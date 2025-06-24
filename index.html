@@ -60,9 +60,7 @@
       color: #1a237e;
     }
 
-    input[type="text"],
-    input[type="date"],
-    select {
+    input[type="text"], input[type="date"], select {
       width: 100%;
       padding: 0.6em;
       font-size: 1em;
@@ -118,7 +116,7 @@
       </form>
 
       <h2 style="margin-top: 2em;">📁 Bestaande cliënten</h2>
-      <label for="client-dropdown">Selecteer cliënt op datum:</label>
+      <label for="client-dropdown">Selecteer cliënt:</label>
       <select id="client-dropdown">
         <option>Kies een cliënt...</option>
       </select>
@@ -126,12 +124,13 @@
 
     <aside>
       <h2>ℹ️ Instructies</h2>
-      <p>Gebruik dit formulier om een nieuwe cliënt toe te voegen inclusief hun telefoonnummer en reden van opname.</p>
+      <p>Vul de gegevens in om een cliënt toe te voegen. Selecteer daarna uit de lijst om naar zijn/haar dossier te gaan.</p>
     </aside>
   </div>
 
   <script>
     const form = document.getElementById('new-client-form');
+    const dropdown = document.getElementById('client-dropdown');
 
     form.addEventListener('submit', e => {
       e.preventDefault();
@@ -151,6 +150,26 @@
 
       window.location.href = `dossier.html?id=${nieuweClient.id}`;
     });
+
+    function updateDropdown() {
+      dropdown.innerHTML = '<option>Kies een cliënt...</option>';
+      const opgeslagenClienten = JSON.parse(localStorage.getItem('clienten')) || [];
+      opgeslagenClienten.forEach(cli => {
+        const option = document.createElement('option');
+        option.value = cli.id;
+        option.textContent = `${cli.naam} (${cli.opnamedatum})`;
+        dropdown.appendChild(option);
+      });
+    }
+
+    dropdown.addEventListener('change', () => {
+      const id = dropdown.value;
+      if (id && id !== 'Kies een cliënt...') {
+        window.location.href = `dossier.html?id=${id}`;
+      }
+    });
+
+    updateDropdown();
   </script>
 </body>
 </html>
