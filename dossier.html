@@ -53,7 +53,7 @@
 
     button {
       margin-top: 1em;
-      padding: 0.6em 1em;
+      padding: 0.6em 1.2em;
       background-color: #fdd835;
       border: none;
       border-radius: 6px;
@@ -100,45 +100,27 @@
 
     <button id="verwijderClient">🗑️ Verwijder dit dossier</button>
   </section>
-
-  <section>
-    <h2>📋 Chronische aandoeningen</h2>
-    <select id="chronischDropdown">
-      <option>-- Selecteer aandoening --</option>
-      <option>Diabetes</option>
-      <option>Astma</option>
-      <option>Hartziekte</option>
-    </select>
-    <button id="addChronisch">➕ Toevoegen</button>
-    <ul id="chronischLijst"></ul>
-  </section>
-
-  <section>
-    <h2>🧠 Psychische aandoeningen</h2>
-    <select id="psychischDropdown">
-      <option>-- Selecteer aandoening --</option>
-      <option>Depressie</option>
-      <option>Angststoornis</option>
-      <option>PTSS</option>
-    </select>
-    <button id="addPsychisch">➕ Toevoegen</button>
-    <ul id="psychischLijst"></ul>
-  </section>
-
   <section>
     <h2>📆 Afspraken</h2>
+
     <label>Datum:</label>
     <input type="date" id="afspraakDatum" />
+
     <label>Behandelaar:</label>
     <input type="text" id="afspraakBehandelaar" />
+
     <label>Reden:</label>
     <input type="text" id="afspraakReden" />
+
     <label>Indicatie:</label>
     <input type="text" id="afspraakIndicatie" />
+
     <label>Plan:</label>
     <input type="text" id="afspraakPlan" />
+
     <label>Notities:</label>
     <input type="text" id="afspraakNotities" />
+
     <button id="opslaanAfspraak">➕ Opslaan afspraak</button>
     <ul id="afsprakenLijst"></ul>
   </section>
@@ -174,7 +156,7 @@
       reader.readAsDataURL(file);
     });
 
-    // Verwijderknop
+    // Verwijder dossier
     document.getElementById('verwijderClient').addEventListener('click', () => {
       if (confirm("Weet je zeker dat je dit dossier wilt verwijderen?")) {
         localStorage.removeItem(`foto-${id}`);
@@ -194,7 +176,6 @@
     // Chronisch
     const chronisch = JSON.parse(localStorage.getItem(`chronisch-${id}`)) || [];
     const chronischLijst = document.getElementById('chronischLijst');
-
     function updateChronischLijst() {
       chronischLijst.innerHTML = '';
       chronisch.forEach((item, i) => {
@@ -211,7 +192,6 @@
         chronischLijst.appendChild(li);
       });
     }
-
     document.getElementById('addChronisch').onclick = () => {
       const val = document.getElementById('chronischDropdown').value;
       if (val && !chronisch.includes(val) && val !== '-- Selecteer aandoening --') {
@@ -224,7 +204,6 @@
     // Psychisch
     const psychisch = JSON.parse(localStorage.getItem(`psychisch-${id}`)) || [];
     const psychischLijst = document.getElementById('psychischLijst');
-
     function updatePsychischLijst() {
       psychischLijst.innerHTML = '';
       psychisch.forEach((item, i) => {
@@ -241,7 +220,6 @@
         psychischLijst.appendChild(li);
       });
     }
-
     document.getElementById('addPsychisch').onclick = () => {
       const val = document.getElementById('psychischDropdown').value;
       if (val && !psychisch.includes(val) && val !== '-- Selecteer aandoening --') {
@@ -254,7 +232,6 @@
     // Afspraken
     const afspraken = JSON.parse(localStorage.getItem(`afspraken-${id}`)) || [];
     const afsprakenLijst = document.getElementById('afsprakenLijst');
-
     function toonAfspraken() {
       afsprakenLijst.innerHTML = '';
       afspraken.forEach(item => {
@@ -271,7 +248,6 @@
     }
 
     toonAfspraken();
-
     document.getElementById('opslaanAfspraak').onclick = () => {
       const afspraak = {
         datum: document.getElementById('afspraakDatum').value,
