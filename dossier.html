@@ -2,7 +2,7 @@
 <html lang="nl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Cliëntendossier</title>
   <style>
     body {
@@ -14,7 +14,7 @@
     }
 
     .dossier {
-      max-width: 900px;
+      max-width: 1000px;
       margin: auto;
       background: white;
       border: 4px solid #ffeb3b;
@@ -50,7 +50,8 @@
     input[type="text"],
     input[type="date"],
     input[type="number"],
-    select {
+    select,
+    textarea {
       width: 100%;
       padding: 0.6em;
       border: 1px solid #90caf9;
@@ -59,8 +60,9 @@
       background-color: #ffffff;
     }
 
-    input[type="file"] {
-      margin-top: 0.6em;
+    textarea {
+      resize: vertical;
+      min-height: 60px;
     }
 
     .flex-row {
@@ -74,18 +76,16 @@
     }
 
     #preview {
-      width: 160px;
-      height: 160px;
+      width: 180px;
+      height: 180px;
       object-fit: cover;
       border: 3px solid #bbdefb;
       border-radius: 12px;
       margin-bottom: 1em;
     }
 
-    .checkbox-group {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 0.5em;
+    .multi-select {
+      height: auto;
     }
   </style>
 </head>
@@ -100,15 +100,15 @@
       </div>
       <div class="card">
         <label>Postcode:</label>
-        <input type="text" id="postcode" placeholder="1234 AB" />
+        <input type="text" id="postcode" />
 
         <label>Burgerlijke staat:</label>
         <select id="burgerlijkeStaat">
           <option>Onbekend</option>
           <option>Gehuwd</option>
           <option>Ongehuwd</option>
-          <option>Weduwe/Weduwnaar</option>
           <option>Gescheiden</option>
+          <option>Weduwe/Weduwnaar</option>
         </select>
 
         <label>1e contactpersoon:</label>
@@ -124,67 +124,68 @@
         <input type="number" id="gewicht" />
       </div>
     </div>
-
-    <div class="section">
-      <h2>🚑 Medisch beleid</h2>
-      <label>Reanimatie:</label>
-      <select id="reanimatie">
-        <option>Niet ingevuld</option>
-        <option>Wel reanimeren</option>
-        <option>Niet reanimeren</option>
+        <div class="section">
+      <h2>🧬 Chronische aandoeningen</h2>
+      <select id="chronisch" multiple class="multi-select">
+        <option>Astma</option>
+        <option>Diabetes type 1</option>
+        <option>Diabetes type 2</option>
+        <option>Parkinson</option>
+        <option>Hoge bloeddruk</option>
+        <option>Hersenschade</option>
+        <option>Hart- en vaatziekten</option>
+        <option>COPD</option>
+        <option>Epilepsie</option>
+        <option>Pacemaker</option>
+        <option>Blindheid</option>
+        <option>Kanker</option>
+        <option>Obesitas</option>
+        <option>Schildklieraandoening</option>
+        <option>AIDS</option>
+        <option>Darmziekte</option>
+        <option>Migraine</option>
+        <option>Spierziekte</option>
       </select>
-
-      <label>Bloedtransfusie:</label>
-      <select id="transfusie">
-        <option>Niet ingevuld</option>
-        <option>Wel toegestaan</option>
-        <option>Niet toegestaan</option>
-      </select>
-
-      <label>Pijnstilling:</label>
-      <select id="pijn">
-        <option>Niet ingevuld</option>
-        <option>Geen voorkeur</option>
-        <option>Zoveel mogelijk</option>
-        <option>Beperkt</option>
-      </select>
-
-      <label>Operatievoorkeur:</label>
-      <select id="operatie">
-        <option>Niet ingevuld</option>
-        <option>Indien noodzakelijk</option>
-        <option>Liever niet</option>
-        <option>Geen voorkeur</option>
-      </select>
-
-      <label>Laatste wens:</label>
-      <select id="wens">
-        <option>Niet ingevuld</option>
-        <option>Begravenis</option>
-        <option>Crematie</option>
-        <option>Orgaandonatie</option>
-      </select>
-    </div>
-
-    <div class="section">
-      <h2>🧬 Medische voorgeschiedenis</h2>
-      <div class="checkbox-group">
-        <label><input type="checkbox" /> Astma</label>
-        <label><input type="checkbox" /> Hoge bloeddruk</label>
-        <label><input type="checkbox" /> Hart- en vaatziekten</label>
-        <label><input type="checkbox" /> Diabetes</label>
-        <label><input type="checkbox" /> Hersenschade</label>
-      </div>
     </div>
 
     <div class="section">
       <h2>🧠 Psychische gezondheid</h2>
-      <div class="checkbox-group">
-        <label><input type="checkbox" /> Krankzinnig</label>
-        <label><input type="checkbox" /> Angststoornis</label>
-        <label><input type="checkbox" /> Depressie</label>
-        <label><input type="checkbox" /> PTSS</label>
-      </div>
+      <select id="psychisch" multiple class="multi-select">
+        <option>Angststoornis</option>
+        <option>Depressie</option>
+        <option>PTSS</option>
+        <option>Burn-out</option>
+        <option>Krankzinnig</option>
+        <option>Agressieproblemen</option>
+        <option>Schizofrenie</option>
+        <option>Autisme</option>
+        <option>Borderline</option>
+        <option>Narcistisch</option>
+        <option>Psychopatisch</option>
+        <option>Eetstoornis</option>
+        <option>Verslaving</option>
+      </select>
+    </div>
+
+    <div class="section">
+      <h2>📅 Afsprakennotities</h2>
+      <label>Datum:</label>
+      <input type="date" />
+
+      <label>Behandeld door:</label>
+      <input type="text" />
+
+      <label>Reden afspraak:</label>
+      <input type="text" />
+
+      <label>Indicatie:</label>
+      <input type="text" />
+
+      <label>Behandelplan:</label>
+      <textarea></textarea>
+
+      <label>Extra notities:</label>
+      <textarea></textarea>
     </div>
   </div>
 
@@ -199,15 +200,12 @@
     } else {
       document.getElementById('naam').textContent = cli.naam;
       document.getElementById('geboorte').value = cli.geboortedatum || '';
-      document.getElementById('telefoon')?.textContent = cli.telefoon || '';
     }
 
-    // Laad opgeslagen foto
     const preview = document.getElementById('preview');
     const foto = localStorage.getItem(`foto-${id}`);
     if (foto) preview.src = foto;
 
-    // Opslaan pasfoto bij upload
     document.getElementById('fotoUpload').addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (!file) return;
@@ -221,3 +219,4 @@
   </script>
 </body>
 </html>
+
