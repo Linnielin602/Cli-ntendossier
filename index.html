@@ -97,9 +97,10 @@
 </head>
 <body>
   <header>
-    <img src="ambu-logo.png" alt="AmbuRP Logo" />
-    <h1>AmbuRP Cliëntendossier</h1>
-  </header>
+  <img src="ambulogo.png" alt="AmbuRP Logo" />
+  <h1 style="flex: 1;">AmbuRP Cliëntendossier</h1>
+  <button onclick="uitloggen()" style="background-color: #ef5350; color: white; font-weight: bold; padding: 0.5em 1em; border: none; border-radius: 6px; cursor: pointer;">🚪 Uitloggen</button>
+</header>
 
   <div class="container">
     <main>
@@ -176,5 +177,11 @@
 
     updateDropdown();
   </script>
+  <script>
+  function uitloggen() {
+    localStorage.removeItem('ingelogd');
+    window.location.href = 'login.html';
+  }
+</script>
 </body>
 </html>
