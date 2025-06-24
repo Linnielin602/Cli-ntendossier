@@ -8,42 +8,27 @@
     body {
       margin: 0;
       font-family: 'Segoe UI', Tahoma, sans-serif;
-      background-color: #f0f4ff;
+      background-color: #eef5ff;
       color: #1a237e;
-      padding: 0;
     }
 
-    header {
-      background-color: #0d47a1;
-      color: white;
-      padding: 1em 2em;
-    }
-
-    .container {
+    .wrapper {
       display: flex;
-      flex-wrap: wrap;
-      padding: 2em;
-      gap: 2em;
       justify-content: center;
-      align-items: flex-start;
+      margin: 2em;
     }
 
     main {
       background-color: white;
-      padding: 1.5em;
+      padding: 2em;
       border-radius: 12px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-      border-left: 6px solid #ffeb3b;
-      flex: 1 1 500px;
-      max-width: 550px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.08);
+      max-width: 800px;
+      width: 100%;
     }
 
-    aside {
-      flex: 0 0 200px;
-      background-color: #ffffff;
-      border: 2px dashed #bbdefb;
-      border-radius: 10px;
-      padding: 1em;
+    section {
+      margin-bottom: 2em;
     }
 
     label {
@@ -52,10 +37,7 @@
       font-weight: 600;
     }
 
-    input[type="text"],
-    input[type="date"],
-    input[type="number"],
-    select {
+    input[type="text"], input[type="date"], input[type="number"], select {
       width: 100%;
       padding: 0.6em;
       font-size: 1em;
@@ -65,23 +47,15 @@
       color: #1a237e;
     }
 
-    ul {
-      list-style-type: none;
-      padding-left: 0;
-    }
-
-    li {
-      margin-bottom: 0.6em;
-    }
-
     button {
       margin-top: 1em;
-      padding: 0.6em 1.2em;
+      padding: 0.5em 1.2em;
+      font-size: 1em;
+      font-weight: bold;
+      color: #1a237e;
       background-color: #fdd835;
       border: none;
       border-radius: 6px;
-      font-weight: bold;
-      color: #1a237e;
       cursor: pointer;
     }
 
@@ -89,9 +63,13 @@
       background-color: #fbc02d;
     }
 
-    #verwijderClient {
-      background-color: #e53935;
-      color: white;
+    ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+
+    li {
+      margin-bottom: 0.4em;
     }
 
     #preview {
@@ -99,15 +77,18 @@
       display: block;
       margin-top: 1em;
     }
+
+    #verwijderClient {
+      background-color: #e53935;
+      color: white;
+    }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Dossier van: <span id="naam">...</span></h1>
-  </header>
-
-  <div class="container">
+  <div class="wrapper">
     <main>
+      <h1>Dossier van: <span id="naam">...</span></h1>
+
       <section>
         <h2>📇 Persoonsgegevens</h2>
 
@@ -217,7 +198,7 @@
       document.getElementById('gewicht').value = cli.gewicht || '';
     }
 
-    // 📷 Foto tonen & uploaden
+    // 📷 Foto
     const savedFoto = localStorage.getItem(`foto-${id}`);
     if (savedFoto) preview.src = savedFoto;
 
@@ -232,10 +213,10 @@
       reader.readAsDataURL(file);
     });
 
-    // 🗑️ Verwijder dossier
+    // 🗑️ Verwijderknop
     document.getElementById('verwijderClient').addEventListener('click', () => {
       if (confirm("Weet je zeker dat je dit dossier wilt verwijderen?")) {
-        ['foto', 'chronisch', 'psychisch', 'afspraken'].forEach(type =>
+        ['foto','chronisch','psychisch','afspraken'].forEach(type =>
           localStorage.removeItem(`${type}-${id}`)
         );
         const lijst = clienten.filter(c => c.id.toString() !== id);
@@ -245,7 +226,7 @@
       }
     });
 
-    // 🏥 Chronische aandoeningen
+    // 🩺 Chronisch
     const chronisch = JSON.parse(localStorage.getItem(`chronisch-${id}`)) || [];
     const chronischLijst = document.getElementById('chronischLijst');
     function updateChronischLijst() {
@@ -264,6 +245,8 @@
         chronischLijst.appendChild(li);
       });
     }
+    updateChronischLijst();
+
     document.getElementById('addChronisch').onclick = () => {
       const val = document.getElementById('chronischDropdown').value;
       if (val && !chronisch.includes(val) && val !== '-- Selecteer aandoening --') {
@@ -273,7 +256,7 @@
       }
     };
 
-    // 🧠 Psychische aandoeningen
+    // 🧠 Psychisch
     const psychisch = JSON.parse(localStorage.getItem(`psychisch-${id}`)) || [];
     const psychischLijst = document.getElementById('psychischLijst');
     function updatePsychischLijst() {
@@ -292,6 +275,8 @@
         psychischLijst.appendChild(li);
       });
     }
+    updatePsychischLijst();
+
     document.getElementById('addPsychisch').onclick = () => {
       const val = document.getElementById('psychischDropdown').value;
       if (val && !psychisch.includes(val) && val !== '-- Selecteer aandoening --') {
@@ -304,18 +289,22 @@
     // 📆 Afspraken
     const afspraken = JSON.parse(localStorage.getItem(`afspraken-${id}`)) || [];
     const afsprakenLijst = document.getElementById('afsprakenLijst');
+
     function toonAfspraken() {
       afsprakenLijst.innerHTML = '';
-      afspraken.forEach((item) => {
+      afspraken.forEach(item => {
         const li = document.createElement('li');
-        li.innerHTML = `<strong>${item.datum}</strong> – ${item.behandelaar}<br>
+        li.innerHTML = `
+          <strong>${item.datum}</strong> – ${item.behandelaar}<br>
           <em>Reden:</em> ${item.reden}<br>
           <em>Indicatie:</em> ${item.indicatie}<br>
           <em>Plan:</em> ${item.plan}<br>
-          <em>Notities:</em> ${item.notities}`;
+          <em>Notities:</em> ${item.notities}
+        `;
         afsprakenLijst.appendChild(li);
       });
     }
+
     toonAfspraken();
 
     document.getElementById('opslaanAfspraak').onclick = () => {
@@ -340,9 +329,6 @@
       ['afspraakDatum','afspraakBehandelaar','afspraakReden','afspraakIndicatie','afspraakPlan','afspraakNotities']
         .forEach(id => document.getElementById(id).value = '');
     };
-
-    updateChronischLijst();
-    updatePsychischLijst();
   </script>
 </body>
 </html>
