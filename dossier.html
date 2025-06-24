@@ -2,374 +2,148 @@
 <html lang="nl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cliëntendossier</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dossier – AmbuRP</title>
   <style>
     body {
       margin: 0;
       font-family: 'Segoe UI', Tahoma, sans-serif;
-      background-color: #e3f2fd;
-      color: #0d47a1;
-      padding: 2em;
+      background-color: #f0f4ff;
+      color: #1a237e;
+      padding: 1em 2em;
     }
-    .dossier {
-      max-width: 1000px;
-      margin: auto;
-      background: white;
-      border: 4px solid #ffeb3b;
-      border-radius: 16px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.1);
-      padding: 2em;
-    }
+
     h1 {
-      margin-top: 0;
       color: #0d47a1;
     }
-    .section {
-      border-left: 6px solid #0d47a1;
-      background-color: #f5faff;
+
+    section {
+      background: white;
       padding: 1.5em;
-      border-radius: 12px;
       margin-bottom: 2em;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.06);
+      border-left: 6px solid #ffeb3b;
     }
+
     label {
       display: block;
-      font-weight: bold;
-      margin-top: 1em;
+      margin: 1em 0 0.3em;
+      font-weight: 600;
     }
-    input[type="text"],
-    input[type="date"],
-    input[type="number"],
-    select,
-    textarea {
+
+    input[type="text"], input[type="date"], input[type="number"] {
       width: 100%;
       padding: 0.6em;
-      border: 1px solid #90caf9;
+      font-size: 1em;
+      border: 2px solid #bbdefb;
       border-radius: 6px;
-      margin-top: 0.3em;
-      background-color: #ffffff;
+      background-color: #f9fcff;
+      color: #1a237e;
     }
-    textarea {
-      resize: vertical;
-      min-height: 60px;
+
+    ul {
+      list-style-type: none;
+      padding-left: 0;
     }
-    .flex-row {
-      display: flex;
-      gap: 2em;
-      flex-wrap: wrap;
+
+    li {
+      margin-bottom: 0.6em;
     }
-    #preview {
-      width: 180px;
-      height: 180px;
-      object-fit: cover;
-      border: 3px solid #bbdefb;
-      border-radius: 12px;
-      margin-bottom: 1em;
-    }
-    .lijst {
-      list-style-type: disc;
-      padding-left: 1.5em;
-      margin-top: 0.6em;
-    }
-    .lijst li button {
-      margin-left: 0.6em;
-      background: none;
-      border: none;
-      color: #c62828;
-      font-weight: bold;
-      cursor: pointer;
-    }
+
     button {
       margin-top: 1em;
+      padding: 0.6em 1em;
       background-color: #fdd835;
       border: none;
-      padding: 0.6em 1.2em;
+      border-radius: 6px;
       font-weight: bold;
       color: #1a237e;
-      border-radius: 6px;
       cursor: pointer;
     }
+
     button:hover {
       background-color: #fbc02d;
+    }
+
+    #verwijderClient {
+      background-color: #e53935;
+      color: white;
     }
   </style>
 </head>
 <body>
-  <div class="dossier">
-    <h1>🩺 Dossier van <span id="naam">...</span></h1>
+  <h1>Dossier van: <span id="naam">...</span></h1>
 
-    <div class="section flex-row">
-      <div>
-        <img id="preview" src="" alt="Geen foto" />
-        <input type="file" id="fotoUpload" accept="image/*" />
-      </div>
-      <div style="flex:1;">
-        <label>Postcode:</label>
-        <input type="text" id="postcode" />
+  <section>
+    <h2>📇 Persoonsgegevens</h2>
+    <label>Geboortedatum:</label>
+    <input type="date" id="geboorte" />
 
-        <label>Burgerlijke staat:</label>
-        <select id="burgerlijkeStaat">
-          <option>Onbekend</option>
-          <option>Gehuwd</option>
-          <option>Ongehuwd</option>
-          <option>Gescheiden</option>
-          <option>Weduwe/Weduwnaar</option>
-        </select>
+    <label>Telefoonnummer:</label>
+    <input type="text" id="telefoon" />
 
-        <label>1e contactpersoon:</label>
-        <input type="text" id="contactpersoon" />
+    <label>Reden opname:</label>
+    <input type="text" id="reden" />
 
-        <label>Geboortedatum:</label>
-        <input type="date" id="geboorte" />
+    <label>Lengte (cm):</label>
+    <input type="number" id="lengte" />
 
-       <label>Telefoonnummer:</label>
-<input type="text" id="telefoon" />
+    <label>Gewicht (kg):</label>
+    <input type="number" id="gewicht" />
 
-<label>Reden opname:</label>
-<input type="text" id="reden" />
+    <label>📷 Foto:</label>
+    <input type="file" id="fotoUpload" accept="image/*" />
+    <br /><br />
+    <img id="preview" src="" alt="Foto" style="max-width: 180px; display:block;" />
 
+    <button id="verwijderClient">🗑️ Verwijder dit dossier</button>
+  </section>
+  <script>
+    const id = new URLSearchParams(location.search).get('id');
+    const naam = document.getElementById('naam');
+    const preview = document.getElementById('preview');
+    const clienten = JSON.parse(localStorage.getItem('clienten')) || [];
+    const cli = clienten.find(c => c.id.toString() === id);
 
-        <label>Lengte (cm):</label>
-        <input type="number" id="lengte" />
+    if (!cli) {
+      document.body.innerHTML = "<p>❌ Cliënt niet gevonden.</p>";
+    } else {
+      naam.textContent = cli.naam || '';
+      document.getElementById('geboorte').value = cli.geboortedatum || '';
+      document.getElementById('telefoon').value = cli.telefoon || '';
+      document.getElementById('reden').value = cli.reden || cli.redenOpname || '';
+    }
 
-        <label>Gewicht (kg):</label>
-        <input type="number" id="gewicht" />
-      </div>
-    </div>
+    const savedFoto = localStorage.getItem(`foto-${id}`);
+    if (savedFoto) preview.src = savedFoto;
 
-    <div class="section">
-      <h2>🚑 Medisch beleid</h2>
-      <label>Reanimatie:</label>
-      <select id="reanimatie">
-        <option>Niet ingevuld</option>
-        <option>Wel reanimeren</option>
-        <option>Niet reanimeren</option>
-      </select>
-
-      <label>Bloedtransfusie:</label>
-      <select id="transfusie">
-        <option>Niet ingevuld</option>
-        <option>Wel toegestaan</option>
-        <option>Niet toegestaan</option>
-      </select>
-
-      <label>Pijnstilling:</label>
-      <select id="pijn">
-        <option>Niet ingevuld</option>
-        <option>Geen voorkeur</option>
-        <option>Zoveel mogelijk</option>
-        <option>Beperkt</option>
-      </select>
-
-      <label>Operatievoorkeur:</label>
-      <select id="operatie">
-        <option>Niet ingevuld</option>
-        <option>Indien noodzakelijk</option>
-        <option>Liever niet</option>
-        <option>Geen voorkeur</option>
-      </select>
-
-      <label>Laatste wens:</label>
-      <select id="wens">
-        <option>Niet ingevuld</option>
-        <option>Begravenis</option>
-        <option>Crematie</option>
-        <option>Orgaandonatie</option>
-      </select>
-    </div>
-    <div class="section">
-      <h2>🧬 Chronische aandoeningen</h2>
-      <select id="chronischDropdown">
-        <option>-- Selecteer aandoening --</option>
-        <option>Astma</option>
-        <option>Diabetes type 1</option>
-        <option>Diabetes type 2</option>
-        <option>Parkinson</option>
-        <option>Hoge bloeddruk</option>
-        <option>Hersenschade</option>
-        <option>Hart- en vaatziekten</option>
-        <option>COPD</option>
-        <option>Epilepsie</option>
-        <option>Pacemaker</option>
-        <option>Blindheid</option>
-        <option>Kanker</option>
-        <option>Obesitas</option>
-        <option>Schildklieraandoening</option>
-        <option>AIDS</option>
-        <option>Darmziekte</option>
-        <option>Migraine</option>
-        <option>Spierziekte</option>
-      </select>
-      <button id="addChronisch">➕ Toevoegen</button>
-      <ul id="chronischLijst" class="lijst"></ul>
-    </div>
-
-    <div class="section">
-      <h2>🧠 Psychische gezondheid</h2>
-      <select id="psychischDropdown">
-        <option>-- Selecteer aandoening --</option>
-        <option>Angststoornis</option>
-        <option>Depressie</option>
-        <option>PTSS</option>
-        <option>Burn-out</option>
-        <option>Krankzinnig</option>
-        <option>Agressieproblemen</option>
-        <option>Schizofrenie</option>
-        <option>Autisme</option>
-        <option>Borderline</option>
-        <option>Narcistisch</option>
-        <option>Psychopatisch</option>
-        <option>Eetstoornis</option>
-        <option>Verslaving</option>
-      </select>
-      <button id="addPsychisch">➕ Toevoegen</button>
-      <ul id="psychischLijst" class="lijst"></ul>
-    </div>
-
-    <div class="section">
-      <h2>📅 Afspraken</h2>
-      <label>Datum:</label>
-      <input type="date" id="afspraakDatum" />
-      <label>Behandeld door:</label>
-      <input type="text" id="afspraakBehandelaar" />
-      <label>Reden afspraak:</label>
-      <input type="text" id="afspraakReden" />
-      <label>Indicatie:</label>
-      <input type="text" id="afspraakIndicatie" />
-      <label>Behandelplan:</label>
-      <textarea id="afspraakPlan"></textarea>
-      <label>Extra notities:</label>
-      <textarea id="afspraakNotities"></textarea>
-      <button id="opslaanAfspraak">💾 Afspraak opslaan</button>
-
-      <h3>Eerdere afspraken</h3>
-      <ul id="afsprakenLijst" class="lijst"></ul>
-    </div>
-  </div>
-
-<script>
-  const id = new URLSearchParams(location.search).get('id');
-  const naam = document.getElementById('naam');
-  const preview = document.getElementById('preview');
-  const clienten = JSON.parse(localStorage.getItem('clienten')) || [];
-  const cli = clienten.find(c => c.id.toString() === id);
-
-  if (!cli) {
-    document.body.innerHTML = "<p>❌ Cliënt niet gevonden.</p>";
-  } else {
-    naam.textContent = cli.naam || '';
-    document.getElementById('geboorte').value = cli.geboortedatum || '';
-    document.getElementById('telefoon').value = cli.telefoon || '';
-document.getElementById('reden').value = cli.reden || cli.redenOpname || '';
-  }
-
-  const chronisch = JSON.parse(localStorage.getItem(`chronisch-${id}`)) || [];
-  const psychisch = JSON.parse(localStorage.getItem(`psychisch-${id}`)) || [];
-  const afspraken = JSON.parse(localStorage.getItem(`afspraken-${id}`)) || [];
-
-  const chronischLijst = document.getElementById('chronischLijst');
-  const psychischLijst = document.getElementById('psychischLijst');
-  const afsprakenLijst = document.getElementById('afsprakenLijst');
-
-  function updateLijst(arr, lijst, storageKey, updateFn) {
-    lijst.innerHTML = '';
-    arr.forEach((item, i) => {
-      const li = document.createElement('li');
-      li.textContent = item;
-      const btn = document.createElement('button');
-      btn.textContent = '❌';
-      btn.onclick = () => {
-        arr.splice(i, 1);
-        localStorage.setItem(storageKey, JSON.stringify(arr));
-        updateFn();
+    document.getElementById('fotoUpload').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        preview.src = reader.result;
+        localStorage.setItem(`foto-${id}`, reader.result);
       };
-      li.appendChild(btn);
-      lijst.appendChild(li);
+      reader.readAsDataURL(file);
     });
-  }
 
-  function updateChronischLijst() {
-    updateLijst(chronisch, chronischLijst, `chronisch-${id}`, updateChronischLijst);
-  }
+    document.getElementById('verwijderClient').addEventListener('click', () => {
+      if (confirm("Weet je zeker dat je dit dossier wilt verwijderen?")) {
+        localStorage.removeItem(`foto-${id}`);
+        localStorage.removeItem(`chronisch-${id}`);
+        localStorage.removeItem(`psychisch-${id}`);
+        localStorage.removeItem(`afspraken-${id}`);
 
-  function updatePsychischLijst() {
-    updateLijst(psychisch, psychischLijst, `psychisch-${id}`, updatePsychischLijst);
-  }
+        let lijst = JSON.parse(localStorage.getItem('clienten')) || [];
+        lijst = lijst.filter(c => c.id.toString() !== id);
+        localStorage.setItem('clienten', JSON.stringify(lijst));
 
-  updateChronischLijst();
-  updatePsychischLijst();
-
-  document.getElementById('addChronisch').onclick = () => {
-    const val = document.getElementById('chronischDropdown').value;
-    if (val && !chronisch.includes(val) && val !== '-- Selecteer aandoening --') {
-      chronisch.push(val);
-      localStorage.setItem(`chronisch-${id}`, JSON.stringify(chronisch));
-      updateChronischLijst();
-    }
-  };
-
-  document.getElementById('addPsychisch').onclick = () => {
-    const val = document.getElementById('psychischDropdown').value;
-    if (val && !psychisch.includes(val) && val !== '-- Selecteer aandoening --') {
-      psychisch.push(val);
-      localStorage.setItem(`psychisch-${id}`, JSON.stringify(psychisch));
-      updatePsychischLijst();
-    }
-  };
-
-  document.getElementById('fotoUpload').addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      preview.src = reader.result;
-      localStorage.setItem(`foto-${id}`, reader.result);
-    };
-    reader.readAsDataURL(file);
-  });
-
-  const savedFoto = localStorage.getItem(`foto-${id}`);
-  if (savedFoto) preview.src = savedFoto;
-
-  function toonAfspraken() {
-    afsprakenLijst.innerHTML = '';
-    afspraken.forEach(item => {
-      const li = document.createElement('li');
-      li.innerHTML = `
-        <strong>${item.datum}</strong> – Behandeld door: ${item.behandelaar}<br>
-        <em>Reden:</em> ${item.reden}<br>
-        <em>Indicatie:</em> ${item.indicatie}<br>
-        <em>Plan:</em> ${item.plan}<br>
-        <em>Notities:</em> ${item.notities}
-      `;
-      afsprakenLijst.appendChild(li);
+        alert("Cliënt is volledig verwijderd.");
+        window.location.href = "index.html";
+      }
     });
-  }
-
-  toonAfspraken();
-
-  document.getElementById('opslaanAfspraak').onclick = () => {
-    const afspraak = {
-      datum: document.getElementById('afspraakDatum').value,
-      behandelaar: document.getElementById('afspraakBehandelaar').value,
-      reden: document.getElementById('afspraakReden').value,
-      indicatie: document.getElementById('afspraakIndicatie').value,
-      plan: document.getElementById('afspraakPlan').value,
-      notities: document.getElementById('afspraakNotities').value
-    };
-
-    if (!afspraak.datum || !afspraak.reden) {
-      alert("Datum en reden zijn verplicht.");
-      return;
-    }
-
-    afspraken.push(afspraak);
-    localStorage.setItem(`afspraken-${id}`, JSON.stringify(afspraken));
-    toonAfspraken();
-
-    ['afspraakDatum','afspraakBehandelaar','afspraakReden','afspraakIndicatie','afspraakPlan','afspraakNotities']
-      .forEach(id => document.getElementById(id).value = '');
-  };
-</script>
+  </script>
 </body>
 </html>
