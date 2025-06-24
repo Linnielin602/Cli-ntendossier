@@ -64,7 +64,8 @@
       const toegestaneWachtwoord = 'Ambu123'; // ← pas dit aan!
 
       if (wachtwoord === toegestaneWachtwoord) {
-        window.location.href = 'index.html';
+        localStorage.setItem('ingelogd', 'true');
+window.location.href = 'index.html';
       } else {
         document.getElementById('fout').textContent = '❌ Onjuist wachtwoord';
       }
