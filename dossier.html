@@ -2,7 +2,7 @@
 <html lang="nl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cliëntendossier</title>
   <style>
     body {
@@ -12,7 +12,6 @@
       color: #0d47a1;
       padding: 2em;
     }
-
     .dossier {
       max-width: 1000px;
       margin: auto;
@@ -22,12 +21,10 @@
       box-shadow: 0 0 20px rgba(0,0,0,0.1);
       padding: 2em;
     }
-
     h1 {
       margin-top: 0;
       color: #0d47a1;
     }
-
     .section {
       border-left: 6px solid #0d47a1;
       background-color: #f5faff;
@@ -35,18 +32,11 @@
       border-radius: 12px;
       margin-bottom: 2em;
     }
-
-    .section h2 {
-      margin-top: 0;
-      color: #0d47a1;
-    }
-
     label {
       display: block;
       font-weight: bold;
       margin-top: 1em;
     }
-
     input[type="text"],
     input[type="date"],
     input[type="number"],
@@ -59,22 +49,15 @@
       margin-top: 0.3em;
       background-color: #ffffff;
     }
-
     textarea {
       resize: vertical;
       min-height: 60px;
     }
-
     .flex-row {
       display: flex;
       gap: 2em;
       flex-wrap: wrap;
     }
-
-    .card {
-      flex: 1;
-    }
-
     #preview {
       width: 180px;
       height: 180px;
@@ -83,9 +66,24 @@
       border-radius: 12px;
       margin-bottom: 1em;
     }
-
-    .multi-select {
-      height: auto;
+    .aandoening-lijsten {
+      margin-top: 0.8em;
+      padding-left: 1.2em;
+      list-style-type: disc;
+      color: #0d47a1;
+    }
+    button {
+      margin-top: 0.8em;
+      background-color: #fdd835;
+      border: none;
+      padding: 0.6em 1em;
+      font-weight: bold;
+      color: #1a237e;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #fbc02d;
     }
   </style>
 </head>
@@ -98,7 +96,7 @@
         <img id="preview" src="" alt="Geen foto" />
         <input type="file" id="fotoUpload" accept="image/*" />
       </div>
-      <div class="card">
+      <div style="flex:1;">
         <label>Postcode:</label>
         <input type="text" id="postcode" />
 
@@ -124,9 +122,10 @@
         <input type="number" id="gewicht" />
       </div>
     </div>
-        <div class="section">
+    <div class="section">
       <h2>🧬 Chronische aandoeningen</h2>
-      <select id="chronisch" multiple class="multi-select">
+      <select id="chronischDropdown">
+        <option>-- Selecteer aandoening --</option>
         <option>Astma</option>
         <option>Diabetes type 1</option>
         <option>Diabetes type 2</option>
@@ -146,11 +145,14 @@
         <option>Migraine</option>
         <option>Spierziekte</option>
       </select>
+      <button id="addChronisch">➕ Toevoegen</button>
+      <ul class="aandoening-lijsten" id="chronischLijst"></ul>
     </div>
 
     <div class="section">
       <h2>🧠 Psychische gezondheid</h2>
-      <select id="psychisch" multiple class="multi-select">
+      <select id="psychischDropdown">
+        <option>-- Selecteer aandoening --</option>
         <option>Angststoornis</option>
         <option>Depressie</option>
         <option>PTSS</option>
@@ -165,46 +167,42 @@
         <option>Eetstoornis</option>
         <option>Verslaving</option>
       </select>
+      <button id="addPsychisch">➕ Toevoegen</button>
+      <ul class="aandoening-lijsten" id="psychischLijst"></ul>
     </div>
 
     <div class="section">
-      <h2>📅 Afsprakennotities</h2>
+      <h2>📅 Afspraken</h2>
       <label>Datum:</label>
-      <input type="date" />
+      <input type="date" id="afspraakDatum" />
 
       <label>Behandeld door:</label>
-      <input type="text" />
+      <input type="text" id="afspraakBehandelaar" />
 
       <label>Reden afspraak:</label>
-      <input type="text" />
+      <input type="text" id="afspraakReden" />
 
       <label>Indicatie:</label>
-      <input type="text" />
+      <input type="text" id="afspraakIndicatie" />
 
       <label>Behandelplan:</label>
-      <textarea></textarea>
+      <textarea id="afspraakPlan"></textarea>
 
       <label>Extra notities:</label>
-      <textarea></textarea>
+      <textarea id="afspraakNotities"></textarea>
+
+      <button id="opslaanAfspraak">💾 Afspraak opslaan</button>
+
+      <h3>Eerdere afspraken:</h3>
+      <ul id="afsprakenLijst" class="aandoening-lijsten"></ul>
     </div>
   </div>
 
   <script>
-    const params = new URLSearchParams(window.location.search);
-    const id = params.get('id');
-    const cliënten = JSON.parse(localStorage.getItem('clienten')) || [];
-    const cli = cliënten.find(c => c.id.toString() === id);
-
-    if (!cli) {
-      document.body.innerHTML = "<p>❌ Cliënt niet gevonden.</p>";
-    } else {
-      document.getElementById('naam').textContent = cli.naam;
-      document.getElementById('geboorte').value = cli.geboortedatum || '';
-    }
-
+    const id = new URLSearchParams(window.location.search).get('id');
     const preview = document.getElementById('preview');
-    const foto = localStorage.getItem(`foto-${id}`);
-    if (foto) preview.src = foto;
+    const cliFoto = localStorage.getItem(`foto-${id}`);
+    if (cliFoto) preview.src = cliFoto;
 
     document.getElementById('fotoUpload').addEventListener('change', (e) => {
       const file = e.target.files[0];
@@ -216,7 +214,96 @@
       };
       reader.readAsDataURL(file);
     });
+
+    let clienten = JSON.parse(localStorage.getItem('clienten')) || [];
+    const cli = clienten.find(c => c.id.toString() === id);
+    if (!cli) {
+      document.body.innerHTML = "<p>❌ Cliënt niet gevonden.</p>";
+    } else {
+      document.getElementById('naam').textContent = cli.naam || '';
+    }
+
+    // ✅ Chronisch
+    const chronisch = JSON.parse(localStorage.getItem(`chronisch-${id}`)) || [];
+    const lijstChronisch = document.getElementById('chronischLijst');
+    chronisch.forEach(item => {
+      const li = document.createElement('li');
+      li.textContent = item;
+      lijstChronisch.appendChild(li);
+    });
+
+    document.getElementById('addChronisch').addEventListener('click', () => {
+      const dropdown = document.getElementById('chronischDropdown');
+      const keuze = dropdown.value;
+      if (keuze && !chronisch.includes(keuze) && keuze !== '-- Selecteer aandoening --') {
+        chronisch.push(keuze);
+        localStorage.setItem(`chronisch-${id}`, JSON.stringify(chronisch));
+        const li = document.createElement('li');
+        li.textContent = keuze;
+        lijstChronisch.appendChild(li);
+      }
+    });
+
+    // ✅ Psychisch
+    const psychisch = JSON.parse(localStorage.getItem(`psychisch-${id}`)) || [];
+    const lijstPsych = document.getElementById('psychischLijst');
+    psychisch.forEach(item => {
+      const li = document.createElement('li');
+      li.textContent = item;
+      lijstPsych.appendChild(li);
+    });
+
+    document.getElementById('addPsychisch').addEventListener('click', () => {
+      const keuze = document.getElementById('psychischDropdown').value;
+      if (keuze && !psychisch.includes(keuze) && keuze !== '-- Selecteer aandoening --') {
+        psychisch.push(keuze);
+        localStorage.setItem(`psychisch-${id}`, JSON.stringify(psychisch));
+        const li = document.createElement('li');
+        li.textContent = keuze;
+        lijstPsych.appendChild(li);
+      }
+    });
+
+    // ✅ Afspraken
+    const afspraken = JSON.parse(localStorage.getItem(`afspraken-${id}`)) || [];
+    const afsprakenLijst = document.getElementById('afsprakenLijst');
+
+    function toonAfspraken() {
+      afsprakenLijst.innerHTML = '';
+      afspraken.forEach(item => {
+        const li = document.createElement('li');
+        li.innerHTML = `<strong>${item.datum}</strong> – ${item.behandelaar}: ${item.reden}`;
+        afsprakenLijst.appendChild(li);
+      });
+    }
+    toonAfspraken();
+
+    document.getElementById('opslaanAfspraak').addEventListener('click', () => {
+      const afspraak = {
+        datum: document.getElementById('afspraakDatum').value,
+        behandelaar: document.getElementById('afspraakBehandelaar').value,
+        reden: document.getElementById('afspraakReden').value,
+        indicatie: document.getElementById('afspraakIndicatie').value,
+        plan: document.getElementById('afspraakPlan').value,
+        notities: document.getElementById('afspraakNotities').value
+      };
+
+      if (!afspraak.datum || !afspraak.reden) {
+        alert("Vul minimaal datum en reden in.");
+        return;
+      }
+
+      afspraken.push(afspraak);
+      localStorage.setItem(`afspraken-${id}`, JSON.stringify(afspraken));
+      toonAfspraken();
+
+      document.getElementById('afspraakDatum').value = '';
+      document.getElementById('afspraakBehandelaar').value = '';
+      document.getElementById('afspraakReden').value = '';
+      document.getElementById('afspraakIndicatie').value = '';
+      document.getElementById('afspraakPlan').value = '';
+      document.getElementById('afspraakNotities').value = '';
+    });
   </script>
 </body>
 </html>
-
