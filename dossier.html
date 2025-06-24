@@ -122,6 +122,9 @@
         <label>Geboortedatum:</label>
         <input type="date" id="geboorte" />
 
+        <p><strong>Telefoonnummer:</strong> <span id="telefoon">...</span></p>
+<p><strong>Reden opname:</strong> <span id="reden">...</span></p>
+
         <label>Lengte (cm):</label>
         <input type="number" id="lengte" />
 
@@ -240,125 +243,129 @@
     </div>
   </div>
 
-  <script>
-    const id = new URLSearchParams(location.search).get('id');
-    const naam = document.getElementById('naam');
-    const preview = document.getElementById('preview');
-    const clienten = JSON.parse(localStorage.getItem('clienten')) || [];
-    const cli = clienten.find(c => c.id.toString() === id);
-    if (!cli) {
-      document.body.innerHTML = "<p>❌ Cliënt niet gevonden.</p>";
-    } else {
-      naam.textContent = cli.naam || '';
-    }
+<script>
+  const id = new URLSearchParams(location.search).get('id');
+  const naam = document.getElementById('naam');
+  const preview = document.getElementById('preview');
+  const clienten = JSON.parse(localStorage.getItem('clienten')) || [];
+  const cli = clienten.find(c => c.id.toString() === id);
 
-    const chronisch = JSON.parse(localStorage.getItem(`chronisch-${id}`)) || [];
-    const psychisch = JSON.parse(localStorage.getItem(`psychisch-${id}`)) || [];
-    const afspraken = JSON.parse(localStorage.getItem(`afspraken-${id}`)) || [];
+  if (!cli) {
+    document.body.innerHTML = "<p>❌ Cliënt niet gevonden.</p>";
+  } else {
+    naam.textContent = cli.naam || '';
+    document.getElementById('geboorte').value = cli.geboortedatum || '';
+    document.getElementById('telefoon').textContent = cli.telefoon || '';
+    document.getElementById('reden').textContent = cli.reden || cli.redenOpname || '';
+  }
 
-    const chronischLijst = document.getElementById('chronischLijst');
-    const psychischLijst = document.getElementById('psychischLijst');
-    const afsprakenLijst = document.getElementById('afsprakenLijst');
+  const chronisch = JSON.parse(localStorage.getItem(`chronisch-${id}`)) || [];
+  const psychisch = JSON.parse(localStorage.getItem(`psychisch-${id}`)) || [];
+  const afspraken = JSON.parse(localStorage.getItem(`afspraken-${id}`)) || [];
 
-    function updateLijst(arr, lijst, storageKey, updateFn) {
-      lijst.innerHTML = '';
-      arr.forEach((item, i) => {
-        const li = document.createElement('li');
-        li.textContent = item;
-        const btn = document.createElement('button');
-        btn.textContent = '❌';
-        btn.onclick = () => {
-          arr.splice(i, 1);
-          localStorage.setItem(storageKey, JSON.stringify(arr));
-          updateFn();
-        };
-        li.appendChild(btn);
-        lijst.appendChild(li);
-      });
-    }
+  const chronischLijst = document.getElementById('chronischLijst');
+  const psychischLijst = document.getElementById('psychischLijst');
+  const afsprakenLijst = document.getElementById('afsprakenLijst');
 
-    function updateChronischLijst() {
-      updateLijst(chronisch, chronischLijst, `chronisch-${id}`, updateChronischLijst);
-    }
-
-    function updatePsychischLijst() {
-      updateLijst(psychisch, psychischLijst, `psychisch-${id}`, updatePsychischLijst);
-    }
-
-    updateChronischLijst();
-    updatePsychischLijst();
-
-    document.getElementById('addChronisch').onclick = () => {
-      const val = document.getElementById('chronischDropdown').value;
-      if (val && !chronisch.includes(val) && val !== '-- Selecteer aandoening --') {
-        chronisch.push(val);
-        localStorage.setItem(`chronisch-${id}`, JSON.stringify(chronisch));
-        updateChronischLijst();
-      }
-    };
-
-    document.getElementById('addPsychisch').onclick = () => {
-      const val = document.getElementById('psychischDropdown').value;
-      if (val && !psychisch.includes(val) && val !== '-- Selecteer aandoening --') {
-        psychisch.push(val);
-        localStorage.setItem(`psychisch-${id}`, JSON.stringify(psychisch));
-        updatePsychischLijst();
-      }
-    };
-
-    document.getElementById('fotoUpload').addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        preview.src = reader.result;
-        localStorage.setItem(`foto-${id}`, reader.result);
+  function updateLijst(arr, lijst, storageKey, updateFn) {
+    lijst.innerHTML = '';
+    arr.forEach((item, i) => {
+      const li = document.createElement('li');
+      li.textContent = item;
+      const btn = document.createElement('button');
+      btn.textContent = '❌';
+      btn.onclick = () => {
+        arr.splice(i, 1);
+        localStorage.setItem(storageKey, JSON.stringify(arr));
+        updateFn();
       };
-      reader.readAsDataURL(file);
+      li.appendChild(btn);
+      lijst.appendChild(li);
     });
+  }
 
-    const savedFoto = localStorage.getItem(`foto-${id}`);
-    if (savedFoto) preview.src = savedFoto;
+  function updateChronischLijst() {
+    updateLijst(chronisch, chronischLijst, `chronisch-${id}`, updateChronischLijst);
+  }
 
-    function toonAfspraken() {
-      afsprakenLijst.innerHTML = '';
-      afspraken.forEach(item => {
-        const li = document.createElement('li');
-        li.innerHTML = `
-          <strong>${item.datum}</strong> – Behandeld door: ${item.behandelaar}<br>
-          <em>Reden:</em> ${item.reden}<br>
-          <em>Indicatie:</em> ${item.indicatie}<br>
-          <em>Plan:</em> ${item.plan}<br>
-          <em>Notities:</em> ${item.notities}
-        `;
-        afsprakenLijst.appendChild(li);
-      });
+  function updatePsychischLijst() {
+    updateLijst(psychisch, psychischLijst, `psychisch-${id}`, updatePsychischLijst);
+  }
+
+  updateChronischLijst();
+  updatePsychischLijst();
+
+  document.getElementById('addChronisch').onclick = () => {
+    const val = document.getElementById('chronischDropdown').value;
+    if (val && !chronisch.includes(val) && val !== '-- Selecteer aandoening --') {
+      chronisch.push(val);
+      localStorage.setItem(`chronisch-${id}`, JSON.stringify(chronisch));
+      updateChronischLijst();
+    }
+  };
+
+  document.getElementById('addPsychisch').onclick = () => {
+    const val = document.getElementById('psychischDropdown').value;
+    if (val && !psychisch.includes(val) && val !== '-- Selecteer aandoening --') {
+      psychisch.push(val);
+      localStorage.setItem(`psychisch-${id}`, JSON.stringify(psychisch));
+      updatePsychischLijst();
+    }
+  };
+
+  document.getElementById('fotoUpload').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      preview.src = reader.result;
+      localStorage.setItem(`foto-${id}`, reader.result);
+    };
+    reader.readAsDataURL(file);
+  });
+
+  const savedFoto = localStorage.getItem(`foto-${id}`);
+  if (savedFoto) preview.src = savedFoto;
+
+  function toonAfspraken() {
+    afsprakenLijst.innerHTML = '';
+    afspraken.forEach(item => {
+      const li = document.createElement('li');
+      li.innerHTML = `
+        <strong>${item.datum}</strong> – Behandeld door: ${item.behandelaar}<br>
+        <em>Reden:</em> ${item.reden}<br>
+        <em>Indicatie:</em> ${item.indicatie}<br>
+        <em>Plan:</em> ${item.plan}<br>
+        <em>Notities:</em> ${item.notities}
+      `;
+      afsprakenLijst.appendChild(li);
+    });
+  }
+
+  toonAfspraken();
+
+  document.getElementById('opslaanAfspraak').onclick = () => {
+    const afspraak = {
+      datum: document.getElementById('afspraakDatum').value,
+      behandelaar: document.getElementById('afspraakBehandelaar').value,
+      reden: document.getElementById('afspraakReden').value,
+      indicatie: document.getElementById('afspraakIndicatie').value,
+      plan: document.getElementById('afspraakPlan').value,
+      notities: document.getElementById('afspraakNotities').value
+    };
+
+    if (!afspraak.datum || !afspraak.reden) {
+      alert("Datum en reden zijn verplicht.");
+      return;
     }
 
+    afspraken.push(afspraak);
+    localStorage.setItem(`afspraken-${id}`, JSON.stringify(afspraken));
     toonAfspraken();
 
-    document.getElementById('opslaanAfspraak').onclick = () => {
-      const afspraak = {
-        datum: document.getElementById('afspraakDatum').value,
-        behandelaar: document.getElementById('afspraakBehandelaar').value,
-        reden: document.getElementById('afspraakReden').value,
-        indicatie: document.getElementById('afspraakIndicatie').value,
-        plan: document.getElementById('afspraakPlan').value,
-        notities: document.getElementById('afspraakNotities').value
-      };
-
-      if (!afspraak.datum || !afspraak.reden) {
-        alert("Datum en reden zijn verplicht.");
-        return;
-      }
-
-      afspraken.push(afspraak);
-      localStorage.setItem(`afspraken-${id}`, JSON.stringify(afspraken));
-      toonAfspraken();
-
-      ['afspraakDatum','afspraakBehandelaar','afspraakReden','afspraakIndicatie','afspraakPlan','afspraakNotities']
-        .forEach(id => document.getElementById(id).value = '');
-    };
-  </script>
+    ['afspraakDatum','afspraakBehandelaar','afspraakReden','afspraakIndicatie','afspraakPlan','afspraakNotities']
+      .forEach(id => document.getElementById(id).value = '');
+  };
+</script>
 </body>
 </html>
