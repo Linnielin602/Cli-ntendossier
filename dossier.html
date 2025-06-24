@@ -5,6 +5,35 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dossier – AmbuRP</title>
   <style>
+    .aandoeningenGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8em;
+  margin-top: 1em;
+}
+
+.aandoeningKaart {
+  background-color: #e3f2fd;
+  border: 2px solid #90caf9;
+  padding: 0.8em 1em;
+  border-radius: 8px;
+  flex: 1 1 250px;
+  max-width: 100%;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.aandoeningKaart button {
+  margin-left: 1em;
+  background-color: transparent;
+  color: #d32f2f;
+  font-size: 1.2em;
+  border: none;
+  cursor: pointer;
+}
+
     .afsprakenGrid {
   display: flex;
   flex-wrap: wrap;
@@ -154,7 +183,7 @@
           <option>Andere...</option>
         </select>
         <button id="addChronisch">➕ Toevoegen</button>
-        <ul id="chronischLijst"></ul>
+        <div id="chronischLijst" class="aandoeningenGrid"></div>
 
         <h3>🧠 Psychische aandoeningen</h3>
         <select id="psychischDropdown">
@@ -171,7 +200,7 @@
           <option>Andere...</option>
         </select>
         <button id="addPsychisch">➕ Toevoegen</button>
-        <ul id="psychischLijst"></ul>
+        <div id="psychischLijst" class="aandoeningenGrid"></div>
       </section>
       <section>
         <h2>📆 Afspraken</h2>
@@ -247,64 +276,68 @@
     });
 
     // 🩺 Chronisch
-    const chronisch = JSON.parse(localStorage.getItem(`chronisch-${id}`)) || [];
-    const chronischLijst = document.getElementById('chronischLijst');
-    function updateChronischLijst() {
-      chronischLijst.innerHTML = '';
-      chronisch.forEach((item, i) => {
-        const li = document.createElement('li');
-        li.textContent = item + ' ';
-        const btn = document.createElement('button');
-        btn.textContent = '❌';
-        btn.onclick = () => {
-          chronisch.splice(i, 1);
-          localStorage.setItem(`chronisch-${id}`, JSON.stringify(chronisch));
-          updateChronischLijst();
-        };
-        li.appendChild(btn);
-        chronischLijst.appendChild(li);
-      });
-    }
-    updateChronischLijst();
+const chronisch = JSON.parse(localStorage.getItem(`chronisch-${id}`)) || [];
+const chronischLijst = document.getElementById('chronischLijst');
 
-    document.getElementById('addChronisch').onclick = () => {
-      const val = document.getElementById('chronischDropdown').value;
-      if (val && !chronisch.includes(val) && val !== '-- Selecteer aandoening --') {
-        chronisch.push(val);
-        localStorage.setItem(`chronisch-${id}`, JSON.stringify(chronisch));
-        updateChronischLijst();
-      }
+function updateChronischLijst() {
+  chronischLijst.innerHTML = '';
+  chronisch.forEach((item, i) => {
+    const div = document.createElement('div');
+    div.className = 'aandoeningKaart';
+    div.innerHTML = `<span>${item}</span>`;
+    const btn = document.createElement('button');
+    btn.textContent = '❌';
+    btn.onclick = () => {
+      chronisch.splice(i, 1);
+      localStorage.setItem(`chronisch-${id}`, JSON.stringify(chronisch));
+      updateChronischLijst();
     };
+    div.appendChild(btn);
+    chronischLijst.appendChild(div);
+  });
+}
+updateChronischLijst();
+
+document.getElementById('addChronisch').onclick = () => {
+  const val = document.getElementById('chronischDropdown').value;
+  if (val && !chronisch.includes(val) && val !== '-- Selecteer aandoening --') {
+    chronisch.push(val);
+    localStorage.setItem(`chronisch-${id}`, JSON.stringify(chronisch));
+    updateChronischLijst();
+  }
+};
 
     // 🧠 Psychisch
-    const psychisch = JSON.parse(localStorage.getItem(`psychisch-${id}`)) || [];
-    const psychischLijst = document.getElementById('psychischLijst');
-    function updatePsychischLijst() {
-      psychischLijst.innerHTML = '';
-      psychisch.forEach((item, i) => {
-        const li = document.createElement('li');
-        li.textContent = item + ' ';
-        const btn = document.createElement('button');
-        btn.textContent = '❌';
-        btn.onclick = () => {
-          psychisch.splice(i, 1);
-          localStorage.setItem(`psychisch-${id}`, JSON.stringify(psychisch));
-          updatePsychischLijst();
-        };
-        li.appendChild(btn);
-        psychischLijst.appendChild(li);
-      });
-    }
-    updatePsychischLijst();
+const psychisch = JSON.parse(localStorage.getItem(`psychisch-${id}`)) || [];
+const psychischLijst = document.getElementById('psychischLijst');
 
-    document.getElementById('addPsychisch').onclick = () => {
-      const val = document.getElementById('psychischDropdown').value;
-      if (val && !psychisch.includes(val) && val !== '-- Selecteer aandoening --') {
-        psychisch.push(val);
-        localStorage.setItem(`psychisch-${id}`, JSON.stringify(psychisch));
-        updatePsychischLijst();
-      }
+function updatePsychischLijst() {
+  psychischLijst.innerHTML = '';
+  psychisch.forEach((item, i) => {
+    const div = document.createElement('div');
+    div.className = 'aandoeningKaart';
+    div.innerHTML = `<span>${item}</span>`;
+    const btn = document.createElement('button');
+    btn.textContent = '❌';
+    btn.onclick = () => {
+      psychisch.splice(i, 1);
+      localStorage.setItem(`psychisch-${id}`, JSON.stringify(psychisch));
+      updatePsychischLijst();
     };
+    div.appendChild(btn);
+    psychischLijst.appendChild(div);
+  });
+}
+updatePsychischLijst();
+
+document.getElementById('addPsychisch').onclick = () => {
+  const val = document.getElementById('psychischDropdown').value;
+  if (val && !psychisch.includes(val) && val !== '-- Selecteer aandoening --') {
+    psychisch.push(val);
+    localStorage.setItem(`psychisch-${id}`, JSON.stringify(psychisch));
+    updatePsychischLijst();
+  }
+};
 
     // 📆 Afspraken
     const afspraken = JSON.parse(localStorage.getItem(`afspraken-${id}`)) || [];
