@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cliëntendossier</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 2em;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background-color: #e3f2fd;
+      color: #0d47a1;
+    }
+    .card {
+      background-color: white;
+      border: 3px solid #ffeb3b;
+      padding: 2em;
+      border-radius: 12px;
+      max-width: 800px;
+      margin: auto;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+    h1, h2 { margin-top: 0; }
+    .info p { margin: 0.5em 0; }
+    .highlight { font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>🩺 Dossier van <span id="naam">...</span></h1>
+    <section class="info">
+      <h2>📇 Persoonsgegevens</h2>
+      <p><span class="highlight">Telefoonnummer:</span> <span id="telefoon">...</span></p>
+      <p><span class="highlight">Opnamedatum:</span> <span id="datum">...</span></p>
+    </section>
+    <section class="info">
+      <h2>📝 Eerste afspraak</h2>
+      <p><span class="highlight">Reden:</span> <span id="reden">...</span></p>
+    </section>
+  </div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get('id');
+    const clienten = JSON.parse(localStorage.getItem('clienten')) || [];
+    const client = clienten.find(c => c.id.toString() === id);
+
+    if (!client) {
+      document.body.innerHTML = "<p>❌ Cliënt niet gevonden. Controleer het ID in de URL.</p>";
+    } else {
+      document.getElementById('naam').textContent = client.naam;
+      document.getElementById('telefoon').textContent = client.telefoon;
+      document.getElementById('datum').textContent = client.opnamedatum;
+      document.getElementById('reden').textContent = client.reden;
+    }
+  </script>
+</body>
+</html>
