@@ -2,58 +2,222 @@
 <html lang="nl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Cliëntendossier</title>
   <style>
     body {
       margin: 0;
-      padding: 2em;
       font-family: 'Segoe UI', Tahoma, sans-serif;
       background-color: #e3f2fd;
       color: #0d47a1;
-    }
-    .card {
-      background-color: white;
-      border: 3px solid #ffeb3b;
       padding: 2em;
-      border-radius: 12px;
-      max-width: 800px;
-      margin: auto;
-      box-shadow: 0 0 15px rgba(0,0,0,0.1);
     }
-    h1, h2 { margin-top: 0; }
-    .info p { margin: 0.5em 0; }
-    .highlight { font-weight: bold; }
+
+    .dossier {
+      max-width: 900px;
+      margin: auto;
+      background: white;
+      border: 4px solid #ffeb3b;
+      border-radius: 16px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      padding: 2em;
+    }
+
+    h1 {
+      margin-top: 0;
+      color: #0d47a1;
+    }
+
+    .section {
+      border-left: 6px solid #0d47a1;
+      background-color: #f5faff;
+      padding: 1.5em;
+      border-radius: 12px;
+      margin-bottom: 2em;
+    }
+
+    .section h2 {
+      margin-top: 0;
+      color: #0d47a1;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-top: 1em;
+    }
+
+    input[type="text"],
+    input[type="date"],
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 0.6em;
+      border: 1px solid #90caf9;
+      border-radius: 6px;
+      margin-top: 0.3em;
+      background-color: #ffffff;
+    }
+
+    input[type="file"] {
+      margin-top: 0.6em;
+    }
+
+    .flex-row {
+      display: flex;
+      gap: 2em;
+      flex-wrap: wrap;
+    }
+
+    .card {
+      flex: 1;
+    }
+
+    #preview {
+      width: 160px;
+      height: 160px;
+      object-fit: cover;
+      border: 3px solid #bbdefb;
+      border-radius: 12px;
+      margin-bottom: 1em;
+    }
+
+    .checkbox-group {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 0.5em;
+    }
   </style>
 </head>
 <body>
-  <div class="card">
+  <div class="dossier">
     <h1>🩺 Dossier van <span id="naam">...</span></h1>
-    <section class="info">
-      <h2>📇 Persoonsgegevens</h2>
-      <p><span class="highlight">Telefoonnummer:</span> <span id="telefoon">...</span></p>
-      <p><span class="highlight">Opnamedatum:</span> <span id="datum">...</span></p>
-    </section>
-    <section class="info">
-      <h2>📝 Eerste afspraak</h2>
-      <p><span class="highlight">Reden:</span> <span id="reden">...</span></p>
-    </section>
+
+    <div class="section flex-row">
+      <div>
+        <img id="preview" src="" alt="Geen foto" />
+        <input type="file" id="fotoUpload" accept="image/*" />
+      </div>
+      <div class="card">
+        <label>Postcode:</label>
+        <input type="text" id="postcode" placeholder="1234 AB" />
+
+        <label>Burgerlijke staat:</label>
+        <select id="burgerlijkeStaat">
+          <option>Onbekend</option>
+          <option>Gehuwd</option>
+          <option>Ongehuwd</option>
+          <option>Weduwe/Weduwnaar</option>
+          <option>Gescheiden</option>
+        </select>
+
+        <label>1e contactpersoon:</label>
+        <input type="text" id="contactpersoon" />
+
+        <label>Geboortedatum:</label>
+        <input type="date" id="geboorte" />
+
+        <label>Lengte (cm):</label>
+        <input type="number" id="lengte" />
+
+        <label>Gewicht (kg):</label>
+        <input type="number" id="gewicht" />
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>🚑 Medisch beleid</h2>
+      <label>Reanimatie:</label>
+      <select id="reanimatie">
+        <option>Niet ingevuld</option>
+        <option>Wel reanimeren</option>
+        <option>Niet reanimeren</option>
+      </select>
+
+      <label>Bloedtransfusie:</label>
+      <select id="transfusie">
+        <option>Niet ingevuld</option>
+        <option>Wel toegestaan</option>
+        <option>Niet toegestaan</option>
+      </select>
+
+      <label>Pijnstilling:</label>
+      <select id="pijn">
+        <option>Niet ingevuld</option>
+        <option>Geen voorkeur</option>
+        <option>Zoveel mogelijk</option>
+        <option>Beperkt</option>
+      </select>
+
+      <label>Operatievoorkeur:</label>
+      <select id="operatie">
+        <option>Niet ingevuld</option>
+        <option>Indien noodzakelijk</option>
+        <option>Liever niet</option>
+        <option>Geen voorkeur</option>
+      </select>
+
+      <label>Laatste wens:</label>
+      <select id="wens">
+        <option>Niet ingevuld</option>
+        <option>Begravenis</option>
+        <option>Crematie</option>
+        <option>Orgaandonatie</option>
+      </select>
+    </div>
+
+    <div class="section">
+      <h2>🧬 Medische voorgeschiedenis</h2>
+      <div class="checkbox-group">
+        <label><input type="checkbox" /> Astma</label>
+        <label><input type="checkbox" /> Hoge bloeddruk</label>
+        <label><input type="checkbox" /> Hart- en vaatziekten</label>
+        <label><input type="checkbox" /> Diabetes</label>
+        <label><input type="checkbox" /> Hersenschade</label>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>🧠 Psychische gezondheid</h2>
+      <div class="checkbox-group">
+        <label><input type="checkbox" /> Krankzinnig</label>
+        <label><input type="checkbox" /> Angststoornis</label>
+        <label><input type="checkbox" /> Depressie</label>
+        <label><input type="checkbox" /> PTSS</label>
+      </div>
+    </div>
   </div>
 
   <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const id = urlParams.get('id');
-    const clienten = JSON.parse(localStorage.getItem('clienten')) || [];
-    const client = clienten.find(c => c.id.toString() === id);
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+    const cliënten = JSON.parse(localStorage.getItem('clienten')) || [];
+    const cli = cliënten.find(c => c.id.toString() === id);
 
-    if (!client) {
-      document.body.innerHTML = "<p>❌ Cliënt niet gevonden. Controleer het ID in de URL.</p>";
+    if (!cli) {
+      document.body.innerHTML = "<p>❌ Cliënt niet gevonden.</p>";
     } else {
-      document.getElementById('naam').textContent = client.naam;
-      document.getElementById('telefoon').textContent = client.telefoon;
-      document.getElementById('datum').textContent = client.opnamedatum;
-      document.getElementById('reden').textContent = client.reden;
+      document.getElementById('naam').textContent = cli.naam;
+      document.getElementById('geboorte').value = cli.geboortedatum || '';
+      document.getElementById('telefoon')?.textContent = cli.telefoon || '';
     }
+
+    // Laad opgeslagen foto
+    const preview = document.getElementById('preview');
+    const foto = localStorage.getItem(`foto-${id}`);
+    if (foto) preview.src = foto;
+
+    // Opslaan pasfoto bij upload
+    document.getElementById('fotoUpload').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        preview.src = reader.result;
+        localStorage.setItem(`foto-${id}`, reader.result);
+      };
+      reader.readAsDataURL(file);
+    });
   </script>
 </body>
 </html>
