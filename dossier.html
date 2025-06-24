@@ -5,6 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dossier – AmbuRP</title>
   <style>
+    .afsprakenGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1em;
+  margin-top: 1em;
+}
+
+.afspraakKaart {
+  background-color: #f1f8e9;
+  border: 2px solid #c5e1a5;
+  padding: 1em;
+  border-radius: 10px;
+  flex: 1 1 300px;
+  max-width: 100%;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
     body {
       margin: 0;
       font-family: 'Segoe UI', Tahoma, sans-serif;
@@ -87,7 +104,10 @@
 <body>
   <div class="wrapper">
     <main>
-      <h1>Dossier van: <span id="naam">...</span></h1>
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+  <h1 style="margin: 0;">Dossier van: <span id="naam">...</span></h1>
+  <img id="preview" src="" alt="Foto cliënt" style="max-width: 100px; border-radius: 6px;" />
+</div>
 
       <section>
         <h2>📇 Persoonsgegevens</h2>
@@ -176,7 +196,7 @@
 
         <button id="opslaanAfspraak">➕ Opslaan afspraak</button>
 
-        <ul id="afsprakenLijst"></ul>
+        <div id="afsprakenLijst" class="afsprakenGrid"></div>
       </section>
     </main>
   </div>
@@ -291,19 +311,21 @@
     const afsprakenLijst = document.getElementById('afsprakenLijst');
 
     function toonAfspraken() {
-      afsprakenLijst.innerHTML = '';
-      afspraken.forEach(item => {
-        const li = document.createElement('li');
-        li.innerHTML = `
-          <strong>${item.datum}</strong> – ${item.behandelaar}<br>
-          <em>Reden:</em> ${item.reden}<br>
-          <em>Indicatie:</em> ${item.indicatie}<br>
-          <em>Plan:</em> ${item.plan}<br>
-          <em>Notities:</em> ${item.notities}
-        `;
-        afsprakenLijst.appendChild(li);
-      });
-    }
+  afsprakenLijst.innerHTML = '';
+  afspraken.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'afspraakKaart';
+    div.innerHTML = `
+      <strong>${item.datum}</strong><br>
+      <em>Behandelaar:</em> ${item.behandelaar}<br>
+      <em>Reden:</em> ${item.reden}<br>
+      <em>Indicatie:</em> ${item.indicatie}<br>
+      <em>Plan:</em> ${item.plan}<br>
+      <em>Notities:</em> ${item.notities}
+    `;
+    afsprakenLijst.appendChild(div);
+  });
+}
 
     toonAfspraken();
 
