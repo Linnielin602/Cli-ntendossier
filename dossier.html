@@ -52,11 +52,12 @@
 }
 
     body {
-      margin: 0;
-      font-family: 'Segoe UI', Tahoma, sans-serif;
-      background-color: #eef5ff;
-      color: #1a237e;
-    }
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  background: url("huisarts.png") no-repeat center center fixed;
+  background-size: cover;
+  color: #1a237e;
+}
 
     .wrapper {
       display: flex;
@@ -65,13 +66,13 @@
     }
 
     main {
-      background-color: white;
-      padding: 2em;
-      border-radius: 12px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.08);
-      max-width: 800px;
-      width: 100%;
-    }
+  background-color: rgba(255, 255, 255, 0.92);
+  padding: 2em;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.08);
+  max-width: 800px;
+  width: 100%;
+}
 
     section {
       margin-bottom: 2em;
@@ -128,6 +129,25 @@
       background-color: #e53935;
       color: white;
     }
+    @media (max-width: 600px) {
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .container {
+    flex-direction: column;
+    gap: 1em;
+  }
+
+  main, aside {
+    max-width: 100%;
+  }
+
+  button {
+    width: 100%;
+  }
+}
   </style>
 </head>
 <body>
