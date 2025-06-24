@@ -10,20 +10,40 @@
       font-family: 'Segoe UI', Tahoma, sans-serif;
       background-color: #f0f4ff;
       color: #1a237e;
+      padding: 0;
+    }
+
+    header {
+      background-color: #0d47a1;
+      color: white;
       padding: 1em 2em;
     }
 
-    h1 {
-      color: #0d47a1;
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      padding: 2em;
+      gap: 2em;
+      justify-content: center;
+      align-items: flex-start;
     }
 
-    section {
-      background: white;
+    main {
+      background-color: white;
       padding: 1.5em;
-      margin-bottom: 2em;
       border-radius: 12px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.06);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
       border-left: 6px solid #ffeb3b;
+      flex: 1 1 500px;
+      max-width: 550px;
+    }
+
+    aside {
+      flex: 0 0 200px;
+      background-color: #ffffff;
+      border: 2px dashed #bbdefb;
+      border-radius: 10px;
+      padding: 1em;
     }
 
     label {
@@ -32,7 +52,10 @@
       font-weight: 600;
     }
 
-    input[type="text"], input[type="date"], input[type="number"], select {
+    input[type="text"],
+    input[type="date"],
+    input[type="number"],
+    select {
       width: 100%;
       padding: 0.6em;
       font-size: 1em;
@@ -70,60 +93,112 @@
       background-color: #e53935;
       color: white;
     }
+
+    #preview {
+      max-width: 180px;
+      display: block;
+      margin-top: 1em;
+    }
   </style>
 </head>
 <body>
-  <h1>Dossier van: <span id="naam">...</span></h1>
+  <header>
+    <h1>Dossier van: <span id="naam">...</span></h1>
+  </header>
 
-  <section>
-    <h2>📇 Persoonsgegevens</h2>
+  <div class="container">
+    <main>
+      <section>
+        <h2>📇 Persoonsgegevens</h2>
 
-    <label>Geboortedatum:</label>
-    <input type="date" id="geboorte" />
+        <label>Geboortedatum:</label>
+        <input type="date" id="geboorte" />
 
-    <label>Telefoonnummer:</label>
-    <input type="text" id="telefoon" />
+        <label>Telefoonnummer:</label>
+        <input type="text" id="telefoon" />
 
-    <label>Reden opname:</label>
-    <input type="text" id="reden" />
+        <label>Reden opname:</label>
+        <input type="text" id="reden" />
 
-    <label>Lengte (cm):</label>
-    <input type="number" id="lengte" />
+        <label>Lengte (cm):</label>
+        <input type="number" id="lengte" />
 
-    <label>Gewicht (kg):</label>
-    <input type="number" id="gewicht" />
+        <label>Gewicht (kg):</label>
+        <input type="number" id="gewicht" />
 
-    <label>📷 Foto:</label>
-    <input type="file" id="fotoUpload" accept="image/*" />
-    <br /><br />
-    <img id="preview" src="" alt="Foto" style="max-width: 180px; display:block;" />
+        <label>📷 Foto:</label>
+        <input type="file" id="fotoUpload" accept="image/*" />
+        <img id="preview" src="" alt="Foto cliënt" />
 
-    <button id="verwijderClient">🗑️ Verwijder dit dossier</button>
-  </section>
-  <section>
-    <h2>📆 Afspraken</h2>
+        <button id="verwijderClient">🗑️ Verwijder dit dossier</button>
+      </section>
+      <section>
+        <h2>🏥 Medische voorgeschiedenis</h2>
 
-    <label>Datum:</label>
-    <input type="date" id="afspraakDatum" />
+        <h3>📋 Chronische aandoeningen</h3>
+        <select id="chronischDropdown">
+          <option>-- Selecteer aandoening --</option>
+          <option>Diabetes mellitus type 1</option>
+          <option>Diabetes mellitus type 2</option>
+          <option>Astma</option>
+          <option>COPD</option>
+          <option>Reuma</option>
+          <option>Hartfalen</option>
+          <option>Nierfalen</option>
+          <option>Hypertensie</option>
+          <option>Kanker (chronisch)</option>
+          <option>Ziekte van Crohn</option>
+          <option>Multiple sclerose</option>
+          <option>Epilepsie</option>
+          <option>Andere...</option>
+        </select>
+        <button id="addChronisch">➕ Toevoegen</button>
+        <ul id="chronischLijst"></ul>
 
-    <label>Behandelaar:</label>
-    <input type="text" id="afspraakBehandelaar" />
+        <h3>🧠 Psychische aandoeningen</h3>
+        <select id="psychischDropdown">
+          <option>-- Selecteer aandoening --</option>
+          <option>Depressie</option>
+          <option>Angststoornis</option>
+          <option>Bipolaire stoornis</option>
+          <option>PTSS</option>
+          <option>ADHD</option>
+          <option>Autismespectrumstoornis</option>
+          <option>Schizofrenie</option>
+          <option>Eetstoornis</option>
+          <option>Verslaving</option>
+          <option>Andere...</option>
+        </select>
+        <button id="addPsychisch">➕ Toevoegen</button>
+        <ul id="psychischLijst"></ul>
+      </section>
+      <section>
+        <h2>📆 Afspraken</h2>
 
-    <label>Reden:</label>
-    <input type="text" id="afspraakReden" />
+        <label>Datum:</label>
+        <input type="date" id="afspraakDatum" />
 
-    <label>Indicatie:</label>
-    <input type="text" id="afspraakIndicatie" />
+        <label>Behandelaar:</label>
+        <input type="text" id="afspraakBehandelaar" />
 
-    <label>Plan:</label>
-    <input type="text" id="afspraakPlan" />
+        <label>Reden:</label>
+        <input type="text" id="afspraakReden" />
 
-    <label>Notities:</label>
-    <input type="text" id="afspraakNotities" />
+        <label>Indicatie:</label>
+        <input type="text" id="afspraakIndicatie" />
 
-    <button id="opslaanAfspraak">➕ Opslaan afspraak</button>
-    <ul id="afsprakenLijst"></ul>
-  </section>
+        <label>Plan:</label>
+        <input type="text" id="afspraakPlan" />
+
+        <label>Notities:</label>
+        <input type="text" id="afspraakNotities" />
+
+        <button id="opslaanAfspraak">➕ Opslaan afspraak</button>
+
+        <ul id="afsprakenLijst"></ul>
+      </section>
+    </main>
+  </div>
   <script>
     const id = new URLSearchParams(location.search).get('id');
     const naam = document.getElementById('naam');
@@ -142,10 +217,11 @@
       document.getElementById('gewicht').value = cli.gewicht || '';
     }
 
+    // 📷 Foto tonen & uploaden
     const savedFoto = localStorage.getItem(`foto-${id}`);
     if (savedFoto) preview.src = savedFoto;
 
-    document.getElementById('fotoUpload').addEventListener('change', (e) => {
+    document.getElementById('fotoUpload').addEventListener('change', e => {
       const file = e.target.files[0];
       if (!file) return;
       const reader = new FileReader();
@@ -156,31 +232,27 @@
       reader.readAsDataURL(file);
     });
 
-    // Verwijder dossier
+    // 🗑️ Verwijder dossier
     document.getElementById('verwijderClient').addEventListener('click', () => {
       if (confirm("Weet je zeker dat je dit dossier wilt verwijderen?")) {
-        localStorage.removeItem(`foto-${id}`);
-        localStorage.removeItem(`chronisch-${id}`);
-        localStorage.removeItem(`psychisch-${id}`);
-        localStorage.removeItem(`afspraken-${id}`);
-
-        let lijst = JSON.parse(localStorage.getItem('clienten')) || [];
-        lijst = lijst.filter(c => c.id.toString() !== id);
+        ['foto', 'chronisch', 'psychisch', 'afspraken'].forEach(type =>
+          localStorage.removeItem(`${type}-${id}`)
+        );
+        const lijst = clienten.filter(c => c.id.toString() !== id);
         localStorage.setItem('clienten', JSON.stringify(lijst));
-
         alert("Cliënt is volledig verwijderd.");
         window.location.href = "index.html";
       }
     });
 
-    // Chronisch
+    // 🏥 Chronische aandoeningen
     const chronisch = JSON.parse(localStorage.getItem(`chronisch-${id}`)) || [];
     const chronischLijst = document.getElementById('chronischLijst');
     function updateChronischLijst() {
       chronischLijst.innerHTML = '';
       chronisch.forEach((item, i) => {
         const li = document.createElement('li');
-        li.textContent = item;
+        li.textContent = item + ' ';
         const btn = document.createElement('button');
         btn.textContent = '❌';
         btn.onclick = () => {
@@ -201,14 +273,14 @@
       }
     };
 
-    // Psychisch
+    // 🧠 Psychische aandoeningen
     const psychisch = JSON.parse(localStorage.getItem(`psychisch-${id}`)) || [];
     const psychischLijst = document.getElementById('psychischLijst');
     function updatePsychischLijst() {
       psychischLijst.innerHTML = '';
       psychisch.forEach((item, i) => {
         const li = document.createElement('li');
-        li.textContent = item;
+        li.textContent = item + ' ';
         const btn = document.createElement('button');
         btn.textContent = '❌';
         btn.onclick = () => {
@@ -229,25 +301,23 @@
       }
     };
 
-    // Afspraken
+    // 📆 Afspraken
     const afspraken = JSON.parse(localStorage.getItem(`afspraken-${id}`)) || [];
     const afsprakenLijst = document.getElementById('afsprakenLijst');
     function toonAfspraken() {
       afsprakenLijst.innerHTML = '';
-      afspraken.forEach(item => {
+      afspraken.forEach((item) => {
         const li = document.createElement('li');
-        li.innerHTML = `
-          <strong>${item.datum}</strong> – Behandeld door: ${item.behandelaar}<br>
+        li.innerHTML = `<strong>${item.datum}</strong> – ${item.behandelaar}<br>
           <em>Reden:</em> ${item.reden}<br>
           <em>Indicatie:</em> ${item.indicatie}<br>
           <em>Plan:</em> ${item.plan}<br>
-          <em>Notities:</em> ${item.notities}
-        `;
+          <em>Notities:</em> ${item.notities}`;
         afsprakenLijst.appendChild(li);
       });
     }
-
     toonAfspraken();
+
     document.getElementById('opslaanAfspraak').onclick = () => {
       const afspraak = {
         datum: document.getElementById('afspraakDatum').value,
