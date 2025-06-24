@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AmbuRP Cliëntendossier</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background: #e3f2fd;
+      color: #1a237e;
+    }
+
+    header {
+      background-color: #0d47a1;
+      color: white;
+      padding: 1em;
+      display: flex;
+      align-items: center;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    header img {
+      height: 45px;
+      margin-right: 15px;
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 2em;
+      padding: 2em;
+    }
+
+    main {
+      flex: 1 1 500px;
+      background-color: #ffffff;
+      border: 3px solid #ffeb3b;
+      border-radius: 12px;
+      padding: 1.5em;
+      box-shadow: 0 0 12px rgba(0,0,0,0.1);
+    }
+
+    aside {
+      flex: 0 0 280px;
+      background: #e8f0fe;
+      border: 2px dashed #ffeb3b;
+      border-radius: 10px;
+      padding: 1.5em;
+      box-shadow: 0 0 6px rgba(0,0,0,0.05);
+    }
+
+    label {
+      display: block;
+      margin: 1em 0 0.4em;
+      font-weight: 600;
+      color: #1a237e;
+    }
+
+    input[type="text"], input[type="date"], select {
+      width: 100%;
+      padding: 0.6em;
+      font-size: 1em;
+      border: 2px solid #bbdefb;
+      border-radius: 6px;
+      background-color: #f5faff;
+      color: #1a237e;
+    }
+
+    button {
+      margin-top: 1.2em;
+      padding: 0.7em 1.2em;
+      background-color: #fdd835;
+      color: #1a237e;
+      font-weight: bold;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #fbc02d;
+    }
+
+    h2 {
+      margin-top: 0.5em;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="ambu-logo.png" alt="AmbuRP Logo" />
+    <h1>AmbuRP Cliëntendossier</h1>
+  </header>
+
+  <div class="container">
+    <main>
+      <h2>🆕 Nieuwe cliënt</h2>
+      <form id="new-client-form">
+        <label>Naam:</label>
+        <input type="text" name="naam" required>
+
+        <label>Telefoonnummer:</label>
+        <input type="text" name="telefoon" required>
+
+        <label>Opnamedatum:</label>
+        <input type="date" name="opnamedatum" required>
+
+        <label>Reden eerste afspraak:</label>
+        <input type="text" name="eersteafspraak" required>
+
+        <button type="submit">➕ Toevoegen aan dossier</button>
+      </form>
+
+      <h2 style="margin-top: 2em;">📁 Bestaande cliënten</h2>
+      <label for="client-dropdown">Selecteer cliënt op datum:</label>
+      <select id="client-dropdown">
+        <option>Kies een cliënt...</option>
+      </select>
+    </main>
+
+    <aside>
+      <h2>ℹ️ Instructies</h2>
+      <p>Gebruik dit formulier om snel een nieuwe cliënt toe te voegen inclusief hun telefoonnummer en eerste afspraak.</p>
+      <p>(Je kunt deze tekst later vervangen met mededelingen, protocollen of verwijzingen.)</p>
+    </aside>
+  </div>
+
+  <script src="scripts.js"></script>
+</body>
+</html>
