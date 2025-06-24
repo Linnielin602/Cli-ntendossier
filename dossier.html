@@ -122,8 +122,12 @@
         <label>Geboortedatum:</label>
         <input type="date" id="geboorte" />
 
-        <p><strong>Telefoonnummer:</strong> <span id="telefoon">...</span></p>
-<p><strong>Reden opname:</strong> <span id="reden">...</span></p>
+       <label>Telefoonnummer:</label>
+<input type="text" id="telefoon" />
+
+<label>Reden opname:</label>
+<input type="text" id="reden" />
+
 
         <label>Lengte (cm):</label>
         <input type="number" id="lengte" />
@@ -255,8 +259,8 @@
   } else {
     naam.textContent = cli.naam || '';
     document.getElementById('geboorte').value = cli.geboortedatum || '';
-    document.getElementById('telefoon').textContent = cli.telefoon || '';
-    document.getElementById('reden').textContent = cli.reden || cli.redenOpname || '';
+    document.getElementById('telefoon').value = cli.telefoon || '';
+document.getElementById('reden').value = cli.reden || cli.redenOpname || '';
   }
 
   const chronisch = JSON.parse(localStorage.getItem(`chronisch-${id}`)) || [];
