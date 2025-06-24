@@ -94,6 +94,25 @@
     h2 {
       margin-top: 0.5em;
     }
+    @media (max-width: 600px) {
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .container {
+    flex-direction: column;
+    gap: 1em;
+  }
+
+  main, aside {
+    max-width: 100%;
+  }
+
+  button {
+    width: 100%;
+  }
+}
   </style>
 </head>
 <body>
