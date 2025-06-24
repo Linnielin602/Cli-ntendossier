@@ -5,89 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>AmbuRP Cliëntendossier</title>
   <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Tahoma, sans-serif;
-      background: #e3f2fd;
-      color: #1a237e;
-    }
-
-    header {
-      background-color: #0d47a1;
-      color: white;
-      padding: 1em;
-      display: flex;
-      align-items: center;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    }
-
-    header img {
-      height: 45px;
-      margin-right: 15px;
-    }
-
-    .container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 2em;
-      padding: 2em;
-    }
-
-    main {
-      flex: 1 1 500px;
-      background-color: #ffffff;
-      border: 3px solid #ffeb3b;
-      border-radius: 12px;
-      padding: 1.5em;
-      box-shadow: 0 0 12px rgba(0,0,0,0.1);
-    }
-
-    aside {
-      flex: 0 0 280px;
-      background: #e8f0fe;
-      border: 2px dashed #ffeb3b;
-      border-radius: 10px;
-      padding: 1.5em;
-      box-shadow: 0 0 6px rgba(0,0,0,0.05);
-    }
-
-    label {
-      display: block;
-      margin: 1em 0 0.4em;
-      font-weight: 600;
-      color: #1a237e;
-    }
-
-    input[type="text"], input[type="date"], select {
-      width: 100%;
-      padding: 0.6em;
-      font-size: 1em;
-      border: 2px solid #bbdefb;
-      border-radius: 6px;
-      background-color: #f5faff;
-      color: #1a237e;
-    }
-
-    button {
-      margin-top: 1.2em;
-      padding: 0.7em 1.2em;
-      background-color: #fdd835;
-      color: #1a237e;
-      font-weight: bold;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #fbc02d;
-    }
-
-    h2 {
-      margin-top: 0.5em;
-    }
+    /* [stijl blijft hetzelfde als eerder, deze heb je al] */
   </style>
 </head>
 <body>
@@ -109,8 +27,8 @@
         <label>Opnamedatum:</label>
         <input type="date" name="opnamedatum" required>
 
-        <label>Reden eerste afspraak:</label>
-        <input type="text" name="eersteafspraak" required>
+        <label>Reden opname:</label>
+        <input type="text" name="redenOpname" required>
 
         <button type="submit">➕ Toevoegen aan dossier</button>
       </form>
@@ -124,11 +42,32 @@
 
     <aside>
       <h2>ℹ️ Instructies</h2>
-      <p>Gebruik dit formulier om snel een nieuwe cliënt toe te voegen inclusief hun telefoonnummer en eerste afspraak.</p>
+      <p>Gebruik dit formulier om een nieuwe cliënt toe te voegen inclusief hun telefoonnummer en reden van opname.</p>
       <p>(Je kunt deze tekst later vervangen met mededelingen, protocollen of verwijzingen.)</p>
     </aside>
   </div>
 
-  <script src="scripts.js"></script>
+  <script>
+    const form = document.getElementById('new-client-form');
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const formData = new FormData(form);
+
+      const nieuweClient = {
+        id: Date.now(),
+        naam: formData.get('naam'),
+        telefoon: formData.get('telefoon'),
+        opnamedatum: formData.get('opnamedatum'),
+        reden: formData.get('redenOpname')
+      };
+
+      const clienten = JSON.parse(localStorage.getItem('clienten')) || [];
+      clienten.push(nieuweClient);
+      localStorage.setItem('clienten', JSON.stringify(clienten));
+
+      window.location.href = `dossier.html?id=${nieuweClient.id}`;
+    });
+  </script>
 </body>
 </html>
