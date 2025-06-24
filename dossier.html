@@ -32,7 +32,7 @@
       font-weight: 600;
     }
 
-    input[type="text"], input[type="date"], input[type="number"] {
+    input[type="text"], input[type="date"], input[type="number"], select {
       width: 100%;
       padding: 0.6em;
       font-size: 1em;
@@ -77,6 +77,7 @@
 
   <section>
     <h2>📇 Persoonsgegevens</h2>
+
     <label>Geboortedatum:</label>
     <input type="date" id="geboorte" />
 
@@ -99,6 +100,48 @@
 
     <button id="verwijderClient">🗑️ Verwijder dit dossier</button>
   </section>
+
+  <section>
+    <h2>📋 Chronische aandoeningen</h2>
+    <select id="chronischDropdown">
+      <option>-- Selecteer aandoening --</option>
+      <option>Diabetes</option>
+      <option>Astma</option>
+      <option>Hartziekte</option>
+    </select>
+    <button id="addChronisch">➕ Toevoegen</button>
+    <ul id="chronischLijst"></ul>
+  </section>
+
+  <section>
+    <h2>🧠 Psychische aandoeningen</h2>
+    <select id="psychischDropdown">
+      <option>-- Selecteer aandoening --</option>
+      <option>Depressie</option>
+      <option>Angststoornis</option>
+      <option>PTSS</option>
+    </select>
+    <button id="addPsychisch">➕ Toevoegen</button>
+    <ul id="psychischLijst"></ul>
+  </section>
+
+  <section>
+    <h2>📆 Afspraken</h2>
+    <label>Datum:</label>
+    <input type="date" id="afspraakDatum" />
+    <label>Behandelaar:</label>
+    <input type="text" id="afspraakBehandelaar" />
+    <label>Reden:</label>
+    <input type="text" id="afspraakReden" />
+    <label>Indicatie:</label>
+    <input type="text" id="afspraakIndicatie" />
+    <label>Plan:</label>
+    <input type="text" id="afspraakPlan" />
+    <label>Notities:</label>
+    <input type="text" id="afspraakNotities" />
+    <button id="opslaanAfspraak">➕ Opslaan afspraak</button>
+    <ul id="afsprakenLijst"></ul>
+  </section>
   <script>
     const id = new URLSearchParams(location.search).get('id');
     const naam = document.getElementById('naam');
@@ -113,6 +156,8 @@
       document.getElementById('geboorte').value = cli.geboortedatum || '';
       document.getElementById('telefoon').value = cli.telefoon || '';
       document.getElementById('reden').value = cli.reden || cli.redenOpname || '';
+      document.getElementById('lengte').value = cli.lengte || '';
+      document.getElementById('gewicht').value = cli.gewicht || '';
     }
 
     const savedFoto = localStorage.getItem(`foto-${id}`);
@@ -129,6 +174,7 @@
       reader.readAsDataURL(file);
     });
 
+    // Verwijderknop
     document.getElementById('verwijderClient').addEventListener('click', () => {
       if (confirm("Weet je zeker dat je dit dossier wilt verwijderen?")) {
         localStorage.removeItem(`foto-${id}`);
@@ -144,6 +190,113 @@
         window.location.href = "index.html";
       }
     });
+
+    // Chronisch
+    const chronisch = JSON.parse(localStorage.getItem(`chronisch-${id}`)) || [];
+    const chronischLijst = document.getElementById('chronischLijst');
+
+    function updateChronischLijst() {
+      chronischLijst.innerHTML = '';
+      chronisch.forEach((item, i) => {
+        const li = document.createElement('li');
+        li.textContent = item;
+        const btn = document.createElement('button');
+        btn.textContent = '❌';
+        btn.onclick = () => {
+          chronisch.splice(i, 1);
+          localStorage.setItem(`chronisch-${id}`, JSON.stringify(chronisch));
+          updateChronischLijst();
+        };
+        li.appendChild(btn);
+        chronischLijst.appendChild(li);
+      });
+    }
+
+    document.getElementById('addChronisch').onclick = () => {
+      const val = document.getElementById('chronischDropdown').value;
+      if (val && !chronisch.includes(val) && val !== '-- Selecteer aandoening --') {
+        chronisch.push(val);
+        localStorage.setItem(`chronisch-${id}`, JSON.stringify(chronisch));
+        updateChronischLijst();
+      }
+    };
+
+    // Psychisch
+    const psychisch = JSON.parse(localStorage.getItem(`psychisch-${id}`)) || [];
+    const psychischLijst = document.getElementById('psychischLijst');
+
+    function updatePsychischLijst() {
+      psychischLijst.innerHTML = '';
+      psychisch.forEach((item, i) => {
+        const li = document.createElement('li');
+        li.textContent = item;
+        const btn = document.createElement('button');
+        btn.textContent = '❌';
+        btn.onclick = () => {
+          psychisch.splice(i, 1);
+          localStorage.setItem(`psychisch-${id}`, JSON.stringify(psychisch));
+          updatePsychischLijst();
+        };
+        li.appendChild(btn);
+        psychischLijst.appendChild(li);
+      });
+    }
+
+    document.getElementById('addPsychisch').onclick = () => {
+      const val = document.getElementById('psychischDropdown').value;
+      if (val && !psychisch.includes(val) && val !== '-- Selecteer aandoening --') {
+        psychisch.push(val);
+        localStorage.setItem(`psychisch-${id}`, JSON.stringify(psychisch));
+        updatePsychischLijst();
+      }
+    };
+
+    // Afspraken
+    const afspraken = JSON.parse(localStorage.getItem(`afspraken-${id}`)) || [];
+    const afsprakenLijst = document.getElementById('afsprakenLijst');
+
+    function toonAfspraken() {
+      afsprakenLijst.innerHTML = '';
+      afspraken.forEach(item => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <strong>${item.datum}</strong> – Behandeld door: ${item.behandelaar}<br>
+          <em>Reden:</em> ${item.reden}<br>
+          <em>Indicatie:</em> ${item.indicatie}<br>
+          <em>Plan:</em> ${item.plan}<br>
+          <em>Notities:</em> ${item.notities}
+        `;
+        afsprakenLijst.appendChild(li);
+      });
+    }
+
+    toonAfspraken();
+
+    document.getElementById('opslaanAfspraak').onclick = () => {
+      const afspraak = {
+        datum: document.getElementById('afspraakDatum').value,
+        behandelaar: document.getElementById('afspraakBehandelaar').value,
+        reden: document.getElementById('afspraakReden').value,
+        indicatie: document.getElementById('afspraakIndicatie').value,
+        plan: document.getElementById('afspraakPlan').value,
+        notities: document.getElementById('afspraakNotities').value
+      };
+
+      if (!afspraak.datum || !afspraak.reden) {
+        alert("Datum en reden zijn verplicht.");
+        return;
+      }
+
+      afspraken.push(afspraak);
+      localStorage.setItem(`afspraken-${id}`, JSON.stringify(afspraken));
+      toonAfspraken();
+
+      ['afspraakDatum','afspraakBehandelaar','afspraakReden','afspraakIndicatie','afspraakPlan','afspraakNotities']
+        .forEach(id => document.getElementById(id).value = '');
+    };
+
+    updateChronischLijst();
+    updatePsychischLijst();
   </script>
 </body>
 </html>
