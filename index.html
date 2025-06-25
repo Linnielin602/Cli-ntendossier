@@ -1,23 +1,41 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-  <script>
-  if (localStorage.getItem('ingelogd') !== 'true') {
-    window.location.href = 'login.html';
-  }
-</script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>AmbuRP Cliëntendossier</title>
+  <script>
+    if (localStorage.getItem('ingelogd') !== 'true') {
+      window.location.href = 'login.html';
+    }
+  </script>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAATkvdTPoWR9vWiqpjogMn3v1UpiA-6ks",
+      authDomain: "clientendossier-3c555.firebaseapp.com",
+      projectId: "clientendossier-3c555",
+      storageBucket: "clientendossier-3c555.appspot.com",
+      messagingSenderId: "266738066133",
+      appId: "1:266738066133:web:a7942baff73d082c01385c",
+      measurementId: "G-ZPSJV66W1W"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+  </script>
+
   <style>
     body {
-  margin: 0;
-  padding: 0;
-  font-family: 'Segoe UI', Tahoma, sans-serif;
-  color: #1a237e;
-  background: url("huisarts.png") no-repeat center center fixed;
-  background-size: cover;
-}
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      color: #1a237e;
+      background: url("huisarts.png") no-repeat center center fixed;
+      background-size: cover;
+    }
 
     header {
       background-color: #0d47a1;
@@ -43,7 +61,7 @@
 
     main {
       flex: 1 1 500px;
-        background-color: rgba(255, 255, 255, 0.92);
+      background-color: rgba(255, 255, 255, 0.92);
       border: 3px solid #ffeb3b;
       border-radius: 12px;
       padding: 1.5em;
@@ -52,7 +70,7 @@
 
     aside {
       flex: 0 0 280px;
-        background-color: rgba(255, 255, 255, 0.85);
+      background-color: rgba(255, 255, 255, 0.85);
       border: 2px dashed #ffeb3b;
       border-radius: 10px;
       padding: 1.5em;
@@ -94,33 +112,34 @@
     h2 {
       margin-top: 0.5em;
     }
+
     @media (max-width: 600px) {
-  header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
 
-  .container {
-    flex-direction: column;
-    gap: 1em;
-  }
+      .container {
+        flex-direction: column;
+        gap: 1em;
+      }
 
-  main, aside {
-    max-width: 100%;
-  }
+      main, aside {
+        max-width: 100%;
+      }
 
-  button {
-    width: 100%;
-  }
-}
+      button {
+        width: 100%;
+      }
+    }
   </style>
 </head>
 <body>
   <header>
-  <img src="ambulogo.png" alt="AmbuRP Logo" />
-  <h1 style="flex: 1;">AmbuRP Cliëntendossier</h1>
-  <button onclick="uitloggen()" style="background-color: #ef5350; color: white; font-weight: bold; padding: 0.5em 1em; border: none; border-radius: 6px; cursor: pointer;">🚪 Uitloggen</button>
-</header>
+    <img src="ambulogo.png" alt="AmbuRP Logo" />
+    <h1 style="flex: 1;">AmbuRP Cliëntendossier</h1>
+    <button onclick="uitloggen()" style="background-color: #ef5350; color: white; font-weight: bold; padding: 0.5em 1em; border: none; border-radius: 6px; cursor: pointer;">🚪 Uitloggen</button>
+  </header>
 
   <div class="container">
     <main>
@@ -158,32 +177,29 @@
     const form = document.getElementById('new-client-form');
     const dropdown = document.getElementById('client-dropdown');
 
-    form.addEventListener('submit', e => {
+    form.addEventListener('submit', async e => {
       e.preventDefault();
       const formData = new FormData(form);
 
       const nieuweClient = {
-        id: Date.now(),
         naam: formData.get('naam'),
         telefoon: formData.get('telefoon'),
-        opnamedatum: formData.get('opnamedatum'),
-        reden: formData.get('redenOpname')
+        geboortedatum: formData.get('opnamedatum'),
+        redenOpname: formData.get('redenOpname')
       };
 
-      const clienten = JSON.parse(localStorage.getItem('clienten')) || [];
-      clienten.push(nieuweClient);
-      localStorage.setItem('clienten', JSON.stringify(clienten));
-
-      window.location.href = `dossier.html?id=${nieuweClient.id}`;
+      const docRef = await db.collection("clienten").add(nieuweClient);
+      window.location.href = `dossier.html?id=${docRef.id}`;
     });
 
-    function updateDropdown() {
+    async function updateDropdown() {
       dropdown.innerHTML = '<option>Kies een cliënt...</option>';
-      const opgeslagenClienten = JSON.parse(localStorage.getItem('clienten')) || [];
-      opgeslagenClienten.forEach(cli => {
+      const snapshot = await db.collection("clienten").get();
+      snapshot.forEach(doc => {
+        const data = doc.data();
         const option = document.createElement('option');
-        option.value = cli.id;
-        option.textContent = `${cli.naam} (${cli.opnamedatum})`;
+        option.value = doc.id;
+        option.textContent = `${data.naam} (${data.geboortedatum})`;
         dropdown.appendChild(option);
       });
     }
@@ -196,12 +212,11 @@
     });
 
     updateDropdown();
+
+    function uitloggen() {
+      localStorage.removeItem('ingelogd');
+      window.location.href = 'login.html';
+    }
   </script>
-  <script>
-  function uitloggen() {
-    localStorage.removeItem('ingelogd');
-    window.location.href = 'login.html';
-  }
-</script>
 </body>
 </html>
