@@ -148,16 +148,41 @@
     width: 100%;
   }
 }
+    .wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2em;
+  margin-top: 1.5em;
+}
+
+.blok {
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  padding: 1.5em;
+  box-shadow: 0 0 10px rgba(0,0,0,0.06);
+  flex: 1 1 360px;
+  min-width: 300px;
+}
+
+.links {
+  /* linkerkant: persoonsgegevens + voorkeuren */
+}
+
+.rechts {
+  /* rechterkant: voorgeschiedenis + afspraken */
+}
   </style>
 </head>
 <body>
   <div class="wrapper">
     <main>
-      <div style="display: flex; align-items: center; justify-content: space-between;">
-  <h1 style="margin: 0;">Dossier van: <span id="naam">...</span></h1>
-  <img id="preview" src="" alt="Foto cliënt" style="width: 180px; height: 180px; object-fit: cover; border-radius: 10px;" />
-</div>
+  <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+    <h1 style="margin: 0;">Dossier van: <span id="naam">...</span></h1>
+    <img id="preview" src="" alt="Foto cliënt" style="width: 180px; height: 180px; object-fit: cover; border-radius: 10px;" />
+  </div>
 
+  <div class="wrapper">
+    <div class="blok links">
       <section>
         <h2>📇 Persoonsgegevens</h2>
 
@@ -182,6 +207,22 @@
 
         <button id="verwijderClient">🗑️ Verwijder dit dossier</button>
       </section>
+
+      <section>
+        <h2>🫀 Reanimatie & behandelvoorkeuren</h2>
+
+        <label for="reanimeren">Reanimatiebeleid:</label>
+        <select id="reanimeren" name="reanimeren">
+          <option>— Kies een optie —</option>
+          <option>Wel reanimeren</option>
+          <option>Niet reanimeren (DNR)</option>
+          <option>Overleg met huisarts</option>
+          <option>Geen voorkeur opgegeven</option>
+        </select>
+      </section>
+    </div>
+
+    <div class="blok rechts">
       <section>
         <h2>🏥 Medische voorgeschiedenis</h2>
 
@@ -222,6 +263,7 @@
         <button id="addPsychisch">➕ Toevoegen</button>
         <div id="psychischLijst" class="aandoeningenGrid"></div>
       </section>
+
       <section>
         <h2>📆 Afspraken</h2>
 
@@ -244,10 +286,11 @@
         <input type="text" id="afspraakNotities" />
 
         <button id="opslaanAfspraak">➕ Opslaan afspraak</button>
-
         <div id="afsprakenLijst" class="afsprakenGrid"></div>
       </section>
-    </main>
+    </div>
+  </div>
+</main>
   </div>
   <script>
     const id = new URLSearchParams(location.search).get('id');
