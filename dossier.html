@@ -322,26 +322,45 @@
       </div>
     </main>
   </div>
+  <!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyAATkvdTPoWR9vWiqpjogMn3v1UpiA-6ks",
+    authDomain: "clientendossier-3c555.firebaseapp.com",
+    projectId: "clientendossier-3c555",
+    storageBucket: "clientendossier-3c555.appspot.com",
+    messagingSenderId: "266738066133",
+    appId: "1:266738066133:web:a7942baff73d082c01385c",
+    measurementId: "G-ZPSJV66W1W"
+  };
 
-  <script>
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+</script>
+
+<script>
   const id = new URLSearchParams(location.search).get('id');
   const naam = document.getElementById('naam');
   const preview = document.getElementById('preview');
-  const clienten = JSON.parse(localStorage.getItem('clienten')) || [];
-  const cli = clienten.find(c => c.id.toString() === id);
 
-  if (!cli) {
-    document.body.innerHTML = "<p>❌ Cliënt niet gevonden.</p>";
-  } else {
+  // 🧾 CLIËNT
+  db.collection("clienten").doc(id).get().then(doc => {
+    if (!doc.exists) {
+      document.body.innerHTML = "<p>❌ Cliënt niet gevonden.</p>";
+      return;
+    }
+    const cli = doc.data();
     naam.textContent = cli.naam || '';
     document.getElementById('geboorte').value = cli.geboortedatum || '';
     document.getElementById('telefoon').value = cli.telefoon || '';
     document.getElementById('reden').value = cli.reden || cli.redenOpname || '';
     document.getElementById('lengte').value = cli.lengte || '';
     document.getElementById('gewicht').value = cli.gewicht || '';
-  }
+  });
 
-  // 📷 Foto
+  // 📷 FOTO (nog steeds lokaal)
   const savedFoto = localStorage.getItem(`foto-${id}`);
   if (savedFoto) preview.src = savedFoto;
 
@@ -356,21 +375,22 @@
     reader.readAsDataURL(file);
   });
 
-  // 🗑️ Verwijderknop
-  document.getElementById('verwijderClient').addEventListener('click', () => {
+  // 🗑️ VERWIJDEREN
+  document.getElementById('verwijderClient').addEventListener('click', async () => {
     if (confirm("Weet je zeker dat je dit dossier wilt verwijderen?")) {
-      ['foto','chronisch','psychisch','afspraken'].forEach(type =>
-        localStorage.removeItem(`${type}-${id}`)
-      );
-      const lijst = clienten.filter(c => c.id.toString() !== id);
-      localStorage.setItem('clienten', JSON.stringify(lijst));
+      await db.collection("clienten").doc(id).delete();
+      const subcollecties = ["chronisch", "psychisch", "afspraken"];
+      for (const coll of subcollecties) {
+        const snap = await db.collection(`clienten/${id}/${coll}`).get();
+        snap.forEach(doc => doc.ref.delete());
+      }
       alert("Cliënt is volledig verwijderd.");
       window.location.href = "index.html";
     }
   });
 
-  // 🩺 Chronisch
-  const chronisch = JSON.parse(localStorage.getItem(`chronisch-${id}`)) || [];
+  // 🩺 CHRONISCH
+  let chronisch = [];
   const chronischLijst = document.getElementById('chronischLijst');
 
   function updateChronischLijst() {
@@ -381,28 +401,34 @@
       div.innerHTML = `<span>${item}</span>`;
       const btn = document.createElement('button');
       btn.textContent = '❌';
-      btn.onclick = () => {
+      btn.onclick = async () => {
+        const naam = chronisch[i];
+        const snap = await db.collection(`clienten/${id}/chronisch`).where("naam", "==", naam).get();
+        snap.forEach(doc => doc.ref.delete());
         chronisch.splice(i, 1);
-        localStorage.setItem(`chronisch-${id}`, JSON.stringify(chronisch));
         updateChronischLijst();
       };
       div.appendChild(btn);
       chronischLijst.appendChild(div);
     });
   }
-  updateChronischLijst();
+
+  db.collection(`clienten/${id}/chronisch`).get().then(snapshot => {
+    snapshot.forEach(doc => chronisch.push(doc.data().naam));
+    updateChronischLijst();
+  });
 
   document.getElementById('addChronisch').onclick = () => {
     const val = document.getElementById('chronischDropdown').value;
     if (val && !chronisch.includes(val) && val !== '-- Selecteer aandoening --') {
+      db.collection(`clienten/${id}/chronisch`).add({ naam: val });
       chronisch.push(val);
-      localStorage.setItem(`chronisch-${id}`, JSON.stringify(chronisch));
       updateChronischLijst();
     }
   };
 
-  // 🧠 Psychisch
-  const psychisch = JSON.parse(localStorage.getItem(`psychisch-${id}`)) || [];
+  // 🧠 PSYCHISCH
+  let psychisch = [];
   const psychischLijst = document.getElementById('psychischLijst');
 
   function updatePsychischLijst() {
@@ -413,44 +439,52 @@
       div.innerHTML = `<span>${item}</span>`;
       const btn = document.createElement('button');
       btn.textContent = '❌';
-      btn.onclick = () => {
+      btn.onclick = async () => {
+        const naam = psychisch[i];
+        const snap = await db.collection(`clienten/${id}/psychisch`).where("naam", "==", naam).get();
+        snap.forEach(doc => doc.ref.delete());
         psychisch.splice(i, 1);
-        localStorage.setItem(`psychisch-${id}`, JSON.stringify(psychisch));
         updatePsychischLijst();
       };
       div.appendChild(btn);
       psychischLijst.appendChild(div);
     });
   }
-  updatePsychischLijst();
+
+  db.collection(`clienten/${id}/psychisch`).get().then(snapshot => {
+    snapshot.forEach(doc => psychisch.push(doc.data().naam));
+    updatePsychischLijst();
+  });
 
   document.getElementById('addPsychisch').onclick = () => {
     const val = document.getElementById('psychischDropdown').value;
     if (val && !psychisch.includes(val) && val !== '-- Selecteer aandoening --') {
+      db.collection(`clienten/${id}/psychisch`).add({ naam: val });
       psychisch.push(val);
-      localStorage.setItem(`psychisch-${id}`, JSON.stringify(psychisch));
       updatePsychischLijst();
     }
   };
 
-  // 📆 Afspraken
-  const afspraken = JSON.parse(localStorage.getItem(`afspraken-${id}`)) || [];
+  // 📆 AFSPRAKEN
   const afsprakenLijst = document.getElementById('afsprakenLijst');
 
   function toonAfspraken() {
     afsprakenLijst.innerHTML = '';
-    afspraken.forEach(item => {
-      const div = document.createElement('div');
-      div.className = 'afspraakKaart';
-      div.innerHTML = `
-        <strong>${item.datum}</strong><br>
-        <em>Behandelaar:</em> ${item.behandelaar}<br>
-        <em>Reden:</em> ${item.reden}<br>
-        <em>Indicatie:</em> ${item.indicatie}<br>
-        <em>Plan:</em> ${item.plan}<br>
-        <em>Notities:</em> ${item.notities}
-      `;
-      afsprakenLijst.appendChild(div);
+    db.collection(`clienten/${id}/afspraken`).get().then(snapshot => {
+      snapshot.forEach(doc => {
+        const item = doc.data();
+        const div = document.createElement('div');
+        div.className = 'afspraakKaart';
+        div.innerHTML = `
+          <strong>${item.datum}</strong><br>
+          <em>Behandelaar:</em> ${item.behandelaar}<br>
+          <em>Reden:</em> ${item.reden}<br>
+          <em>Indicatie:</em> ${item.indicatie}<br>
+          <em>Plan:</em> ${item.plan}<br>
+          <em>Notities:</em> ${item.notities}
+        `;
+        afsprakenLijst.appendChild(div);
+      });
     });
   }
 
@@ -471,13 +505,13 @@
       return;
     }
 
-    afspraken.push(afspraak);
-    localStorage.setItem(`afspraken-${id}`, JSON.stringify(afspraken));
-    toonAfspraken();
-
-    ['afspraakDatum','afspraakBehandelaar','afspraakReden','afspraakIndicatie','afspraakPlan','afspraakNotities']
-      .forEach(id => document.getElementById(id).value = '');
+    db.collection(`clienten/${id}/afspraken`).add(afspraak).then(() => {
+      toonAfspraken();
+      ['afspraakDatum','afspraakBehandelaar','afspraakReden','afspraakIndicatie','afspraakPlan','afspraakNotities']
+        .forEach(vak => document.getElementById(vak).value = '');
+    });
   };
 </script>
 </body>
 </html>
+
