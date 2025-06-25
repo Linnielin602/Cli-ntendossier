@@ -5,74 +5,52 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dossier – AmbuRP</title>
   <style>
-    .aandoeningenGrid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.8em;
-  margin-top: 1em;
-}
-
-.aandoeningKaart {
-  background-color: #e3f2fd;
-  border: 2px solid #90caf9;
-  padding: 0.8em 1em;
-  border-radius: 8px;
-  flex: 1 1 250px;
-  max-width: 100%;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.aandoeningKaart button {
-  margin-left: 1em;
-  background-color: transparent;
-  color: #d32f2f;
-  font-size: 1.2em;
-  border: none;
-  cursor: pointer;
-}
-
-    .afsprakenGrid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1em;
-  margin-top: 1em;
-}
-
-.afspraakKaart {
-  background-color: #f1f8e9;
-  border: 2px solid #c5e1a5;
-  padding: 1em;
-  border-radius: 10px;
-  flex: 1 1 300px;
-  max-width: 100%;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-}
-
     body {
-  margin: 0;
-  font-family: 'Segoe UI', Tahoma, sans-serif;
-  background: url("rodebaard.png") no-repeat center center fixed;
-  background-size: cover;
-  color: #1a237e;
-}
-
-    .wrapper {
-      display: flex;
-      justify-content: center;
-      margin: 2em;
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background: url("rodebaard.png") no-repeat center center fixed;
+      background-size: cover;
+      color: #1a237e;
     }
 
     main {
-  background-color: rgba(255, 255, 255, 0.92);
-  padding: 2em;
-  border-radius: 12px;
-  box-shadow: 0 0 15px rgba(0,0,0,0.08);
-  max-width: 800px;
-  width: 100%;
-}
+      background-color: rgba(255, 255, 255, 0.92);
+      padding: 2em;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.08);
+      max-width: 800px;
+      width: 100%;
+    }
+
+    .wrapper {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2em;
+      margin-top: 1.5em;
+    }
+
+    .blok {
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 12px;
+      padding: 1.5em;
+      box-shadow: 0 0 10px rgba(0,0,0,0.06);
+      flex: 1 1 360px;
+      min-width: 300px;
+    }
+
+    .links {
+      /* linkerkant: persoonsgegevens + voorkeuren */
+    }
+
+    .rechts {
+      /* rechterkant: voorgeschiedenis + afspraken */
+    }
+
+    .pagewrapper {
+      padding: 2em;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
 
     section {
       margin-bottom: 2em;
@@ -129,329 +107,340 @@
       background-color: #e53935;
       color: white;
     }
+
+    .aandoeningenGrid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8em;
+      margin-top: 1em;
+    }
+
+    .aandoeningKaart {
+      background-color: #e3f2fd;
+      border: 2px solid #90caf9;
+      padding: 0.8em 1em;
+      border-radius: 8px;
+      flex: 1 1 250px;
+      max-width: 100%;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .aandoeningKaart button {
+      margin-left: 1em;
+      background-color: transparent;
+      color: #d32f2f;
+      font-size: 1.2em;
+      border: none;
+      cursor: pointer;
+    }
+
+    .afsprakenGrid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1em;
+      margin-top: 1em;
+    }
+
+    .afspraakKaart {
+      background-color: #f1f8e9;
+      border: 2px solid #c5e1a5;
+      padding: 1em;
+      border-radius: 10px;
+      flex: 1 1 300px;
+      max-width: 100%;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
     @media (max-width: 600px) {
-  header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
 
-  .container {
-    flex-direction: column;
-    gap: 1em;
-  }
+      main {
+        max-width: 100%;
+      }
 
-  main, aside {
-    max-width: 100%;
-  }
-
-  button {
-    width: 100%;
-  }
-}
-    .wrapper {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2em;
-  margin-top: 1.5em;
-}
-
-.blok {
-  background-color: rgba(255, 255, 255, 0.9);
-  border-radius: 12px;
-  padding: 1.5em;
-  box-shadow: 0 0 10px rgba(0,0,0,0.06);
-  flex: 1 1 360px;
-  min-width: 300px;
-}
-
-.links {
-  /* linkerkant: persoonsgegevens + voorkeuren */
-}
-
-.rechts {
-  /* rechterkant: voorgeschiedenis + afspraken */
-}
-    .pagewrapper {
-  padding: 2em;
-  max-width: 1200px;
-  margin: 0 auto;
-}
+      button {
+        width: 100%;
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="wrapper">
-    <main>
-  <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
-    <h1 style="margin: 0;">Dossier van: <span id="naam">...</span></h1>
-    <img id="preview" src="" alt="Foto cliënt" style="width: 180px; height: 180px; object-fit: cover; border-radius: 10px;" />
-  </div>
-
   <div class="pagewrapper">
-    <div class="blok links">
-      <section>
-        <h2>📇 Persoonsgegevens</h2>
+    <main>
+      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+        <h1 style="margin: 0;">Dossier van: <span id="naam">...</span></h1>
+        <img id="preview" src="" alt="Foto cliënt" style="width: 180px; height: 180px; object-fit: cover; border-radius: 10px;" />
+      </div>
 
-        <label>Geboortedatum:</label>
-        <input type="date" id="geboorte" />
+      <div class="wrapper">
+        <div class="blok links">
+          <section>
+            <h2>📇 Persoonsgegevens</h2>
+            <label>Geboortedatum:</label>
+            <input type="date" id="geboorte" />
 
-        <label>Telefoonnummer:</label>
-        <input type="text" id="telefoon" />
+            <label>Telefoonnummer:</label>
+            <input type="text" id="telefoon" />
 
-        <label>Reden opname:</label>
-        <input type="text" id="reden" />
+            <label>Reden opname:</label>
+            <input type="text" id="reden" />
 
-        <label>Lengte (cm):</label>
-        <input type="number" id="lengte" />
+            <label>Lengte (cm):</label>
+            <input type="number" id="lengte" />
 
-        <label>Gewicht (kg):</label>
-        <input type="number" id="gewicht" />
+            <label>Gewicht (kg):</label>
+            <input type="number" id="gewicht" />
 
-        <label>📷 Foto:</label>
-        <input type="file" id="fotoUpload" accept="image/*" />
-        <img id="preview" src="" alt="Foto cliënt" />
+            <label>📷 Foto:</label>
+            <input type="file" id="fotoUpload" accept="image/*" />
 
-        <button id="verwijderClient">🗑️ Verwijder dit dossier</button>
-      </section>
+            <button id="verwijderClient">🗑️ Verwijder dit dossier</button>
+          </section>
 
-      <section>
-        <h2>🫀 Reanimatie & behandelvoorkeuren</h2>
+          <section>
+            <h2>🫀 Reanimatie & behandelvoorkeuren</h2>
+            <label for="reanimeren">Reanimatiebeleid:</label>
+            <select id="reanimeren" name="reanimeren">
+              <option>— Kies een optie —</option>
+              <option>Wel reanimeren</option>
+              <option>Niet reanimeren (DNR)</option>
+              <option>Overleg met huisarts</option>
+              <option>Geen voorkeur opgegeven</option>
+            </select>
+          </section>
+        </div>
 
-        <label for="reanimeren">Reanimatiebeleid:</label>
-        <select id="reanimeren" name="reanimeren">
-          <option>— Kies een optie —</option>
-          <option>Wel reanimeren</option>
-          <option>Niet reanimeren (DNR)</option>
-          <option>Overleg met huisarts</option>
-          <option>Geen voorkeur opgegeven</option>
-        </select>
-      </section>
-    </div>
+        <div class="blok rechts">
+          <section>
+            <h2>🏥 Medische voorgeschiedenis</h2>
 
-    <div class="blok rechts">
-      <section>
-        <h2>🏥 Medische voorgeschiedenis</h2>
+            <h3>📋 Chronische aandoeningen</h3>
+            <select id="chronischDropdown">
+              <option>-- Selecteer aandoening --</option>
+              <option>Diabetes mellitus type 1</option>
+              <option>Diabetes mellitus type 2</option>
+              <option>Astma</option>
+              <option>COPD</option>
+              <option>Reuma</option>
+              <option>Hartfalen</option>
+              <option>Nierfalen</option>
+              <option>Hypertensie</option>
+              <option>Kanker (chronisch)</option>
+              <option>Ziekte van Crohn</option>
+              <option>Multiple sclerose</option>
+              <option>Epilepsie</option>
+              <option>Andere...</option>
+            </select>
+            <button id="addChronisch">➕ Toevoegen</button>
+            <div id="chronischLijst" class="aandoeningenGrid"></div>
 
-        <h3>📋 Chronische aandoeningen</h3>
-        <select id="chronischDropdown">
-          <option>-- Selecteer aandoening --</option>
-          <option>Diabetes mellitus type 1</option>
-          <option>Diabetes mellitus type 2</option>
-          <option>Astma</option>
-          <option>COPD</option>
-          <option>Reuma</option>
-          <option>Hartfalen</option>
-          <option>Nierfalen</option>
-          <option>Hypertensie</option>
-          <option>Kanker (chronisch)</option>
-          <option>Ziekte van Crohn</option>
-          <option>Multiple sclerose</option>
-          <option>Epilepsie</option>
-          <option>Andere...</option>
-        </select>
-        <button id="addChronisch">➕ Toevoegen</button>
-        <div id="chronischLijst" class="aandoeningenGrid"></div>
+            <h3>🧠 Psychische aandoeningen</h3>
+            <select id="psychischDropdown">
+              <option>-- Selecteer aandoening --</option>
+              <option>Depressie</option>
+              <option>Angststoornis</option>
+              <option>Bipolaire stoornis</option>
+              <option>PTSS</option>
+              <option>ADHD</option>
+              <option>Autismespectrumstoornis</option>
+              <option>Schizofrenie</option>
+              <option>Eetstoornis</option>
+              <option>Verslaving</option>
+              <option>Andere...</option>
+            </select>
+            <button id="addPsychisch">➕ Toevoegen</button>
+            <div id="psychischLijst" class="aandoeningenGrid"></div>
+          </section>
 
-        <h3>🧠 Psychische aandoeningen</h3>
-        <select id="psychischDropdown">
-          <option>-- Selecteer aandoening --</option>
-          <option>Depressie</option>
-          <option>Angststoornis</option>
-          <option>Bipolaire stoornis</option>
-          <option>PTSS</option>
-          <option>ADHD</option>
-          <option>Autismespectrumstoornis</option>
-          <option>Schizofrenie</option>
-          <option>Eetstoornis</option>
-          <option>Verslaving</option>
-          <option>Andere...</option>
-        </select>
-        <button id="addPsychisch">➕ Toevoegen</button>
-        <div id="psychischLijst" class="aandoeningenGrid"></div>
-      </section>
+          <section>
+            <h2>📆 Afspraken</h2>
+            <label>Datum:</label>
+            <input type="date" id="afspraakDatum" />
 
-      <section>
-        <h2>📆 Afspraken</h2>
+            <label>Behandelaar:</label>
+            <input type="text" id="afspraakBehandelaar" />
 
-        <label>Datum:</label>
-        <input type="date" id="afspraakDatum" />
+            <label>Reden:</label>
+            <input type="text" id="afspraakReden" />
 
-        <label>Behandelaar:</label>
-        <input type="text" id="afspraakBehandelaar" />
+            <label>Indicatie:</label>
+            <input type="text" id="afspraakIndicatie" />
 
-        <label>Reden:</label>
-        <input type="text" id="afspraakReden" />
+            <label>Plan:</label>
+            <input type="text" id="afspraakPlan" />
 
-        <label>Indicatie:</label>
-        <input type="text" id="afspraakIndicatie" />
+            <label>Notities:</label>
+            <input type="text" id="afspraakNotities" />
 
-        <label>Plan:</label>
-        <input type="text" id="afspraakPlan" />
-
-        <label>Notities:</label>
-        <input type="text" id="afspraakNotities" />
-
-        <button id="opslaanAfspraak">➕ Opslaan afspraak</button>
-        <div id="afsprakenLijst" class="afsprakenGrid"></div>
-      </section>
-    </div>
+            <button id="opslaanAfspraak">➕ Opslaan afspraak</button>
+            <div id="afsprakenLijst" class="afsprakenGrid"></div>
+          </section>
+        </div>
+      </div>
+    </main>
   </div>
-</main>
-  </div>
+
   <script>
-    const id = new URLSearchParams(location.search).get('id');
-    const naam = document.getElementById('naam');
-    const preview = document.getElementById('preview');
-    const clienten = JSON.parse(localStorage.getItem('clienten')) || [];
-    const cli = clienten.find(c => c.id.toString() === id);
+  const id = new URLSearchParams(location.search).get('id');
+  const naam = document.getElementById('naam');
+  const preview = document.getElementById('preview');
+  const clienten = JSON.parse(localStorage.getItem('clienten')) || [];
+  const cli = clienten.find(c => c.id.toString() === id);
 
-    if (!cli) {
-      document.body.innerHTML = "<p>❌ Cliënt niet gevonden.</p>";
-    } else {
-      naam.textContent = cli.naam || '';
-      document.getElementById('geboorte').value = cli.geboortedatum || '';
-      document.getElementById('telefoon').value = cli.telefoon || '';
-      document.getElementById('reden').value = cli.reden || cli.redenOpname || '';
-      document.getElementById('lengte').value = cli.lengte || '';
-      document.getElementById('gewicht').value = cli.gewicht || '';
+  if (!cli) {
+    document.body.innerHTML = "<p>❌ Cliënt niet gevonden.</p>";
+  } else {
+    naam.textContent = cli.naam || '';
+    document.getElementById('geboorte').value = cli.geboortedatum || '';
+    document.getElementById('telefoon').value = cli.telefoon || '';
+    document.getElementById('reden').value = cli.reden || cli.redenOpname || '';
+    document.getElementById('lengte').value = cli.lengte || '';
+    document.getElementById('gewicht').value = cli.gewicht || '';
+  }
+
+  // 📷 Foto
+  const savedFoto = localStorage.getItem(`foto-${id}`);
+  if (savedFoto) preview.src = savedFoto;
+
+  document.getElementById('fotoUpload').addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      preview.src = reader.result;
+      localStorage.setItem(`foto-${id}`, reader.result);
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // 🗑️ Verwijderknop
+  document.getElementById('verwijderClient').addEventListener('click', () => {
+    if (confirm("Weet je zeker dat je dit dossier wilt verwijderen?")) {
+      ['foto','chronisch','psychisch','afspraken'].forEach(type =>
+        localStorage.removeItem(`${type}-${id}`)
+      );
+      const lijst = clienten.filter(c => c.id.toString() !== id);
+      localStorage.setItem('clienten', JSON.stringify(lijst));
+      alert("Cliënt is volledig verwijderd.");
+      window.location.href = "index.html";
     }
+  });
 
-    // 📷 Foto
-    const savedFoto = localStorage.getItem(`foto-${id}`);
-    if (savedFoto) preview.src = savedFoto;
+  // 🩺 Chronisch
+  const chronisch = JSON.parse(localStorage.getItem(`chronisch-${id}`)) || [];
+  const chronischLijst = document.getElementById('chronischLijst');
 
-    document.getElementById('fotoUpload').addEventListener('change', e => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        preview.src = reader.result;
-        localStorage.setItem(`foto-${id}`, reader.result);
+  function updateChronischLijst() {
+    chronischLijst.innerHTML = '';
+    chronisch.forEach((item, i) => {
+      const div = document.createElement('div');
+      div.className = 'aandoeningKaart';
+      div.innerHTML = `<span>${item}</span>`;
+      const btn = document.createElement('button');
+      btn.textContent = '❌';
+      btn.onclick = () => {
+        chronisch.splice(i, 1);
+        localStorage.setItem(`chronisch-${id}`, JSON.stringify(chronisch));
+        updateChronischLijst();
       };
-      reader.readAsDataURL(file);
+      div.appendChild(btn);
+      chronischLijst.appendChild(div);
     });
+  }
+  updateChronischLijst();
 
-    // 🗑️ Verwijderknop
-    document.getElementById('verwijderClient').addEventListener('click', () => {
-      if (confirm("Weet je zeker dat je dit dossier wilt verwijderen?")) {
-        ['foto','chronisch','psychisch','afspraken'].forEach(type =>
-          localStorage.removeItem(`${type}-${id}`)
-        );
-        const lijst = clienten.filter(c => c.id.toString() !== id);
-        localStorage.setItem('clienten', JSON.stringify(lijst));
-        alert("Cliënt is volledig verwijderd.");
-        window.location.href = "index.html";
-      }
-    });
-
-    // 🩺 Chronisch
-const chronisch = JSON.parse(localStorage.getItem(`chronisch-${id}`)) || [];
-const chronischLijst = document.getElementById('chronischLijst');
-
-function updateChronischLijst() {
-  chronischLijst.innerHTML = '';
-  chronisch.forEach((item, i) => {
-    const div = document.createElement('div');
-    div.className = 'aandoeningKaart';
-    div.innerHTML = `<span>${item}</span>`;
-    const btn = document.createElement('button');
-    btn.textContent = '❌';
-    btn.onclick = () => {
-      chronisch.splice(i, 1);
+  document.getElementById('addChronisch').onclick = () => {
+    const val = document.getElementById('chronischDropdown').value;
+    if (val && !chronisch.includes(val) && val !== '-- Selecteer aandoening --') {
+      chronisch.push(val);
       localStorage.setItem(`chronisch-${id}`, JSON.stringify(chronisch));
       updateChronischLijst();
-    };
-    div.appendChild(btn);
-    chronischLijst.appendChild(div);
-  });
-}
-updateChronischLijst();
+    }
+  };
 
-document.getElementById('addChronisch').onclick = () => {
-  const val = document.getElementById('chronischDropdown').value;
-  if (val && !chronisch.includes(val) && val !== '-- Selecteer aandoening --') {
-    chronisch.push(val);
-    localStorage.setItem(`chronisch-${id}`, JSON.stringify(chronisch));
-    updateChronischLijst();
+  // 🧠 Psychisch
+  const psychisch = JSON.parse(localStorage.getItem(`psychisch-${id}`)) || [];
+  const psychischLijst = document.getElementById('psychischLijst');
+
+  function updatePsychischLijst() {
+    psychischLijst.innerHTML = '';
+    psychisch.forEach((item, i) => {
+      const div = document.createElement('div');
+      div.className = 'aandoeningKaart';
+      div.innerHTML = `<span>${item}</span>`;
+      const btn = document.createElement('button');
+      btn.textContent = '❌';
+      btn.onclick = () => {
+        psychisch.splice(i, 1);
+        localStorage.setItem(`psychisch-${id}`, JSON.stringify(psychisch));
+        updatePsychischLijst();
+      };
+      div.appendChild(btn);
+      psychischLijst.appendChild(div);
+    });
   }
-};
+  updatePsychischLijst();
 
-    // 🧠 Psychisch
-const psychisch = JSON.parse(localStorage.getItem(`psychisch-${id}`)) || [];
-const psychischLijst = document.getElementById('psychischLijst');
-
-function updatePsychischLijst() {
-  psychischLijst.innerHTML = '';
-  psychisch.forEach((item, i) => {
-    const div = document.createElement('div');
-    div.className = 'aandoeningKaart';
-    div.innerHTML = `<span>${item}</span>`;
-    const btn = document.createElement('button');
-    btn.textContent = '❌';
-    btn.onclick = () => {
-      psychisch.splice(i, 1);
+  document.getElementById('addPsychisch').onclick = () => {
+    const val = document.getElementById('psychischDropdown').value;
+    if (val && !psychisch.includes(val) && val !== '-- Selecteer aandoening --') {
+      psychisch.push(val);
       localStorage.setItem(`psychisch-${id}`, JSON.stringify(psychisch));
       updatePsychischLijst();
-    };
-    div.appendChild(btn);
-    psychischLijst.appendChild(div);
-  });
-}
-updatePsychischLijst();
+    }
+  };
 
-document.getElementById('addPsychisch').onclick = () => {
-  const val = document.getElementById('psychischDropdown').value;
-  if (val && !psychisch.includes(val) && val !== '-- Selecteer aandoening --') {
-    psychisch.push(val);
-    localStorage.setItem(`psychisch-${id}`, JSON.stringify(psychisch));
-    updatePsychischLijst();
+  // 📆 Afspraken
+  const afspraken = JSON.parse(localStorage.getItem(`afspraken-${id}`)) || [];
+  const afsprakenLijst = document.getElementById('afsprakenLijst');
+
+  function toonAfspraken() {
+    afsprakenLijst.innerHTML = '';
+    afspraken.forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'afspraakKaart';
+      div.innerHTML = `
+        <strong>${item.datum}</strong><br>
+        <em>Behandelaar:</em> ${item.behandelaar}<br>
+        <em>Reden:</em> ${item.reden}<br>
+        <em>Indicatie:</em> ${item.indicatie}<br>
+        <em>Plan:</em> ${item.plan}<br>
+        <em>Notities:</em> ${item.notities}
+      `;
+      afsprakenLijst.appendChild(div);
+    });
   }
-};
 
-    // 📆 Afspraken
-    const afspraken = JSON.parse(localStorage.getItem(`afspraken-${id}`)) || [];
-    const afsprakenLijst = document.getElementById('afsprakenLijst');
+  toonAfspraken();
 
-    function toonAfspraken() {
-  afsprakenLijst.innerHTML = '';
-  afspraken.forEach(item => {
-    const div = document.createElement('div');
-    div.className = 'afspraakKaart';
-    div.innerHTML = `
-      <strong>${item.datum}</strong><br>
-      <em>Behandelaar:</em> ${item.behandelaar}<br>
-      <em>Reden:</em> ${item.reden}<br>
-      <em>Indicatie:</em> ${item.indicatie}<br>
-      <em>Plan:</em> ${item.plan}<br>
-      <em>Notities:</em> ${item.notities}
-    `;
-    afsprakenLijst.appendChild(div);
-  });
-}
+  document.getElementById('opslaanAfspraak').onclick = () => {
+    const afspraak = {
+      datum: document.getElementById('afspraakDatum').value,
+      behandelaar: document.getElementById('afspraakBehandelaar').value,
+      reden: document.getElementById('afspraakReden').value,
+      indicatie: document.getElementById('afspraakIndicatie').value,
+      plan: document.getElementById('afspraakPlan').value,
+      notities: document.getElementById('afspraakNotities').value
+    };
 
+    if (!afspraak.datum || !afspraak.reden) {
+      alert("Datum en reden zijn verplicht.");
+      return;
+    }
+
+    afspraken.push(afspraak);
+    localStorage.setItem(`afspraken-${id}`, JSON.stringify(afspraken));
     toonAfspraken();
 
-    document.getElementById('opslaanAfspraak').onclick = () => {
-      const afspraak = {
-        datum: document.getElementById('afspraakDatum').value,
-        behandelaar: document.getElementById('afspraakBehandelaar').value,
-        reden: document.getElementById('afspraakReden').value,
-        indicatie: document.getElementById('afspraakIndicatie').value,
-        plan: document.getElementById('afspraakPlan').value,
-        notities: document.getElementById('afspraakNotities').value
-      };
-
-      if (!afspraak.datum || !afspraak.reden) {
-        alert("Datum en reden zijn verplicht.");
-        return;
-      }
-
-      afspraken.push(afspraak);
-      localStorage.setItem(`afspraken-${id}`, JSON.stringify(afspraken));
-      toonAfspraken();
-
-      ['afspraakDatum','afspraakBehandelaar','afspraakReden','afspraakIndicatie','afspraakPlan','afspraakNotities']
-        .forEach(id => document.getElementById(id).value = '');
-    };
-  </script>
+    ['afspraakDatum','afspraakBehandelaar','afspraakReden','afspraakIndicatie','afspraakPlan','afspraakNotities']
+      .forEach(id => document.getElementById(id).value = '');
+  };
+</script>
 </body>
 </html>
