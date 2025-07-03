@@ -289,6 +289,18 @@
       fotoUrl: downloadURL
     });
   });
+  
+document.getElementById('geboorte').addEventListener('change', e => {
+  db.collection("clienten").doc(id).update({ geboortedatum: e.target.value });
+});
+
+document.getElementById('lengte').addEventListener('change', e => {
+  db.collection("clienten").doc(id).update({ lengte: e.target.value });
+});
+
+document.getElementById('gewicht').addEventListener('change', e => {
+  db.collection("clienten").doc(id).update({ gewicht: e.target.value });
+});
 
   document.getElementById('verwijderClient').addEventListener('click', async () => {
     if (confirm("Weet je zeker dat je dit dossier wilt verwijderen?")) {
