@@ -266,7 +266,7 @@
       }
       const cli = doc.data();
       naam.textContent = cli.naam || '';
-      document.getElementById('opname').value = cli.opnamedatum || '';
+      document.getElementById('opname').value = cli.opnamedatum || cli.geboortedatum || '';
       // document.getElementById('geboorte').value = cli.geboortedatum || '';  <-- Niet automatisch invullen
       document.getElementById('telefoon').value = cli.telefoon || '';
       document.getElementById('reden').value = cli.reden || cli.redenOpname || '';
