@@ -302,6 +302,18 @@ document.getElementById('gewicht').addEventListener('change', e => {
   db.collection("clienten").doc(id).update({ gewicht: e.target.value });
 });
 
+document.getElementById('telefoon').addEventListener('change', e => {
+  db.collection("clienten").doc(id).update({ telefoon: e.target.value });
+});
+
+document.getElementById('eersteOpname').addEventListener('change', e => {
+  db.collection("clienten").doc(id).update({ eersteOpname: e.target.value });
+});
+
+document.getElementById('redenOpname').addEventListener('change', e => {
+  db.collection("clienten").doc(id).update({ redenOpname: e.target.value });
+});
+
   document.getElementById('verwijderClient').addEventListener('click', async () => {
     if (confirm("Weet je zeker dat je dit dossier wilt verwijderen?")) {
       await db.collection("clienten").doc(id).delete();
