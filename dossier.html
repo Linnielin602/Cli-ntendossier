@@ -254,28 +254,53 @@
         </div>
 
         <div class="blok rechts">
-          <section>
-            <h2>🏥 Medische voorgeschiedenis</h2>
 
-            <h3>📋 Chronische aandoeningen</h3>
-            <select id="chronischDropdown">
-              <option>-- Selecteer aandoening --</option>
-              <option>Diabetes mellitus type 1</option>
-              <option>Diabetes mellitus type 2</option>
-              <option>Astma</option>
-              <option>COPD</option>
-              <option>Reuma</option>
-              <option>Hartfalen</option>
-              <option>Nierfalen</option>
-              <option>Hypertensie</option>
-              <option>Kanker (chronisch)</option>
-              <option>Ziekte van Crohn</option>
-              <option>Multiple sclerose</option>
-              <option>Epilepsie</option>
-              <option>Andere...</option>
-            </select>
-            <button id="addChronisch">➕ Toevoegen</button>
-            <div id="chronischLijst" class="aandoeningenGrid"></div>
+  <!-- 🧑‍⚕️ Cliëntgegevens -->
+  <section class="clientHeader">
+    <h2>Dossier van: <span id="naam">...</span></h2>
+
+    <div class="clientField">
+      <label for="geboorte">📅 Geboortedatum:</label>
+      <input type="date" id="geboorte" readonly />
+    </div>
+
+    <div class="clientField">
+      <label for="telefoon">📞 Telefoonnummer:</label>
+      <input type="text" id="telefoon" readonly />
+    </div>
+
+    <div class="clientField">
+      <label for="reden">📝 Reden opname:</label>
+      <input type="text" id="reden" readonly />
+    </div>
+  </section>
+
+  <!-- 🏥 Medische voorgeschiedenis -->
+  <section class="medischBlok">
+    <h2>🏥 Medische voorgeschiedenis</h2>
+
+    <h3>📋 Chronische aandoeningen</h3>
+    <select id="chronischDropdown">
+      <option disabled selected>-- Selecteer aandoening --</option>
+      <option>Diabetes mellitus type 1</option>
+      <option>Diabetes mellitus type 2</option>
+      <option>Astma</option>
+      <option>COPD</option>
+      <option>Reuma</option>
+      <option>Hartfalen</option>
+      <option>Nierfalen</option>
+      <option>Hypertensie</option>
+      <option>Kanker (chronisch)</option>
+      <option>Ziekte van Crohn</option>
+      <option>Multiple sclerose</option>
+      <option>Epilepsie</option>
+      <option>Andere...</option>
+    </select>
+    <button id="addChronisch" type="button">➕ Toevoegen</button>
+    <div id="chronischLijst" class="aandoeningenGrid"></div>
+  </section>
+
+</div>
 
             <h3>🧠 Psychische aandoeningen</h3>
             <select id="psychischDropdown">
