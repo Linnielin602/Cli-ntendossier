@@ -238,12 +238,6 @@
     </div>
   </main>
 
-    <!-- Login en uploadvelden -->
-<input type="password" id="wachtwoord" placeholder="Wachtwoord invoeren" />
-<button id="loginBtn">Start</button>
-<input type="file" id="fotoUpload" disabled />
-<img id="preview" src="" alt="Voorvertoning" />
-
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -262,67 +256,38 @@
 
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
-
-  <script>
   const id = new URLSearchParams(location.search).get('id');
   const naam = document.getElementById('naam');
   const preview = document.getElementById('preview');
 
-  document.getElementById('fotoUpload').disabled = true;
-
-  document.getElementById('loginBtn').addEventListener('click', () => {
-    const pw = document.getElementById('wachtwoord').value;
-    if (pw === "stephansbaard") {
-      firebase.auth().signInAnonymously()
-        .then(() => {
-          alert("✅ Ingelogd! Je kunt nu foto's uploaden.");
-          document.getElementById('fotoUpload').disabled = false;
-          laadCliëntdata();
-          toonAfspraken();
-        })
-        .catch(err => {
-          console.error("Login mislukt:", err);
-          alert("Login mislukt. Probeer opnieuw.");
-        });
-    } else {
-      alert("❌ Onjuist wachtwoord.");
+  db.collection("clienten").doc(id).get().then(doc => {
+    if (!doc.exists) {
+      document.body.innerHTML = "<p>❌ Cliënt niet gevonden.</p>";
+      return;
     }
+    const cli = doc.data();
+    if (cli.fotoUrl) preview.src = cli.fotoUrl;
+    naam.textContent = cli.naam || '';
+    document.getElementById('geboorte').value = cli.geboortedatum || '';
+    document.getElementById('opname').value = cli.opnamedatum || cli.geboortedatum || '';
+    document.getElementById('telefoon').value = cli.telefoon || '';
+    document.getElementById('reden').value = cli.reden || cli.redenOpname || '';
+    document.getElementById('lengte').value = cli.lengte || '';
+    document.getElementById('gewicht').value = cli.gewicht || '';
   });
-
-  function laadCliëntdata() {
-    db.collection("clienten").doc(id).get().then(doc => {
-      if (!doc.exists) {
-        document.body.innerHTML = "<p>❌ Cliënt niet gevonden.</p>";
-        return;
-      }
-      const cli = doc.data();
-      if (cli.fotoUrl) preview.src = cli.fotoUrl;
-      naam.textContent = cli.naam || '';
-      document.getElementById('geboorte').value = cli.geboortedatum || '';
-      document.getElementById('opname').value = cli.opnamedatum || cli.geboortedatum || '';
-      document.getElementById('telefoon').value = cli.telefoon || '';
-      document.getElementById('reden').value = cli.reden || cli.redenOpname || '';
-      document.getElementById('lengte').value = cli.lengte || '';
-      document.getElementById('gewicht').value = cli.gewicht || '';
-      laadAandoeningen();
-    });
-  }
 
   document.getElementById('fotoUpload').addEventListener('change', async e => {
     const file = e.target.files[0];
     if (!file) return;
 
-    try {
-      const fotoRef = firebase.storage().ref(`client_fotos/${id}.jpg`);
-      await fotoRef.put(file);
-      const downloadURL = await fotoRef.getDownloadURL();
-      preview.src = downloadURL;
-      await db.collection("clienten").doc(id).update({ fotoUrl: downloadURL });
-      alert("✅ Foto geüpload!");
-    } catch (err) {
-      console.error("Upload mislukt:", err);
-      alert("Upload mislukt. Ben je ingelogd?");
-    }
+    const fotoRef = firebase.storage().ref(`client_fotos/${id}.jpg`);
+    await fotoRef.put(file);
+    const downloadURL = await fotoRef.getDownloadURL();
+    preview.src = downloadURL;
+
+    await db.collection("clienten").doc(id).update({
+      fotoUrl: downloadURL
+    });
   });
 
   document.getElementById('verwijderClient').addEventListener('click', async () => {
@@ -337,18 +302,6 @@
       window.location.href = "index.html";
     }
   });
-
-  function laadAandoeningen() {
-    db.collection(`clienten/${id}/chronisch`).get().then(snapshot => {
-      chronisch = snapshot.docs.map(doc => doc.data().naam);
-      updateChronischLijst();
-    });
-
-    db.collection(`clienten/${id}/psychisch`).get().then(snapshot => {
-      psychisch = snapshot.docs.map(doc => doc.data().naam);
-      updatePsychischLijst();
-    });
-  }
 
   let chronisch = [];
   const chronischLijst = document.getElementById('chronischLijst');
@@ -370,6 +323,11 @@
       chronischLijst.appendChild(div);
     });
   }
+
+  db.collection(`clienten/${id}/chronisch`).get().then(snapshot => {
+    snapshot.forEach(doc => chronisch.push(doc.data().naam));
+    updateChronischLijst();
+  });
 
   document.getElementById('addChronisch').onclick = () => {
     const val = document.getElementById('chronischDropdown').value;
@@ -401,6 +359,11 @@
     });
   }
 
+  db.collection(`clienten/${id}/psychisch`).get().then(snapshot => {
+    snapshot.forEach(doc => psychisch.push(doc.data().naam));
+    updatePsychischLijst();
+  });
+
   document.getElementById('addPsychisch').onclick = () => {
     const val = document.getElementById('psychischDropdown').value;
     if (val && !psychisch.includes(val) && val !== '-- Selecteer aandoening --') {
@@ -430,6 +393,8 @@
       });
     });
   }
+
+  toonAfspraken();
 
   document.getElementById('opslaanAfspraak').onclick = () => {
     const afspraak = {
