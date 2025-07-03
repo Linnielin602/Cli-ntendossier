@@ -151,6 +151,9 @@
 
         <label>Telefoonnummer:</label>
         <input type="text" id="telefoon" />
+        
+        <label>Datum eerste opname:</label>
+        <input type="date" id="opname" />
 
         <label>Reden opname:</label>
         <input type="text" id="reden" />
@@ -235,7 +238,7 @@
     </div>
   </main>
 
-  <!-- Firebase compatibele SDK -->
+    <!-- Firebase compatibele SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script>
@@ -263,7 +266,8 @@
       }
       const cli = doc.data();
       naam.textContent = cli.naam || '';
-      document.getElementById('geboorte').value = cli.geboortedatum || '';
+      document.getElementById('opname').value = cli.opnamedatum || '';
+      // document.getElementById('geboorte').value = cli.geboortedatum || '';  <-- Niet automatisch invullen
       document.getElementById('telefoon').value = cli.telefoon || '';
       document.getElementById('reden').value = cli.reden || cli.redenOpname || '';
       document.getElementById('lengte').value = cli.lengte || '';
@@ -370,7 +374,7 @@
     const afsprakenLijst = document.getElementById('afsprakenLijst');
     function toonAfspraken() {
       afsprakenLijst.innerHTML = '';
-            db.collection(`clienten/${id}/afspraken`).get().then(snapshot => {
+      db.collection(`clienten/${id}/afspraken`).get().then(snapshot => {
         snapshot.forEach(doc => {
           const item = doc.data();
           const div = document.createElement('div');
