@@ -265,6 +265,9 @@
         return;
       }
       const cli = doc.data();
+      if (cli.fotoUrl) {
+  preview.src = cli.fotoUrl;
+}
       naam.textContent = cli.naam || '';
       document.getElementById('opname').value = cli.opnamedatum || cli.geboortedatum || '';
       // document.getElementById('geboorte').value = cli.geboortedatum || '';  <-- Niet automatisch invullen
@@ -277,16 +280,21 @@
     const savedFoto = localStorage.getItem(`foto-${id}`);
     if (savedFoto) preview.src = savedFoto;
 
-    document.getElementById('fotoUpload').addEventListener('change', e => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        preview.src = reader.result;
-        localStorage.setItem(`foto-${id}`, reader.result);
-      };
-      reader.readAsDataURL(file);
-    });
+    document.getElementById('fotoUpload').addEventListener('change', async e => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const storageRef = firebase.storage().ref();
+  const fotoRef = storageRef.child(`client_fotos/${id}.jpg`);
+  await fotoRef.put(file);
+
+  const downloadURL = await fotoRef.getDownloadURL();
+  document.getElementById('preview').src = downloadURL;
+
+  await db.collection("clienten").doc(id).update({
+    fotoUrl: downloadURL
+  });
+});
 
     document.getElementById('verwijderClient').addEventListener('click', async () => {
       if (confirm("Weet je zeker dat je dit dossier wilt verwijderen?")) {
