@@ -290,23 +290,24 @@
     });
   });
   
-document.getElementById('geboorte').addEventListener('change', e => {
+// ✅ Veiligere event listeners – gebruiken ?. om fouten te voorkomen
+document.getElementById('geboorte')?.addEventListener('change', e => {
   db.collection("clienten").doc(id).update({ geboortedatum: e.target.value });
 });
 
-document.getElementById('lengte').addEventListener('change', e => {
+document.getElementById('lengte')?.addEventListener('change', e => {
   db.collection("clienten").doc(id).update({ lengte: e.target.value });
 });
 
-document.getElementById('gewicht').addEventListener('change', e => {
+document.getElementById('gewicht')?.addEventListener('change', e => {
   db.collection("clienten").doc(id).update({ gewicht: e.target.value });
 });
 
-document.getElementById('telefoon').addEventListener('change', e => {
+document.getElementById('telefoon')?.addEventListener('change', e => {
   db.collection("clienten").doc(id).update({ telefoon: e.target.value });
 });
 
-document.getElementById('opname').addEventListener('change', e => {
+document.getElementById('opname')?.addEventListener('change', e => {
   db.collection("clienten").doc(id).update({ eersteOpname: e.target.value });
 });
 
@@ -314,18 +315,25 @@ document.getElementById('reden')?.addEventListener('change', e => {
   db.collection("clienten").doc(id).update({ redenOpname: e.target.value });
 });
 
-  document.getElementById('verwijderClient').addEventListener('click', async () => {
-    if (confirm("Weet je zeker dat je dit dossier wilt verwijderen?")) {
+// ✅ Verwijderknop – blijft werken zelfs als andere velden ontbreken
+document.getElementById('verwijderClient')?.addEventListener('click', async () => {
+  if (confirm("Weet je zeker dat je dit dossier wilt verwijderen?")) {
+    try {
       await db.collection("clienten").doc(id).delete();
+
       const sub = ["chronisch", "psychisch", "afspraken"];
       for (const coll of sub) {
         const snap = await db.collection(`clienten/${id}/${coll}`).get();
         snap.forEach(doc => doc.ref.delete());
       }
+
       alert("Cliënt is verwijderd.");
       window.location.href = "index.html";
+    } catch (err) {
+      alert("Er ging iets mis bij het verwijderen: " + err.message);
     }
-  });
+  }
+});
 
   let chronisch = [];
   const chronischLijst = document.getElementById('chronischLijst');
