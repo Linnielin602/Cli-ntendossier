@@ -310,7 +310,7 @@ document.getElementById('opname').addEventListener('change', e => {
   db.collection("clienten").doc(id).update({ eersteOpname: e.target.value });
 });
 
-document.getElementById('redenOpname').addEventListener('change', e => {
+document.getElementById('reden')?.addEventListener('change', e => {
   db.collection("clienten").doc(id).update({ redenOpname: e.target.value });
 });
 
