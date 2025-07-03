@@ -306,7 +306,7 @@ document.getElementById('telefoon').addEventListener('change', e => {
   db.collection("clienten").doc(id).update({ telefoon: e.target.value });
 });
 
-document.getElementById('eersteOpname').addEventListener('change', e => {
+document.getElementById('opname').addEventListener('change', e => {
   db.collection("clienten").doc(id).update({ eersteOpname: e.target.value });
 });
 
