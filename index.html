@@ -10,8 +10,8 @@
     }
   </script>
   <!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyAATkvdTPoWR9vWiqpjogMn3v1UpiA-6ks",
@@ -22,11 +22,9 @@
       appId: "1:266738066133:web:a7942baff73d082c01385c",
       measurementId: "G-ZPSJV66W1W"
     };
-
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
   </script>
-
   <style>
     body {
       margin: 0;
@@ -36,7 +34,6 @@
       background: url("huisarts.png") no-repeat center center fixed;
       background-size: cover;
     }
-
     header {
       background-color: #0d47a1;
       color: white;
@@ -45,12 +42,10 @@
       align-items: center;
       box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     }
-
     header img {
       height: 45px;
       margin-right: 15px;
     }
-
     .container {
       display: flex;
       flex-wrap: wrap;
@@ -58,7 +53,6 @@
       gap: 2em;
       padding: 2em;
     }
-
     main {
       flex: 1 1 500px;
       background-color: rgba(255, 255, 255, 0.92);
@@ -67,7 +61,6 @@
       padding: 1.5em;
       box-shadow: 0 0 12px rgba(0,0,0,0.1);
     }
-
     aside {
       flex: 0 0 280px;
       background-color: rgba(255, 255, 255, 0.85);
@@ -76,14 +69,12 @@
       padding: 1.5em;
       box-shadow: 0 0 6px rgba(0,0,0,0.05);
     }
-
     label {
       display: block;
       margin: 1em 0 0.4em;
       font-weight: 600;
       color: #1a237e;
     }
-
     input[type="text"], input[type="date"], select {
       width: 100%;
       padding: 0.6em;
@@ -93,7 +84,6 @@
       background-color: #f5faff;
       color: #1a237e;
     }
-
     button {
       margin-top: 1.2em;
       padding: 0.7em 1.2em;
@@ -104,30 +94,24 @@
       border-radius: 6px;
       cursor: pointer;
     }
-
     button:hover {
       background-color: #fbc02d;
     }
-
     h2 {
       margin-top: 0.5em;
     }
-
     @media (max-width: 600px) {
       header {
         flex-direction: column;
         align-items: flex-start;
       }
-
       .container {
         flex-direction: column;
         gap: 1em;
       }
-
       main, aside {
         max-width: 100%;
       }
-
       button {
         width: 100%;
       }
@@ -184,7 +168,7 @@
       const nieuweClient = {
         naam: formData.get('naam'),
         telefoon: formData.get('telefoon'),
-        geboortedatum: formData.get('opnamedatum'),
+        opnamedatum: formData.get('opnamedatum'), // 🔧 juiste naam
         redenOpname: formData.get('redenOpname')
       };
 
@@ -197,9 +181,11 @@
       const snapshot = await db.collection("clienten").get();
       snapshot.forEach(doc => {
         const data = doc.data();
+        if (!data.naam) return;
         const option = document.createElement('option');
+        const extraInfo = data.opnamedatum ? ` (${data.opnamedatum})` : '';
         option.value = doc.id;
-        option.textContent = `${data.naam} (${data.geboortedatum})`;
+        option.textContent = `${data.naam}${extraInfo}`;
         dropdown.appendChild(option);
       });
     }
