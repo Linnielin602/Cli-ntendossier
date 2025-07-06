@@ -67,22 +67,21 @@
     <p id="fout"></p>
   </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
+  <!-- Firebase compatibele SDK’s -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyAATkvdTPoWR9vWiqpjogMn3v1UpiA-6ks",
       authDomain: "clientendossier-3c555.firebaseapp.com",
       projectId: "clientendossier-3c555",
       storageBucket: "clientendossier-3c555.appspot.com",
       messagingSenderId: "266738066133",
-      appId: "1:266738066133:web:a7942baff73d082c01385c",
-      measurementId: "G-ZPSJV66W1W"
+      appId: "1:266738066133:web:a7942baff73d082c01385c"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
 
     const foutmelding = document.getElementById("fout");
     const wachtwoordVeld = document.getElementById("wachtwoord");
@@ -99,21 +98,23 @@
       foutmelding.textContent = "";
       console.log("🔐 Loginpoging gestart...");
 
-      signInWithEmailAndPassword(auth, email, wachtwoord)
+      auth.signInWithEmailAndPassword(email, wachtwoord)
         .then(userCredential => {
           console.log("✅ Login geslaagd voor:", userCredential.user.email);
-          // wacht tot de sessie echt actief is
           setTimeout(() => {
             window.location.href = "index.html";
           }, 200);
         })
         .catch(error => {
           console.error("❌ Login mislukt:", error.code, error.message);
-          foutmelding.textContent = `❌ ${error.code === "auth/wrong-password" ? "Onjuist wachtwoord" : "Verbindingsfout of verkeerde inlog"}`;
+          foutmelding.textContent = `❌ ${
+            error.code === "auth/wrong-password"
+              ? "Onjuist wachtwoord"
+              : "Verbindingsfout of verkeerde inlog"
+          }`;
         });
     });
 
-    // Optioneel: focus direct op wachtwoordveld bij laden
     window.addEventListener("DOMContentLoaded", () => {
       wachtwoordVeld.focus();
     });
