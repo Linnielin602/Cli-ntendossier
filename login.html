@@ -5,7 +5,8 @@
   <title>Inloggen – AmbuRP</title>
   <style>
     body {
-      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+      background: url('stephansbaard.png') no-repeat center center fixed;
+      background-size: cover;
       font-family: Arial, sans-serif;
       display: flex;
       justify-content: center;
@@ -16,11 +17,11 @@
     }
 
     .login-container {
-      background-color: rgba(255, 255, 255, 0.1);
+      background-color: rgba(0, 0, 0, 0.5);
       padding: 2em;
       border-radius: 12px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.3);
-      backdrop-filter: blur(6px);
+      box-shadow: 0 0 20px rgba(0,0,0,0.4);
+      backdrop-filter: blur(4px);
       text-align: center;
     }
 
@@ -54,22 +55,36 @@
   <div class="login-container">
     <h2>🔐 Toegang tot AmbuRP</h2>
     <input type="password" id="wachtwoord" placeholder="Wachtwoord invoeren..." />
-    <button onclick="checkLogin()">Log in</button>
+    <button id="loginBtn">Log in</button>
     <p id="fout" style="color: #ff8a80; font-weight: bold;"></p>
   </div>
 
-  <script>
-    function checkLogin() {
-      const wachtwoord = document.getElementById('wachtwoord').value;
-      const toegestaneWachtwoord = 'StephansBaard'; // ← pas dit aan!
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-      if (wachtwoord === toegestaneWachtwoord) {
-        localStorage.setItem('ingelogd', 'true');
-window.location.href = 'index.html';
-      } else {
-        document.getElementById('fout').textContent = '❌ Onjuist wachtwoord';
-      }
-    }
+    const firebaseConfig = {
+      apiKey: "JOUW_API_KEY",
+      authDomain: "jouw-project-id.firebaseapp.com",
+      projectId: "jouw-project-id",
+      storageBucket: "jouw-project-id.appspot.com",
+      messagingSenderId: "JOUW_SENDER_ID",
+      appId: "JOUW_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    document.getElementById("loginBtn").addEventListener("click", () => {
+      const email = "huisarts@mrp.nl";
+      const wachtwoord = document.getElementById("wachtwoord").value;
+
+      signInWithEmailAndPassword(auth, email, wachtwoord)
+        .then(() => window.location.href = "index.html")
+        .catch(() => {
+          document.getElementById("fout").textContent = "❌ Onjuist wachtwoord";
+        });
+    });
   </script>
 </body>
 </html>
