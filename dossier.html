@@ -238,7 +238,7 @@
     </div>
   </main>
 
-  <!-- ✅ Compatibele Firebase SDK's -->
+  <!-- ✅ Firebase compat SDK's -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
@@ -257,13 +257,14 @@
   firebase.initializeApp(firebaseConfig);
 </script>
 
-<!-- ✅ Upload via Storage module binnen onAuthStateChanged -->
+<!-- ✅ Moderne Firebase Storage module voor upload -->
 <script type="module">
   import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
   const app = firebase.app();
   const db = firebase.firestore();
   const auth = firebase.auth();
+  const storage = getStorage(app, "gs://clientendossier-3c555.firebasestorage.app");
 
   auth.onAuthStateChanged(async user => {
     if (!user) {
@@ -275,7 +276,6 @@
     const id = new URLSearchParams(location.search).get("id");
     const naam = document.getElementById("naam");
     const preview = document.getElementById("preview");
-    const storage = getStorage(app, "gs://clientendossier-3c555.firebasestorage.app");
 
     const docSnap = await db.collection("clienten").doc(id).get();
     if (!docSnap.exists) {
@@ -284,8 +284,8 @@
     }
 
     const cli = docSnap.data();
+    naam.textContent = cli.naam || "Onbekende cliënt";
     if (cli.fotoUrl) preview.src = cli.fotoUrl;
-    naam.textContent = cli.naam || '';
     document.getElementById("geboorte").value = cli.geboortedatum || '';
     document.getElementById("opname").value = cli.opnamedatum || '';
     document.getElementById("telefoon").value = cli.telefoon || '';
@@ -303,7 +303,7 @@
       }
     });
 
-    // ✅ Uploadcode — opgelost en werkend zonder CORS of undefined errors
+    // ✅ Foto upload
     document.getElementById("fotoUpload")?.addEventListener("change", async e => {
       const file = e.target.files[0];
       if (!file) return;
@@ -313,7 +313,7 @@
         const downloadURL = await getDownloadURL(fotoRef);
         preview.src = downloadURL;
         await db.collection("clienten").doc(id).update({ fotoUrl: downloadURL });
-        console.log("✅ Foto geüpload!");
+        console.log("✅ Foto geüpload");
       } catch (err) {
         console.error("❌ Upload mislukt:", err);
         alert("Fout bij uploaden van foto.");
@@ -449,6 +449,7 @@
 </script>
 </body>
 </html>
+
 
 
 
