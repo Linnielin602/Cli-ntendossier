@@ -298,7 +298,7 @@
       const el = document.getElementById(veld);
       if (el) {
         el.addEventListener("change", e => {
-          const veldnaam = veld === "reden" ? "redenOpname" : veld;
+          const veldnaam = veld === "reden" ? "redenOpname" : (veld === "opname" ? "opnamedatum" : veld);
           db.collection("clienten").doc(id).update({ [veldnaam]: e.target.value });
         });
       }
