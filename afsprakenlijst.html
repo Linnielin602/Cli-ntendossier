@@ -76,7 +76,7 @@
     <div id="lijstContainer">Laden...</div>
   </main>
 
-  <!-- Firebase SDKs -->
+  <!-- ✅ Firebase SDKs (compat) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
@@ -93,62 +93,70 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+    const auth = firebase.auth();
     const lijstContainer = document.getElementById("lijstContainer");
 
-    db.collection("clienten").get().then(snapshot => {
-      lijstContainer.innerHTML = "";
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        const id = doc.id;
-
-        if (!data.naam || data.naam.toLowerCase() === "onbekend") return;
-
-        const div = document.createElement("div");
-        div.className = "client-kaart";
-
-        div.innerHTML = `
-          <h3>${data.naam}</h3>
-          <p>📞 ${data.telefoon || "Geen telefoonnummer"}</p>
-          <p>🏥 ${data.redenOpname || "Geen reden voor opname"}</p>
-
-          <label>🔧 Specialist nodig:</label>
-          <select id="spec-${id}">
-            <option>-- Kies specialist --</option>
-            <option>Ambulancier</option>
-            <option>Operatiespecialist</option>
-            <option>Psycholoog</option>
-            <option>Fysiotherapeut</option>
-            <option>Diëtist</option>
-            <option>Huisarts</option>
-            <option>Tandarts</option>
-            <option>Verloskundige</option>
-            <option>Oogarts</option>
-          </select>
-
-          <label>📌 Reden volgende afspraak:</label>
-          <input type="text" id="reden-${id}" placeholder="Bijv. gips verwijderen..." />
-        `;
-
-        lijstContainer.appendChild(div);
-
-        // Info ophalen & listeners toevoegen
-        const specSelect = div.querySelector(`#spec-${id}`);
-        const redenInput = div.querySelector(`#reden-${id}`);
-
-        // Ophalen bestaande info
-        db.collection("clienten").doc(id).collection("volgendeAfspraak").doc("info").get().then(afspraakDoc => {
-          if (afspraakDoc.exists) {
-            const afspraak = afspraakDoc.data();
-            specSelect.value = afspraak.specialist || "-- Kies specialist --";
-            redenInput.value = afspraak.reden || "";
-          }
-        });
-
-        // Automatisch opslaan bij wijziging
-        specSelect.addEventListener("change", () => opslaan(id));
-        redenInput.addEventListener("blur", () => opslaan(id));
-      });
+    auth.onAuthStateChanged(user => {
+      if (!user) {
+        window.location.href = "login.html";
+      } else {
+        console.log("✅ Ingelogd als:", user.email);
+        laadClienten();
+      }
     });
+
+    function laadClienten() {
+      db.collection("clienten").get().then(snapshot => {
+        lijstContainer.innerHTML = "";
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          const id = doc.id;
+
+          if (!data.naam || data.naam.toLowerCase() === "onbekend") return;
+
+          const div = document.createElement("div");
+          div.className = "client-kaart";
+          div.innerHTML = `
+            <h3>${data.naam}</h3>
+            <p>📞 ${data.telefoon || "Geen telefoonnummer"}</p>
+            <p>🏥 ${data.redenOpname || "Geen reden voor opname"}</p>
+
+            <label>🔧 Specialist nodig:</label>
+            <select id="spec-${id}">
+              <option>-- Kies specialist --</option>
+              <option>Ambulancier</option>
+              <option>Operatiespecialist</option>
+              <option>Psycholoog</option>
+              <option>Fysiotherapeut</option>
+              <option>Diëtist</option>
+              <option>Huisarts</option>
+              <option>Tandarts</option>
+              <option>Verloskundige</option>
+              <option>Oogarts</option>
+            </select>
+
+            <label>📌 Reden volgende afspraak:</label>
+            <input type="text" id="reden-${id}" placeholder="Bijv. gips verwijderen..." />
+          `;
+
+          lijstContainer.appendChild(div);
+
+          const specSelect = div.querySelector(`#spec-${id}`);
+          const redenInput = div.querySelector(`#reden-${id}`);
+
+          db.collection("clienten").doc(id).collection("volgendeAfspraak").doc("info").get().then(afspraakDoc => {
+            if (afspraakDoc.exists) {
+              const afspraak = afspraakDoc.data();
+              specSelect.value = afspraak.specialist || "-- Kies specialist --";
+              redenInput.value = afspraak.reden || "";
+            }
+          });
+
+          specSelect.addEventListener("change", () => opslaan(id));
+          redenInput.addEventListener("blur", () => opslaan(id));
+        });
+      });
+    }
 
     async function opslaan(id) {
       const specialist = document.getElementById(`spec-${id}`).value;
@@ -160,39 +168,12 @@
           reden,
           updated: new Date().toISOString()
         });
-        console.log(`✅ Automatisch opgeslagen voor: ${id}`);
+        console.log(`✅ Opgeslagen voor: ${id}`);
       } catch (err) {
         console.error("❌ Opslaan mislukt:", err);
-        alert("❌ Opslaan mislukt, bekijk console");
+        alert("❌ Opslaan mislukt – controleer console");
       }
     }
-  </script>
-
-  <!-- Auth check -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
-    const app = initializeApp({
-      apiKey: "AIzaSyAATkvdTPoWR9vWiqpjogMn3v1UpiA-6ks",
-      authDomain: "clientendossier-3c555.firebaseapp.com",
-      projectId: "clientendossier-3c555",
-      storageBucket: "clientendossier-3c555.appspot.com",
-      messagingSenderId: "266738066133",
-      appId: "1:266738066133:web:a7942baff73d082c01385c"
-    });
-
-    const auth = getAuth(app);
-    onAuthStateChanged(auth, (user) => {
-      setTimeout(() => {
-        if (!user) {
-          console.warn("🔐 Niet ingelogd – naar login.html");
-          window.location.href = "login.html";
-        } else {
-          console.log("✅ Ingelogd als:", user.email);
-        }
-      }, 100);
-    });
   </script>
 </body>
 </html>
