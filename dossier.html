@@ -238,10 +238,9 @@
     </div>
   </main>
 
-  <!-- ✅ Firebase compat SDK's -->
+  <!-- ✅ Compatibele Firebase SDK's -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 
 <!-- ✅ Firebase config -->
@@ -258,14 +257,13 @@
   firebase.initializeApp(firebaseConfig);
 </script>
 
-<!-- ✅ Nieuwe upload-functionaliteit + al je logica -->
+<!-- ✅ Upload via Storage module binnen onAuthStateChanged -->
 <script type="module">
   import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
   const app = firebase.app();
   const db = firebase.firestore();
   const auth = firebase.auth();
-  const storage = getStorage(app, "gs://clientendossier-3c555.firebasestorage.app");
 
   auth.onAuthStateChanged(async user => {
     if (!user) {
@@ -274,9 +272,10 @@
     }
 
     console.log("✅ Ingelogd als:", user.email);
-    const id = new URLSearchParams(location.search).get('id');
-    const naam = document.getElementById('naam');
-    const preview = document.getElementById('preview');
+    const id = new URLSearchParams(location.search).get("id");
+    const naam = document.getElementById("naam");
+    const preview = document.getElementById("preview");
+    const storage = getStorage(app, "gs://clientendossier-3c555.firebasestorage.app");
 
     const docSnap = await db.collection("clienten").doc(id).get();
     if (!docSnap.exists) {
@@ -287,25 +286,25 @@
     const cli = docSnap.data();
     if (cli.fotoUrl) preview.src = cli.fotoUrl;
     naam.textContent = cli.naam || '';
-    document.getElementById('geboorte').value = cli.geboortedatum || '';
-    document.getElementById('opname').value = cli.opnamedatum || '';
-    document.getElementById('telefoon').value = cli.telefoon || '';
-    document.getElementById('reden').value = cli.reden || cli.redenOpname || '';
-    document.getElementById('lengte').value = cli.lengte || '';
-    document.getElementById('gewicht').value = cli.gewicht || '';
+    document.getElementById("geboorte").value = cli.geboortedatum || '';
+    document.getElementById("opname").value = cli.opnamedatum || '';
+    document.getElementById("telefoon").value = cli.telefoon || '';
+    document.getElementById("reden").value = cli.reden || cli.redenOpname || '';
+    document.getElementById("lengte").value = cli.lengte || '';
+    document.getElementById("gewicht").value = cli.gewicht || '';
 
     ["gewicht", "geboorte", "lengte", "telefoon", "opname", "reden"].forEach(veld => {
       const el = document.getElementById(veld);
       if (el) {
-        el.addEventListener('change', e => {
+        el.addEventListener("change", e => {
           const veldnaam = veld === "reden" ? "redenOpname" : veld;
           db.collection("clienten").doc(id).update({ [veldnaam]: e.target.value });
         });
       }
     });
 
-    // ✅ FOTO UPLOAD via Storage Module
-    document.getElementById('fotoUpload')?.addEventListener('change', async e => {
+    // ✅ Uploadcode — opgelost en werkend zonder CORS of undefined errors
+    document.getElementById("fotoUpload")?.addEventListener("change", async e => {
       const file = e.target.files[0];
       if (!file) return;
       try {
@@ -314,19 +313,18 @@
         const downloadURL = await getDownloadURL(fotoRef);
         preview.src = downloadURL;
         await db.collection("clienten").doc(id).update({ fotoUrl: downloadURL });
-        console.log("✅ Foto geüpload");
+        console.log("✅ Foto geüpload!");
       } catch (err) {
         console.error("❌ Upload mislukt:", err);
         alert("Fout bij uploaden van foto.");
       }
     });
 
-    document.getElementById('verwijderClient')?.addEventListener('click', async () => {
+    document.getElementById("verwijderClient")?.addEventListener("click", async () => {
       if (confirm("Weet je zeker dat je dit dossier wilt verwijderen?")) {
         try {
           await db.collection("clienten").doc(id).delete();
-          const sub = ["chronisch", "psychisch", "afspraken"];
-          for (const coll of sub) {
+          for (const coll of ["chronisch", "psychisch", "afspraken"]) {
             const snap = await db.collection(`clienten/${id}/${coll}`).get();
             snap.forEach(doc => doc.ref.delete());
           }
@@ -338,15 +336,15 @@
       }
     });
     const chronisch = [];
-    const chronischLijst = document.getElementById('chronischLijst');
+    const chronischLijst = document.getElementById("chronischLijst");
     function updateChronischLijst() {
-      chronischLijst.innerHTML = '';
+      chronischLijst.innerHTML = "";
       chronisch.forEach((item, i) => {
-        const div = document.createElement('div');
-        div.className = 'aandoeningKaart';
+        const div = document.createElement("div");
+        div.className = "aandoeningKaart";
         div.innerHTML = `<span>${item}</span>`;
-        const btn = document.createElement('button');
-        btn.textContent = '❌';
+        const btn = document.createElement("button");
+        btn.textContent = "❌";
         btn.onclick = async () => {
           const snap = await db.collection(`clienten/${id}/chronisch`).where("naam", "==", item).get();
           snap.forEach(doc => doc.ref.delete());
@@ -361,9 +359,9 @@
       snapshot.forEach(doc => chronisch.push(doc.data().naam));
       updateChronischLijst();
     });
-    document.getElementById('addChronisch').onclick = () => {
-      const val = document.getElementById('chronischDropdown').value;
-      if (val && !chronisch.includes(val) && val !== '-- Selecteer aandoening --') {
+    document.getElementById("addChronisch").onclick = () => {
+      const val = document.getElementById("chronischDropdown").value;
+      if (val && !chronisch.includes(val) && val !== "-- Selecteer aandoening --") {
         db.collection(`clienten/${id}/chronisch`).add({ naam: val });
         chronisch.push(val);
         updateChronischLijst();
@@ -371,15 +369,15 @@
     };
 
     const psychisch = [];
-    const psychischLijst = document.getElementById('psychischLijst');
+    const psychischLijst = document.getElementById("psychischLijst");
     function updatePsychischLijst() {
-      psychischLijst.innerHTML = '';
+      psychischLijst.innerHTML = "";
       psychisch.forEach((item, i) => {
-        const div = document.createElement('div');
-        div.className = 'aandoeningKaart';
+        const div = document.createElement("div");
+        div.className = "aandoeningKaart";
         div.innerHTML = `<span>${item}</span>`;
-        const btn = document.createElement('button');
-        btn.textContent = '❌';
+        const btn = document.createElement("button");
+        btn.textContent = "❌";
         btn.onclick = async () => {
           const snap = await db.collection(`clienten/${id}/psychisch`).where("naam", "==", item).get();
           snap.forEach(doc => doc.ref.delete());
@@ -394,23 +392,23 @@
       snapshot.forEach(doc => psychisch.push(doc.data().naam));
       updatePsychischLijst();
     });
-    document.getElementById('addPsychisch').onclick = () => {
-      const val = document.getElementById('psychischDropdown').value;
-      if (val && !psychisch.includes(val) && val !== '-- Selecteer aandoening --') {
+    document.getElementById("addPsychisch").onclick = () => {
+      const val = document.getElementById("psychischDropdown").value;
+      if (val && !psychisch.includes(val) && val !== "-- Selecteer aandoening --") {
         db.collection(`clienten/${id}/psychisch`).add({ naam: val });
         psychisch.push(val);
         updatePsychischLijst();
       }
     };
 
-    const afsprakenLijst = document.getElementById('afsprakenLijst');
+    const afsprakenLijst = document.getElementById("afsprakenLijst");
     function toonAfspraken() {
-      afsprakenLijst.innerHTML = '';
+      afsprakenLijst.innerHTML = "";
       db.collection(`clienten/${id}/afspraken`).get().then(snapshot => {
         snapshot.forEach(doc => {
           const item = doc.data();
-          const div = document.createElement('div');
-          div.className = 'afspraakKaart';
+          const div = document.createElement("div");
+          div.className = "afspraakKaart";
           div.innerHTML = `
             <strong>${item.datum}</strong><br>
             <em>Behandelaar:</em> ${item.behandelaar}<br>
@@ -426,14 +424,14 @@
 
     toonAfspraken();
 
-    document.getElementById('opslaanAfspraak').onclick = () => {
+    document.getElementById("opslaanAfspraak").onclick = () => {
       const afspraak = {
-        datum: document.getElementById('afspraakDatum').value,
-        behandelaar: document.getElementById('afspraakBehandelaar').value,
-        reden: document.getElementById('afspraakReden').value,
-        indicatie: document.getElementById('afspraakIndicatie').value,
-        plan: document.getElementById('afspraakPlan').value,
-        notities: document.getElementById('afspraakNotities').value
+        datum: document.getElementById("afspraakDatum").value,
+        behandelaar: document.getElementById("afspraakBehandelaar").value,
+        reden: document.getElementById("afspraakReden").value,
+        indicatie: document.getElementById("afspraakIndicatie").value,
+        plan: document.getElementById("afspraakPlan").value,
+        notities: document.getElementById("afspraakNotities").value
       };
 
       if (!afspraak.datum || !afspraak.reden) {
@@ -443,14 +441,15 @@
 
       db.collection(`clienten/${id}/afspraken`).add(afspraak).then(() => {
         toonAfspraken();
-        ['afspraakDatum','afspraakBehandelaar','afspraakReden','afspraakIndicatie','afspraakPlan','afspraakNotities']
-          .forEach(vak => document.getElementById(vak).value = '');
+        ["afspraakDatum", "afspraakBehandelaar", "afspraakReden", "afspraakIndicatie", "afspraakPlan", "afspraakNotities"]
+          .forEach(vak => document.getElementById(vak).value = "");
       });
     };
   });
 </script>
 </body>
 </html>
+
 
 
 
