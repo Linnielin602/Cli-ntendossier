@@ -17,7 +17,7 @@
       background-color: rgba(255, 255, 255, 0.95);
       padding: 2em;
       border-radius: 12px;
-      max-width: 960px;
+      max-width: 1200px;
       margin: 2em auto;
       box-shadow: 0 0 12px rgba(0,0,0,0.15);
     }
@@ -27,12 +27,20 @@
       margin-bottom: 1.5em;
     }
 
+    #lijstContainer {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5em;
+      justify-content: space-between;
+    }
+
     .client-kaart {
+      flex: 1 1 45%;
+      max-width: 45%;
       border: 2px solid #fdd835;
       border-radius: 10px;
       padding: 1.2em;
       background-color: #fffde7;
-      margin-bottom: 1.5em;
     }
 
     .client-kaart h3 {
@@ -69,9 +77,10 @@
       background-color: #283593;
     }
 
-    @media (max-width: 600px) {
-      main {
-        padding: 1em;
+    @media (max-width: 800px) {
+      .client-kaart {
+        flex: 1 1 100%;
+        max-width: 100%;
       }
     }
   </style>
@@ -80,6 +89,8 @@
   <main>
     <h1>📋 Afsprakenlijst</h1>
     <div id="lijstContainer">Laden...</div>
+  </main>
+
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -97,7 +108,6 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-
     const lijstContainer = document.getElementById("lijstContainer");
 
     db.collection("clienten").get().then(snapshot => {
@@ -106,11 +116,14 @@
         const data = doc.data();
         const id = doc.id;
 
+        // ➖ Sla over als er geen naam is
+        if (!data.naam || data.naam.toLowerCase() === "onbekend") return;
+
         const div = document.createElement("div");
         div.className = "client-kaart";
 
         div.innerHTML = `
-          <h3>${data.naam || "🧑 Onbekende naam"}</h3>
+          <h3>${data.naam}</h3>
           <p>📞 ${data.telefoon || "Geen telefoonnummer"}</p>
           <p>🏥 ${data.redenOpname || "Geen reden voor opname"}</p>
 
@@ -136,7 +149,7 @@
 
         lijstContainer.appendChild(div);
 
-        // Laad bestaande specialistinfo indien aanwezig
+        // 🔄 Laad bestaande info
         db.collection("clienten").doc(id).collection("volgendeAfspraak").doc("info").get().then(afspraakDoc => {
           if (afspraakDoc.exists) {
             const afspraak = afspraakDoc.data();
@@ -147,17 +160,21 @@
       });
     });
 
-    function opslaan(id) {
+    async function opslaan(id) {
       const specialist = document.getElementById(`spec-${id}`).value;
       const reden = document.getElementById(`reden-${id}`).value.trim();
 
-      db.collection("clienten").doc(id).collection("volgendeAfspraak").doc("info").set({
-        specialist,
-        reden,
-        updated: new Date().toISOString()
-      }).then(() => {
-        alert("✅ Opgeslagen voor: " + id);
-      });
+      try {
+        await db.collection("clienten").doc(id).collection("volgendeAfspraak").doc("info").set({
+          specialist,
+          reden,
+          updated: new Date().toISOString()
+        });
+        alert(`✅ Opgeslagen voor: ${id}`);
+      } catch (err) {
+        console.error("❌ Fout bij opslaan:", err);
+        alert("❌ Opslaan mislukt, bekijk console");
+      }
     }
   </script>
 
@@ -189,4 +206,3 @@
   </script>
 </body>
 </html>
-
