@@ -467,9 +467,14 @@ document.getElementById('verwijderClient')?.addEventListener('click', async () =
   const auth = getAuth(app);
 
   onAuthStateChanged(auth, (user) => {
-    if (!user) {
-      window.location.href = "login.html";
-    }
+    setTimeout(() => {
+      if (!user) {
+        console.warn("🔐 Geen geldige sessie – terug naar login");
+        window.location.href = "login.html";
+      } else {
+        console.log("✅ Ingelogd als:", user.email);
+      }
+    }, 100); // wacht 100ms zodat Firebase sessie kan laden
   });
 </script>
 </body>
