@@ -309,9 +309,9 @@
       const file = e.target.files[0];
       if (!file) return;
       try {
-        const fotoRef = storageRef(storage, `client_fotos/${id}.jpg`);
-        await uploadBytes(fotoRef, file);
-        const downloadURL = await getDownloadURL(fotoRef);
+        const fotoRef = firebase.storage().ref(`client_fotos/${id}.jpg`);
+await fotoRef.put(file);
+const downloadURL = await fotoRef.getDownloadURL();
         preview.src = downloadURL;
         await db.collection("clienten").doc(id).update({ fotoUrl: downloadURL });
         console.log("✅ Foto geüpload");
