@@ -23,17 +23,16 @@
       margin: 2em auto;
     }
 
-    section {
-      margin-bottom: 2em;
-    }
-
     label {
       display: block;
       margin: 1em 0 0.3em;
       font-weight: 600;
     }
 
-    input[type="text"], input[type="date"], input[type="number"], select {
+    input[type="text"],
+    input[type="date"],
+    input[type="number"],
+    select {
       width: 100%;
       padding: 0.6em;
       font-size: 1em;
@@ -59,20 +58,11 @@
       background-color: #fbc02d;
     }
 
-    ul {
-      list-style-type: none;
-      padding-left: 0;
-    }
-
-    li {
-      margin-bottom: 0.4em;
-    }
-
     #preview {
       max-width: 180px;
-      display: block;
       margin-top: 1em;
       border-radius: 10px;
+      display: block;
     }
 
     #verwijderClient {
@@ -80,34 +70,7 @@
       color: white;
     }
 
-    .aandoeningenGrid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.8em;
-      margin-top: 1em;
-    }
-
-    .aandoeningKaart {
-      background-color: #e3f2fd;
-      border: 2px solid #90caf9;
-      padding: 0.8em 1em;
-      border-radius: 8px;
-      flex: 1 1 250px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .aandoeningKaart button {
-      margin-left: 1em;
-      background-color: transparent;
-      color: #d32f2f;
-      font-size: 1.2em;
-      border: none;
-      cursor: pointer;
-    }
-
+    .aandoeningenGrid,
     .afsprakenGrid {
       display: flex;
       flex-wrap: wrap;
@@ -115,137 +78,133 @@
       margin-top: 1em;
     }
 
+    .aandoeningKaart,
+    .afspraakKaart {
+      padding: 1em;
+      border-radius: 10px;
+      flex: 1 1 280px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .aandoeningKaart {
+      background-color: #e3f2fd;
+      border: 2px solid #90caf9;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .aandoeningKaart button {
+      background: transparent;
+      color: #d32f2f;
+      border: none;
+      font-size: 1.2em;
+      cursor: pointer;
+    }
+
     .afspraakKaart {
       background-color: #f1f8e9;
       border: 2px solid #c5e1a5;
-      padding: 1em;
-      border-radius: 10px;
-      flex: 1 1 300px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
 
     @media (max-width: 600px) {
-      main {
-        padding: 1em;
-      }
-
-      button {
-        width: 100%;
-      }
+      main { padding: 1em; }
+      button { width: 100%; }
     }
   </style>
 </head>
 <body>
-  <main>
-    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
-      <h1 style="margin: 0;">Dossier van: <span id="naam">...</span></h1>
-      <img id="preview" src="" alt="Foto cliënt" style="width: 180px; height: 180px; object-fit: cover;" />
-    </div>
+<main>
+  <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+    <h1 style="margin: 0;">Dossier van: <span id="naam">...</span></h1>
+    <img id="preview" src="" alt="Foto cliënt" style="width: 180px; height: 180px; object-fit: cover;" />
+  </div>
 
-    <div class="blok">
-      <section>
-        <h2>📇 Persoonsgegevens</h2>
+  <div class="blok">
+    <section>
+      <h2>📇 Persoonsgegevens</h2>
+      <label>Geboortedatum:</label>
+      <input type="date" id="geboorte" />
+      <label>Telefoonnummer:</label>
+      <input type="text" id="telefoon" />
+      <label>Datum eerste opname:</label>
+      <input type="date" id="opname" />
+      <label>Reden opname:</label>
+      <input type="text" id="reden" />
+      <label>Lengte (cm):</label>
+      <input type="number" id="lengte" />
+      <label>Gewicht (kg):</label>
+      <input type="number" id="gewicht" />
+      <label>📷 Foto:</label>
+      <input type="file" id="fotoUpload" accept="image/*" />
+      <button id="verwijderClient">🗑️ Verwijder dit dossier</button>
+    </section>
+    <section>
+      <h2>📋 Chronische aandoeningen</h2>
+      <select id="chronischDropdown">
+        <option>-- Selecteer aandoening --</option>
+        <option>Diabetes mellitus type 1</option>
+        <option>Diabetes mellitus type 2</option>
+        <option>Astma</option>
+        <option>COPD</option>
+        <option>Reuma</option>
+        <option>Hartfalen</option>
+        <option>Nierfalen</option>
+        <option>Hypertensie</option>
+        <option>Kanker (chronisch)</option>
+        <option>Ziekte van Crohn</option>
+        <option>Multiple sclerose</option>
+        <option>Epilepsie</option>
+        <option>Andere...</option>
+      </select>
+      <button id="addChronisch">➕ Toevoegen</button>
+      <div id="chronischLijst" class="aandoeningenGrid"></div>
+    </section>
 
-        <label>Geboortedatum:</label>
-        <input type="date" id="geboorte" />
+    <section>
+      <h2>🧠 Psychische aandoeningen</h2>
+      <select id="psychischDropdown">
+        <option>-- Selecteer aandoening --</option>
+        <option>Depressie</option>
+        <option>Angststoornis</option>
+        <option>Bipolaire stoornis</option>
+        <option>PTSS</option>
+        <option>ADHD</option>
+        <option>Autismespectrumstoornis</option>
+        <option>Schizofrenie</option>
+        <option>Eetstoornis</option>
+        <option>Verslaving</option>
+        <option>Andere...</option>
+      </select>
+      <button id="addPsychisch">➕ Toevoegen</button>
+      <div id="psychischLijst" class="aandoeningenGrid"></div>
+    </section>
 
-        <label>Telefoonnummer:</label>
-        <input type="text" id="telefoon" />
-        
-        <label>Datum eerste opname:</label>
-        <input type="date" id="opname" />
+    <section>
+      <h2>📆 Afspraken</h2>
+      <label>Datum:</label>
+      <input type="date" id="afspraakDatum" />
+      <label>Behandelaar:</label>
+      <input type="text" id="afspraakBehandelaar" />
+      <label>Reden:</label>
+      <input type="text" id="afspraakReden" />
+      <label>Indicatie:</label>
+      <input type="text" id="afspraakIndicatie" />
+      <label>Plan:</label>
+      <input type="text" id="afspraakPlan" />
+      <label>Notities:</label>
+      <input type="text" id="afspraakNotities" />
+      <button id="opslaanAfspraak">➕ Opslaan afspraak</button>
+      <div id="afsprakenLijst" class="afsprakenGrid"></div>
+    </section>
+  </div>
+</main>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getFirestore, doc, getDoc, updateDoc, deleteDoc, collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
-        <label>Reden opname:</label>
-        <input type="text" id="reden" />
-
-        <label>Lengte (cm):</label>
-        <input type="number" id="lengte" />
-
-        <label>Gewicht (kg):</label>
-        <input type="number" id="gewicht" />
-
-        <label>📷 Foto:</label>
-        <input type="file" id="fotoUpload" accept="image/*" />
-
-        <button id="verwijderClient">🗑️ Verwijder dit dossier</button>
-      </section>
-      </section>
-
-      <section>
-        <h2>📋 Chronische aandoeningen</h2>
-        <select id="chronischDropdown">
-          <option>-- Selecteer aandoening --</option>
-          <option>Diabetes mellitus type 1</option>
-          <option>Diabetes mellitus type 2</option>
-          <option>Astma</option>
-          <option>COPD</option>
-          <option>Reuma</option>
-          <option>Hartfalen</option>
-          <option>Nierfalen</option>
-          <option>Hypertensie</option>
-          <option>Kanker (chronisch)</option>
-          <option>Ziekte van Crohn</option>
-          <option>Multiple sclerose</option>
-          <option>Epilepsie</option>
-          <option>Andere...</option>
-        </select>
-        <button id="addChronisch">➕ Toevoegen</button>
-        <div id="chronischLijst" class="aandoeningenGrid"></div>
-      </section>
-
-      <section>
-        <h2>🧠 Psychische aandoeningen</h2>
-        <select id="psychischDropdown">
-          <option>-- Selecteer aandoening --</option>
-          <option>Depressie</option>
-          <option>Angststoornis</option>
-          <option>Bipolaire stoornis</option>
-          <option>PTSS</option>
-          <option>ADHD</option>
-          <option>Autismespectrumstoornis</option>
-          <option>Schizofrenie</option>
-          <option>Eetstoornis</option>
-          <option>Verslaving</option>
-          <option>Andere...</option>
-        </select>
-        <button id="addPsychisch">➕ Toevoegen</button>
-        <div id="psychischLijst" class="aandoeningenGrid"></div>
-      </section>
-
-      <section>
-        <h2>📆 Afspraken</h2>
-        <label>Datum:</label>
-        <input type="date" id="afspraakDatum" />
-
-        <label>Behandelaar:</label>
-        <input type="text" id="afspraakBehandelaar" />
-
-        <label>Reden:</label>
-        <input type="text" id="afspraakReden" />
-
-        <label>Indicatie:</label>
-        <input type="text" id="afspraakIndicatie" />
-
-        <label>Plan:</label>
-        <input type="text" id="afspraakPlan" />
-
-        <label>Notities:</label>
-        <input type="text" id="afspraakNotities" />
-
-        <button id="opslaanAfspraak">➕ Opslaan afspraak</button>
-        <div id="afsprakenLijst" class="afsprakenGrid"></div>
-      </section>
-    </div>
-  </main>
-
-  <!-- ✅ Firebase compat SDK's -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
-
-<!-- ✅ Firebase config -->
-<script>
   const firebaseConfig = {
     apiKey: "AIzaSyAATkvdTPoWR9vWiqpjogMn3v1UpiA-6ks",
     authDomain: "clientendossier-3c555.firebaseapp.com",
@@ -255,157 +214,147 @@
     appId: "1:266738066133:web:a7942baff73d082c01385c"
   };
 
-  firebase.initializeApp(firebaseConfig);
-</script>
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+  const storage = getStorage(app);
 
-<script type="module">
-  import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+  const id = new URLSearchParams(location.search).get("id");
+  if (!id) {
+    alert("Geen cliënt-ID meegegeven. Je wordt teruggestuurd.");
+    window.location.href = "index.html";
+  }
 
-  const app = firebase.app();
-  const db = firebase.firestore();
-  const auth = firebase.auth();
-  const storage = getStorage(app, "gs://clientendossier-3c555.firebasestorage.app");
-
-  auth.onAuthStateChanged(async user => {
+  onAuthStateChanged(auth, async user => {
     if (!user) {
       window.location.href = "login.html";
       return;
     }
 
-    console.log("✅ Ingelogd als:", user.email);
-
-    const id = new URLSearchParams(location.search).get("id");
     const naam = document.getElementById("naam");
     const preview = document.getElementById("preview");
+    const cliRef = doc(db, "clienten", id);
+    const cliSnap = await getDoc(cliRef);
 
-    const docSnap = await db.collection("clienten").doc(id).get();
-    if (!docSnap.exists) {
+    if (!cliSnap.exists()) {
       document.body.innerHTML = "<p>❌ Cliënt niet gevonden.</p>";
       return;
     }
 
-    const cli = docSnap.data();
-    naam.textContent = cli.naam || "Onbekende cliënt";
+    const cli = cliSnap.data();
+    naam.textContent = cli.naam || "Onbekend";
     if (cli.fotoUrl) preview.src = cli.fotoUrl;
     document.getElementById("geboorte").value = cli.geboortedatum || '';
     document.getElementById("opname").value = cli.opnamedatum || '';
     document.getElementById("telefoon").value = cli.telefoon || '';
-    document.getElementById("reden").value = cli.reden || cli.redenOpname || '';
+    document.getElementById("reden").value = cli.redenOpname || '';
     document.getElementById("lengte").value = cli.lengte || '';
     document.getElementById("gewicht").value = cli.gewicht || '';
 
     ["gewicht", "geboorte", "lengte", "telefoon", "opname", "reden"].forEach(veld => {
-      const el = document.getElementById(veld);
-      if (el) {
-        el.addEventListener("change", e => {
-          const veldnaam = veld === "reden" ? "redenOpname" : (veld === "opname" ? "opnamedatum" : veld);
-          db.collection("clienten").doc(id).update({ [veldnaam]: e.target.value });
-        });
-      }
+      document.getElementById(veld)?.addEventListener("change", e => {
+        const veldnaam = veld === "reden" ? "redenOpname" : (veld === "opname" ? "opnamedatum" : veld);
+        updateDoc(cliRef, { [veldnaam]: e.target.value });
+      });
     });
 
-    // ✅ Foto upload
     document.getElementById("fotoUpload")?.addEventListener("change", async e => {
       const file = e.target.files[0];
       if (!file) return;
       try {
-        const fotoRef = firebase.storage().ref(`client_fotos/${id}.jpg`);
-await fotoRef.put(file);
-const downloadURL = await fotoRef.getDownloadURL();
+        const fotoRef = storageRef(storage, `client_fotos/${id}.jpg`);
+        await uploadBytes(fotoRef, file);
+        const downloadURL = await getDownloadURL(fotoRef);
         preview.src = downloadURL;
-        await db.collection("clienten").doc(id).update({ fotoUrl: downloadURL });
-        console.log("✅ Foto geüpload");
+        await updateDoc(cliRef, { fotoUrl: downloadURL });
       } catch (err) {
         console.error("❌ Upload mislukt:", err);
-        alert("Fout bij uploaden van foto.");
+        alert("Foto uploaden is mislukt.");
       }
     });
 
     document.getElementById("verwijderClient")?.addEventListener("click", async () => {
       if (confirm("Weet je zeker dat je dit dossier wilt verwijderen?")) {
-        try {
-          await db.collection("clienten").doc(id).delete();
-          for (const coll of ["chronisch", "psychisch", "afspraken"]) {
-            const snap = await db.collection(`clienten/${id}/${coll}`).get();
-            snap.forEach(doc => doc.ref.delete());
-          }
-          alert("Cliënt is verwijderd.");
-          window.location.href = "index.html";
-        } catch (err) {
-          alert("Fout bij verwijderen: " + err.message);
+        await deleteDoc(cliRef);
+        for (const coll of ["chronisch", "psychisch", "afspraken"]) {
+          const subCol = collection(db, `clienten/${id}/${coll}`);
+          const snap = await getDocs(subCol);
+          snap.forEach(doc => deleteDoc(doc.ref));
         }
+        alert("Dossier verwijderd.");
+        window.location.href = "index.html";
       }
     });
+
+    // Aandoeningen
+    const chronischCol = collection(db, `clienten/${id}/chronisch`);
     const chronisch = [];
     const chronischLijst = document.getElementById("chronischLijst");
-    function updateChronischLijst() {
+    function toonChronisch() {
       chronischLijst.innerHTML = "";
       chronisch.forEach((item, i) => {
         const div = document.createElement("div");
         div.className = "aandoeningKaart";
-        div.innerHTML = `<span>${item}</span>`;
-        const btn = document.createElement("button");
-        btn.textContent = "❌";
-        btn.onclick = async () => {
-          const snap = await db.collection(`clienten/${id}/chronisch`).where("naam", "==", item).get();
-          snap.forEach(doc => doc.ref.delete());
+        div.innerHTML = `<span>${item}</span><button>❌</button>`;
+        div.querySelector("button").onclick = async () => {
+          const snap = await getDocs(query(chronischCol, where("naam", "==", item)));
+          snap.forEach(d => deleteDoc(d.ref));
           chronisch.splice(i, 1);
-          updateChronischLijst();
+          toonChronisch();
         };
-        div.appendChild(btn);
         chronischLijst.appendChild(div);
       });
     }
-    db.collection(`clienten/${id}/chronisch`).get().then(snapshot => {
-      snapshot.forEach(doc => chronisch.push(doc.data().naam));
-      updateChronischLijst();
+    getDocs(chronischCol).then(snap => {
+      snap.forEach(doc => chronisch.push(doc.data().naam));
+      toonChronisch();
     });
     document.getElementById("addChronisch").onclick = () => {
       const val = document.getElementById("chronischDropdown").value;
       if (val && !chronisch.includes(val) && val !== "-- Selecteer aandoening --") {
-        db.collection(`clienten/${id}/chronisch`).add({ naam: val });
+        addDoc(chronischCol, { naam: val });
         chronisch.push(val);
-        updateChronischLijst();
+        toonChronisch();
       }
     };
 
+    const psychischCol = collection(db, `clienten/${id}/psychisch`);
     const psychisch = [];
     const psychischLijst = document.getElementById("psychischLijst");
-    function updatePsychischLijst() {
+    function toonPsychisch() {
       psychischLijst.innerHTML = "";
       psychisch.forEach((item, i) => {
         const div = document.createElement("div");
         div.className = "aandoeningKaart";
-        div.innerHTML = `<span>${item}</span>`;
-        const btn = document.createElement("button");
-        btn.textContent = "❌";
-        btn.onclick = async () => {
-          const snap = await db.collection(`clienten/${id}/psychisch`).where("naam", "==", item).get();
-          snap.forEach(doc => doc.ref.delete());
+        div.innerHTML = `<span>${item}</span><button>❌</button>`;
+        div.querySelector("button").onclick = async () => {
+          const snap = await getDocs(query(psychischCol, where("naam", "==", item)));
+          snap.forEach(d => deleteDoc(d.ref));
           psychisch.splice(i, 1);
-          updatePsychischLijst();
+          toonPsychisch();
         };
-        div.appendChild(btn);
         psychischLijst.appendChild(div);
       });
     }
-    db.collection(`clienten/${id}/psychisch`).get().then(snapshot => {
-      snapshot.forEach(doc => psychisch.push(doc.data().naam));
-      updatePsychischLijst();
+    getDocs(psychischCol).then(snap => {
+      snap.forEach(doc => psychisch.push(doc.data().naam));
+      toonPsychisch();
     });
     document.getElementById("addPsychisch").onclick = () => {
       const val = document.getElementById("psychischDropdown").value;
       if (val && !psychisch.includes(val) && val !== "-- Selecteer aandoening --") {
-        db.collection(`clienten/${id}/psychisch`).add({ naam: val });
+        addDoc(psychischCol, { naam: val });
         psychisch.push(val);
-        updatePsychischLijst();
+        toonPsychisch();
       }
     };
 
+    // Afspraken
+    const afsprakenCol = collection(db, `clienten/${id}/afspraken`);
     const afsprakenLijst = document.getElementById("afsprakenLijst");
     function toonAfspraken() {
       afsprakenLijst.innerHTML = "";
-      db.collection(`clienten/${id}/afspraken`).get().then(snapshot => {
+      getDocs(afsprakenCol).then(snapshot => {
         snapshot.forEach(doc => {
           const item = doc.data();
           const div = document.createElement("div");
@@ -422,7 +371,6 @@ const downloadURL = await fotoRef.getDownloadURL();
         });
       });
     }
-
     toonAfspraken();
 
     document.getElementById("opslaanAfspraak").onclick = () => {
@@ -431,7 +379,7 @@ const downloadURL = await fotoRef.getDownloadURL();
         behandelaar: document.getElementById("afspraakBehandelaar").value,
         reden: document.getElementById("afspraakReden").value,
         indicatie: document.getElementById("afspraakIndicatie").value,
-        plan: document.getElementById("afspraakPlan").value,
+                plan: document.getElementById("afspraakPlan").value,
         notities: document.getElementById("afspraakNotities").value
       };
 
@@ -440,21 +388,16 @@ const downloadURL = await fotoRef.getDownloadURL();
         return;
       }
 
-      db.collection(`clienten/${id}/afspraken`).add(afspraak).then(() => {
+      addDoc(afsprakenCol, afspraak).then(() => {
         toonAfspraken();
         ["afspraakDatum", "afspraakBehandelaar", "afspraakReden", "afspraakIndicatie", "afspraakPlan", "afspraakNotities"]
-          .forEach(vak => document.getElementById(vak).value = "");
+          .forEach(id => document.getElementById(id).value = "");
+      }).catch(err => {
+        console.error("❌ Opslaan afspraak mislukt:", err);
+        alert("Fout bij opslaan afspraak.");
       });
     };
   });
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
