@@ -4,12 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>AmbuRP Cliëntendossier</title>
-  <script>
-    if (localStorage.getItem('ingelogd') !== 'true') {
-      window.location.href = 'login.html';
-    }
-  </script>
-  <!-- Firebase SDK -->
+  <!-- Firebase SDK compat voor Firestore -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script>
@@ -168,7 +163,7 @@
       const nieuweClient = {
         naam: formData.get('naam'),
         telefoon: formData.get('telefoon'),
-        opnamedatum: formData.get('opnamedatum'), // 🔧 juiste naam
+        opnamedatum: formData.get('opnamedatum'),
         redenOpname: formData.get('redenOpname')
       };
 
@@ -200,9 +195,33 @@
     updateDropdown();
 
     function uitloggen() {
-      localStorage.removeItem('ingelogd');
-      window.location.href = 'login.html';
+      import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js")
+        .then(module => {
+          const auth = module.getAuth();
+          module.signOut(auth).then(() => {
+            window.location.href = 'login.html';
+          });
+        });
     }
   </script>
-</body>
-</html>
+
+  <!-- ✅ Beveiliging via Firebase Auth -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAATkvdTPoWR9vWiqpjogMn3v1UpiA-6ks",
+      authDomain: "clientendossier-3c555.firebaseapp.com",
+      projectId: "clientendossier-3c555",
+      storageBucket: "clientendossier-3c555.appspot.com",
+      messagingSenderId: "266738066133",
+      appId: "1:266738066133:web:a7942baff73d082c01385c"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location
