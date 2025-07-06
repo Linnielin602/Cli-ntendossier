@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>AmbuRP Cliëntendossier</title>
-  <!-- Firebase SDK compat voor Firestore -->
+  <!-- Firebase compat SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script>
@@ -126,16 +126,12 @@
       <form id="new-client-form">
         <label>Naam:</label>
         <input type="text" name="naam" required />
-
         <label>Telefoonnummer:</label>
         <input type="text" name="telefoon" required />
-
         <label>Opnamedatum:</label>
-        <input type="date" name="opnamedatum" id="opnamedatum" required />
-
+        <input type="date" name="opnamedatum" required />
         <label>Reden opname:</label>
         <input type="text" name="redenOpname" required />
-
         <button type="submit">➕ Toevoegen aan dossier</button>
       </form>
 
@@ -151,7 +147,6 @@
       <p>Vul de gegevens in om een cliënt toe te voegen. Selecteer daarna uit de lijst om naar zijn/haar dossier te gaan.</p>
     </aside>
   </div>
-
   <script>
     const form = document.getElementById('new-client-form');
     const dropdown = document.getElementById('client-dropdown');
@@ -205,7 +200,7 @@
     }
   </script>
 
-  <!-- ✅ Beveiliging via Firebase Auth -->
+  <!-- ✅ Firebase Auth login-check -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -224,4 +219,9 @@
 
     onAuthStateChanged(auth, (user) => {
       if (!user) {
-        window.location
+        window.location.href = "login.html";
+      }
+    });
+  </script>
+</body>
+</html>
