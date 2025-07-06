@@ -239,25 +239,39 @@
   </main>
 
   <!-- ✅ Firebase compat SDK's -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyAATkvdTPoWR9vWiqpjogMn3v1UpiA-6ks",
-      authDomain: "clientendossier-3c555.firebaseapp.com",
-      projectId: "clientendossier-3c555",
-      storageBucket: "clientendossier-3c555.appspot.com",
-      messagingSenderId: "266738066133",
-      appId: "1:266738066133:web:a7942baff73d082c01385c"
-    };
+<!-- ✅ Firebase config en compat-initialisatie -->
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyAATkvdTPoWR9vWiqpjogMn3v1UpiA-6ks",
+    authDomain: "clientendossier-3c555.firebaseapp.com",
+    projectId: "clientendossier-3c555",
+    storageBucket: "clientendossier-3c555.appspot.com",
+    messagingSenderId: "266738066133",
+    appId: "1:266738066133:web:a7942baff73d082c01385c"
+  };
 
-    firebase.initializeApp(firebaseConfig);
+  firebase.initializeApp(firebaseConfig);
+</script>
+
+<!-- ✅ Moderne Firebase Storage module voor upload -->
+<script type="module">
+  import {
+    getStorage,
+    ref as storageRef,
+    uploadBytes,
+    getDownloadURL
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+
+  window.addEventListener("DOMContentLoaded", () => {
+    const app = firebase.app();
     const db = firebase.firestore();
     const auth = firebase.auth();
-    const storage = firebase.storage();
+    const storage = getStorage(app, "gs://clientendossier-3c555.firebasestorage.app");
 
     auth.onAuthStateChanged(async user => {
       if (!user) {
@@ -266,7 +280,6 @@
       }
 
       console.log("✅ Ingelogd als:", user.email);
-
       const id = new URLSearchParams(location.search).get('id');
       const naam = document.getElementById('naam');
       const preview = document.getElementById('preview');
@@ -287,33 +300,31 @@
       document.getElementById('lengte').value = cli.lengte || '';
       document.getElementById('gewicht').value = cli.gewicht || '';
 
-      document.getElementById('gewicht')?.addEventListener('change', e => {
-        db.collection("clienten").doc(id).update({ gewicht: e.target.value });
-      });
-      document.getElementById('geboorte')?.addEventListener('change', e => {
-        db.collection("clienten").doc(id).update({ geboortedatum: e.target.value });
-      });
-      document.getElementById('lengte')?.addEventListener('change', e => {
-        db.collection("clienten").doc(id).update({ lengte: e.target.value });
-      });
-      document.getElementById('telefoon')?.addEventListener('change', e => {
-        db.collection("clienten").doc(id).update({ telefoon: e.target.value });
-      });
-      document.getElementById('opname')?.addEventListener('change', e => {
-        db.collection("clienten").doc(id).update({ opnamedatum: e.target.value });
-      });
-      document.getElementById('reden')?.addEventListener('change', e => {
-        db.collection("clienten").doc(id).update({ redenOpname: e.target.value });
+      ["gewicht", "geboorte", "lengte", "telefoon", "opname", "reden"].forEach(veld => {
+        const el = document.getElementById(veld);
+        if (el) {
+          el.addEventListener('change', e => {
+            const veldnaam = veld === "reden" ? "redenOpname" : veld;
+            db.collection("clienten").doc(id).update({ [veldnaam]: e.target.value });
+          });
+        }
       });
 
+      // ✅ Nieuw: correcte foto-upload via moderne Storage SDK
       document.getElementById('fotoUpload')?.addEventListener('change', async e => {
         const file = e.target.files[0];
         if (!file) return;
-        const fotoRef = firebase.storage("gs://clientendossier-3c555.firebasestorage.app").ref(`client_fotos/${id}.jpg`);
-        await fotoRef.put(file);
-        const downloadURL = await fotoRef.getDownloadURL();
-        preview.src = downloadURL;
-        await db.collection("clienten").doc(id).update({ fotoUrl: downloadURL });
+        try {
+          const fotoRef = storageRef(storage, `client_fotos/${id}.jpg`);
+          await uploadBytes(fotoRef, file);
+          const downloadURL = await getDownloadURL(fotoRef);
+          preview.src = downloadURL;
+          await db.collection("clienten").doc(id).update({ fotoUrl: downloadURL });
+          console.log("✅ Foto geüpload");
+        } catch (err) {
+          console.error("❌ Upload mislukt:", err);
+          alert("Fout bij uploaden van foto.");
+        }
       });
 
       document.getElementById('verwijderClient')?.addEventListener('click', async () => {
@@ -333,7 +344,7 @@
         }
       });
 
-      let chronisch = [];
+      const chronisch = [];
       const chronischLijst = document.getElementById('chronischLijst');
       function updateChronischLijst() {
         chronischLijst.innerHTML = '';
@@ -366,7 +377,7 @@
         }
       };
 
-      let psychisch = [];
+      const psychisch = [];
       const psychischLijst = document.getElementById('psychischLijst');
       function updatePsychischLijst() {
         psychischLijst.innerHTML = '';
@@ -424,7 +435,7 @@
 
       document.getElementById('opslaanAfspraak').onclick = () => {
         const afspraak = {
-          datum: document.getElementById('afspraakDatum').value,
+                    datum: document.getElementById('afspraakDatum').value,
           behandelaar: document.getElementById('afspraakBehandelaar').value,
           reden: document.getElementById('afspraakReden').value,
           indicatie: document.getElementById('afspraakIndicatie').value,
@@ -432,7 +443,7 @@
           notities: document.getElementById('afspraakNotities').value
         };
 
-                if (!afspraak.datum || !afspraak.reden) {
+        if (!afspraak.datum || !afspraak.reden) {
           alert("Datum en reden zijn verplicht.");
           return;
         }
@@ -444,9 +455,11 @@
         });
       };
     });
-  </script>
+  });
+</script>
 </body>
 </html>
+
 
 
 
