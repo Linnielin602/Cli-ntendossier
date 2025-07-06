@@ -8,9 +8,9 @@
     body {
       margin: 0;
       font-family: 'Segoe UI', Tahoma, sans-serif;
+      color: #1a237e;
       background: url("teamhuisarts.png") no-repeat center center fixed;
       background-size: cover;
-      color: #1a237e;
     }
 
     main {
@@ -62,21 +62,6 @@
       margin-bottom: 0.5em;
     }
 
-    button {
-      padding: 0.6em 1.2em;
-      font-weight: bold;
-      border: none;
-      border-radius: 6px;
-      background-color: #1a237e;
-      color: white;
-      cursor: pointer;
-      margin-top: 0.5em;
-    }
-
-    button:hover {
-      background-color: #283593;
-    }
-
     @media (max-width: 800px) {
       .client-kaart {
         flex: 1 1 100%;
@@ -116,7 +101,6 @@
         const data = doc.data();
         const id = doc.id;
 
-        // ➖ Sla over als er geen naam is
         if (!data.naam || data.naam.toLowerCase() === "onbekend") return;
 
         const div = document.createElement("div");
@@ -143,20 +127,26 @@
 
           <label>📌 Reden volgende afspraak:</label>
           <input type="text" id="reden-${id}" placeholder="Bijv. gips verwijderen..." />
-
-          <button onclick="opslaan('${id}')">💾 Opslaan</button>
         `;
 
         lijstContainer.appendChild(div);
 
-        // 🔄 Laad bestaande info
+        // Info ophalen & listeners toevoegen
+        const specSelect = div.querySelector(`#spec-${id}`);
+        const redenInput = div.querySelector(`#reden-${id}`);
+
+        // Ophalen bestaande info
         db.collection("clienten").doc(id).collection("volgendeAfspraak").doc("info").get().then(afspraakDoc => {
           if (afspraakDoc.exists) {
             const afspraak = afspraakDoc.data();
-            document.getElementById(`spec-${id}`).value = afspraak.specialist || "-- Kies specialist --";
-            document.getElementById(`reden-${id}`).value = afspraak.reden || "";
+            specSelect.value = afspraak.specialist || "-- Kies specialist --";
+            redenInput.value = afspraak.reden || "";
           }
         });
+
+        // Automatisch opslaan bij wijziging
+        specSelect.addEventListener("change", () => opslaan(id));
+        redenInput.addEventListener("blur", () => opslaan(id));
       });
     });
 
@@ -170,9 +160,9 @@
           reden,
           updated: new Date().toISOString()
         });
-        alert(`✅ Opgeslagen voor: ${id}`);
+        console.log(`✅ Automatisch opgeslagen voor: ${id}`);
       } catch (err) {
-        console.error("❌ Fout bij opslaan:", err);
+        console.error("❌ Opslaan mislukt:", err);
         alert("❌ Opslaan mislukt, bekijk console");
       }
     }
