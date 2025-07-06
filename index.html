@@ -4,9 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>AmbuRP Cliëntendossier</title>
-  <!-- Firebase compat SDKs -->
+
+  <!-- ✅ Firebase compat SDK’s -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyAATkvdTPoWR9vWiqpjogMn3v1UpiA-6ks",
@@ -14,12 +17,24 @@
       projectId: "clientendossier-3c555",
       storageBucket: "clientendossier-3c555.appspot.com",
       messagingSenderId: "266738066133",
-      appId: "1:266738066133:web:a7942baff73d082c01385c",
-      measurementId: "G-ZPSJV66W1W"
+      appId: "1:266738066133:web:a7942baff73d082c01385c"
     };
+
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+    const auth = firebase.auth();
+
+    auth.onAuthStateChanged(user => {
+      if (!user) {
+        console.warn("⚠️ Geen sessie – naar login.html");
+        window.location.href = "login.html";
+      } else {
+        console.log("✅ Ingelogd als:", user.email);
+        updateDropdown(); // Alleen na succesvolle login
+      }
+    });
   </script>
+
   <style>
     body {
       margin: 0;
@@ -140,15 +155,14 @@
       <select id="client-dropdown">
         <option>Kies een cliënt...</option>
       </select>
-      
-      <!-- 🔽 Toevoegen aan index.html — PLAK dit vlak boven </main> -->
-<section style="margin-top: 2em; padding: 1.2em; border: 2px dashed #1a237e; border-radius: 10px; background: rgba(255,255,255,0.9); text-align: center;">
-  <h2>📞 Klaar om cliënten te bellen?</h2>
-  <p>Bekijk de <strong>afsprakenlijst</strong> voor contactgegevens, gewenste specialist en opvolgacties.</p>
-  <a href="afsprakenlijst.html" style="display: inline-block; margin-top: 1em; padding: 0.7em 1.5em; background-color: #1a237e; color: white; border-radius: 8px; text-decoration: none; font-weight: bold;">
-    ➡️ Ga naar Afsprakenlijst
-  </a>
-</section>
+
+      <section style="margin-top: 2em; padding: 1.2em; border: 2px dashed #1a237e; border-radius: 10px; background: rgba(255,255,255,0.9); text-align: center;">
+        <h2>📞 Klaar om cliënten te bellen?</h2>
+        <p>Bekijk de <strong>afsprakenlijst</strong> voor contactgegevens, gewenste specialist en opvolgacties.</p>
+        <a href="afsprakenlijst.html" style="display: inline-block; margin-top: 1em; padding: 0.7em 1.5em; background-color: #1a237e; color: white; border-radius: 8px; text-decoration: none; font-weight: bold;">
+          ➡️ Ga naar Afsprakenlijst
+        </a>
+      </section>
     </main>
 
     <aside>
@@ -156,6 +170,7 @@
       <p>Vul de gegevens in om een cliënt toe te voegen. Selecteer daarna uit de lijst om naar zijn/haar dossier te gaan.</p>
     </aside>
   </div>
+
   <script>
     const form = document.getElementById('new-client-form');
     const dropdown = document.getElementById('client-dropdown');
@@ -163,7 +178,6 @@
     form.addEventListener('submit', async e => {
       e.preventDefault();
       const formData = new FormData(form);
-
       const nieuweClient = {
         naam: formData.get('naam'),
         telefoon: formData.get('telefoon'),
@@ -171,22 +185,31 @@
         redenOpname: formData.get('redenOpname')
       };
 
-      const docRef = await db.collection("clienten").add(nieuweClient);
-      window.location.href = `dossier.html?id=${docRef.id}`;
+      try {
+        const docRef = await db.collection("clienten").add(nieuweClient);
+        window.location.href = `dossier.html?id=${docRef.id}`;
+      } catch (err) {
+        console.error("❌ Fout bij opslaan:", err);
+        alert("Opslaan mislukt – zie console voor details");
+      }
     });
 
     async function updateDropdown() {
       dropdown.innerHTML = '<option>Kies een cliënt...</option>';
-      const snapshot = await db.collection("clienten").get();
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        if (!data.naam) return;
-        const option = document.createElement('option');
-        const extraInfo = data.opnamedatum ? ` (${data.opnamedatum})` : '';
-        option.value = doc.id;
-        option.textContent = `${data.naam}${extraInfo}`;
-        dropdown.appendChild(option);
-      });
+      try {
+        const snapshot = await db.collection("clienten").get();
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          if (!data.naam) return;
+          const option = document.createElement('option');
+          const extra = data.opnamedatum ? ` (${data.opnamedatum})` : '';
+          option.value = doc.id;
+          option.textContent = `${data.naam}${extra}`;
+          dropdown.appendChild(option);
+        });
+      } catch (err) {
+        console.error("❌ Fout bij ophalen cliënten:", err);
+      }
     }
 
     dropdown.addEventListener('change', () => {
@@ -196,47 +219,13 @@
       }
     });
 
-    updateDropdown();
-
     function uitloggen() {
-      import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js")
-        .then(module => {
-          const auth = module.getAuth();
-          module.signOut(auth).then(() => {
-            window.location.href = 'login.html';
-          });
-        });
+      auth.signOut().then(() => {
+        window.location.href = 'login.html';
+      }).catch(err => {
+        console.error("❌ Uitloggen mislukt:", err);
+      });
     }
-  </script>
-
-  <!-- ✅ Firebase Auth login-check -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyAATkvdTPoWR9vWiqpjogMn3v1UpiA-6ks",
-      authDomain: "clientendossier-3c555.firebaseapp.com",
-      projectId: "clientendossier-3c555",
-      storageBucket: "clientendossier-3c555.appspot.com",
-      messagingSenderId: "266738066133",
-      appId: "1:266738066133:web:a7942baff73d082c01385c"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-
-    onAuthStateChanged(auth, (user) => {
-      // Voeg kleine vertraging toe om auth goed te laden
-      setTimeout(() => {
-        if (!user) {
-          console.warn("⚠️ Geen actieve sessie: terug naar login");
-          window.location.href = "login.html";
-        } else {
-          console.log("✅ Gebruiker ingelogd:", user.email);
-        }
-      }, 100);
-    });
   </script>
 </body>
 </html>
