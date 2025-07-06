@@ -69,7 +69,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAATkvdTPoWR9vWiqpjogMn3v1UpiA-6ks",
@@ -85,9 +85,10 @@
     const auth = getAuth(app);
 
     const foutmelding = document.getElementById("fout");
+    const wachtwoordVeld = document.getElementById("wachtwoord");
 
     document.getElementById("loginBtn").addEventListener("click", () => {
-      const wachtwoord = document.getElementById("wachtwoord").value.trim();
+      const wachtwoord = wachtwoordVeld.value.trim();
       const email = "huisarts@mrp.nl";
 
       if (!wachtwoord) {
@@ -100,16 +101,21 @@
 
       signInWithEmailAndPassword(auth, email, wachtwoord)
         .then(userCredential => {
-          console.log("✅ Ingelogd als:", userCredential.user.email);
-          // Redirect met fallback via setTimeout
+          console.log("✅ Login geslaagd voor:", userCredential.user.email);
+          // wacht tot de sessie echt actief is
           setTimeout(() => {
             window.location.href = "index.html";
-          }, 150);
+          }, 200);
         })
         .catch(error => {
           console.error("❌ Login mislukt:", error.code, error.message);
-          foutmelding.textContent = "❌ Onjuist wachtwoord of verbindingsfout";
+          foutmelding.textContent = `❌ ${error.code === "auth/wrong-password" ? "Onjuist wachtwoord" : "Verbindingsfout of verkeerde inlog"}`;
         });
+    });
+
+    // Optioneel: focus direct op wachtwoordveld bij laden
+    window.addEventListener("DOMContentLoaded", () => {
+      wachtwoordVeld.focus();
     });
   </script>
 </body>
