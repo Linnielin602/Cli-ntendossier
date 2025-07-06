@@ -309,7 +309,7 @@
       document.getElementById('fotoUpload')?.addEventListener('change', async e => {
         const file = e.target.files[0];
         if (!file) return;
-        const fotoRef = firebase.storage().ref(`client_fotos/${id}.jpg`);
+        const fotoRef = firebase.storage("gs://clientendossier-3c555.firebasestorage.app").ref(`client_fotos/${id}.jpg`);
         await fotoRef.put(file);
         const downloadURL = await fotoRef.getDownloadURL();
         preview.src = downloadURL;
