@@ -23,6 +23,7 @@
       box-shadow: 0 0 20px rgba(0,0,0,0.4);
       backdrop-filter: blur(4px);
       text-align: center;
+      width: 300px;
     }
 
     input {
@@ -44,19 +45,26 @@
       font-weight: bold;
       color: #1a237e;
       cursor: pointer;
+      width: 100%;
     }
 
     button:hover {
       background-color: #fbc02d;
+    }
+
+    p#fout {
+      margin-top: 1em;
+      color: #ff8a80;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
   <div class="login-container">
     <h2>🔐 Toegang tot AmbuRP</h2>
-    <input type="password" id="wachtwoord" placeholder="Wachtwoord invoeren..." />
+    <input type="password" id="wachtwoord" placeholder="Wachtwoord invoeren..." autocomplete="current-password" />
     <button id="loginBtn">Log in</button>
-    <p id="fout" style="color: #ff8a80; font-weight: bold;"></p>
+    <p id="fout"></p>
   </div>
 
   <script type="module">
@@ -80,10 +88,15 @@
       const email = "huisarts@mrp.nl";
       const wachtwoord = document.getElementById("wachtwoord").value;
 
+      console.log("🔐 Loginpoging gestart...");
       signInWithEmailAndPassword(auth, email, wachtwoord)
-        .then(() => window.location.href = "index.html")
-        .catch(() => {
-          document.getElementById("fout").textContent = "❌ Onjuist wachtwoord";
+        .then(userCredential => {
+          console.log("✅ Ingelogd als:", userCredential.user.email);
+          window.location.href = "index.html";
+        })
+        .catch(error => {
+          console.error("❌ Login mislukt:", error.code, error.message);
+          document.getElementById("fout").textContent = "❌ Onjuist wachtwoord of verbinding";
         });
     });
   </script>
