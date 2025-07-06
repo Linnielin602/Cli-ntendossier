@@ -218,9 +218,15 @@
     const auth = getAuth(app);
 
     onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        window.location.href = "login.html";
-      }
+      // Voeg kleine vertraging toe om auth goed te laden
+      setTimeout(() => {
+        if (!user) {
+          console.warn("⚠️ Geen actieve sessie: terug naar login");
+          window.location.href = "login.html";
+        } else {
+          console.log("✅ Gebruiker ingelogd:", user.email);
+        }
+      }, 100);
     });
   </script>
 </body>
