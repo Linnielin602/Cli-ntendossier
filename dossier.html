@@ -244,7 +244,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 
-<!-- ✅ Firebase config en compat-initialisatie -->
+<!-- ✅ Firebase config -->
 <script>
   const firebaseConfig = {
     apiKey: "AIzaSyAATkvdTPoWR9vWiqpjogMn3v1UpiA-6ks",
@@ -258,207 +258,200 @@
   firebase.initializeApp(firebaseConfig);
 </script>
 
-<!-- ✅ Moderne Firebase Storage module voor upload -->
+<!-- ✅ Nieuwe upload-functionaliteit + al je logica -->
 <script type="module">
-  import {
-    getStorage,
-    ref as storageRef,
-    uploadBytes,
-    getDownloadURL
-  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+  import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
-  window.addEventListener("DOMContentLoaded", () => {
-    const app = firebase.app();
-    const db = firebase.firestore();
-    const auth = firebase.auth();
-    const storage = getStorage(app, "gs://clientendossier-3c555.firebasestorage.app");
+  const app = firebase.app();
+  const db = firebase.firestore();
+  const auth = firebase.auth();
+  const storage = getStorage(app, "gs://clientendossier-3c555.firebasestorage.app");
 
-    auth.onAuthStateChanged(async user => {
-      if (!user) {
-        window.location.href = "login.html";
-        return;
-      }
+  auth.onAuthStateChanged(async user => {
+    if (!user) {
+      window.location.href = "login.html";
+      return;
+    }
 
-      console.log("✅ Ingelogd als:", user.email);
-      const id = new URLSearchParams(location.search).get('id');
-      const naam = document.getElementById('naam');
-      const preview = document.getElementById('preview');
+    console.log("✅ Ingelogd als:", user.email);
+    const id = new URLSearchParams(location.search).get('id');
+    const naam = document.getElementById('naam');
+    const preview = document.getElementById('preview');
 
-      const docSnap = await db.collection("clienten").doc(id).get();
-      if (!docSnap.exists) {
-        document.body.innerHTML = "<p>❌ Cliënt niet gevonden.</p>";
-        return;
-      }
+    const docSnap = await db.collection("clienten").doc(id).get();
+    if (!docSnap.exists) {
+      document.body.innerHTML = "<p>❌ Cliënt niet gevonden.</p>";
+      return;
+    }
 
-      const cli = docSnap.data();
-      if (cli.fotoUrl) preview.src = cli.fotoUrl;
-      naam.textContent = cli.naam || '';
-      document.getElementById('geboorte').value = cli.geboortedatum || '';
-      document.getElementById('opname').value = cli.opnamedatum || '';
-      document.getElementById('telefoon').value = cli.telefoon || '';
-      document.getElementById('reden').value = cli.reden || cli.redenOpname || '';
-      document.getElementById('lengte').value = cli.lengte || '';
-      document.getElementById('gewicht').value = cli.gewicht || '';
+    const cli = docSnap.data();
+    if (cli.fotoUrl) preview.src = cli.fotoUrl;
+    naam.textContent = cli.naam || '';
+    document.getElementById('geboorte').value = cli.geboortedatum || '';
+    document.getElementById('opname').value = cli.opnamedatum || '';
+    document.getElementById('telefoon').value = cli.telefoon || '';
+    document.getElementById('reden').value = cli.reden || cli.redenOpname || '';
+    document.getElementById('lengte').value = cli.lengte || '';
+    document.getElementById('gewicht').value = cli.gewicht || '';
 
-      ["gewicht", "geboorte", "lengte", "telefoon", "opname", "reden"].forEach(veld => {
-        const el = document.getElementById(veld);
-        if (el) {
-          el.addEventListener('change', e => {
-            const veldnaam = veld === "reden" ? "redenOpname" : veld;
-            db.collection("clienten").doc(id).update({ [veldnaam]: e.target.value });
-          });
-        }
-      });
-
-      // ✅ Nieuw: correcte foto-upload via moderne Storage SDK
-      document.getElementById('fotoUpload')?.addEventListener('change', async e => {
-        const file = e.target.files[0];
-        if (!file) return;
-        try {
-          const fotoRef = storageRef(storage, `client_fotos/${id}.jpg`);
-          await uploadBytes(fotoRef, file);
-          const downloadURL = await getDownloadURL(fotoRef);
-          preview.src = downloadURL;
-          await db.collection("clienten").doc(id).update({ fotoUrl: downloadURL });
-          console.log("✅ Foto geüpload");
-        } catch (err) {
-          console.error("❌ Upload mislukt:", err);
-          alert("Fout bij uploaden van foto.");
-        }
-      });
-
-      document.getElementById('verwijderClient')?.addEventListener('click', async () => {
-        if (confirm("Weet je zeker dat je dit dossier wilt verwijderen?")) {
-          try {
-            await db.collection("clienten").doc(id).delete();
-            const sub = ["chronisch", "psychisch", "afspraken"];
-            for (const coll of sub) {
-              const snap = await db.collection(`clienten/${id}/${coll}`).get();
-              snap.forEach(doc => doc.ref.delete());
-            }
-            alert("Cliënt is verwijderd.");
-            window.location.href = "index.html";
-          } catch (err) {
-            alert("Fout bij verwijderen: " + err.message);
-          }
-        }
-      });
-
-      const chronisch = [];
-      const chronischLijst = document.getElementById('chronischLijst');
-      function updateChronischLijst() {
-        chronischLijst.innerHTML = '';
-        chronisch.forEach((item, i) => {
-          const div = document.createElement('div');
-          div.className = 'aandoeningKaart';
-          div.innerHTML = `<span>${item}</span>`;
-          const btn = document.createElement('button');
-          btn.textContent = '❌';
-          btn.onclick = async () => {
-            const snap = await db.collection(`clienten/${id}/chronisch`).where("naam", "==", item).get();
-            snap.forEach(doc => doc.ref.delete());
-            chronisch.splice(i, 1);
-            updateChronischLijst();
-          };
-          div.appendChild(btn);
-          chronischLijst.appendChild(div);
+    ["gewicht", "geboorte", "lengte", "telefoon", "opname", "reden"].forEach(veld => {
+      const el = document.getElementById(veld);
+      if (el) {
+        el.addEventListener('change', e => {
+          const veldnaam = veld === "reden" ? "redenOpname" : veld;
+          db.collection("clienten").doc(id).update({ [veldnaam]: e.target.value });
         });
       }
-      db.collection(`clienten/${id}/chronisch`).get().then(snapshot => {
-        snapshot.forEach(doc => chronisch.push(doc.data().naam));
-        updateChronischLijst();
-      });
-      document.getElementById('addChronisch').onclick = () => {
-        const val = document.getElementById('chronischDropdown').value;
-        if (val && !chronisch.includes(val) && val !== '-- Selecteer aandoening --') {
-          db.collection(`clienten/${id}/chronisch`).add({ naam: val });
-          chronisch.push(val);
-          updateChronischLijst();
-        }
-      };
-
-      const psychisch = [];
-      const psychischLijst = document.getElementById('psychischLijst');
-      function updatePsychischLijst() {
-        psychischLijst.innerHTML = '';
-        psychisch.forEach((item, i) => {
-          const div = document.createElement('div');
-          div.className = 'aandoeningKaart';
-          div.innerHTML = `<span>${item}</span>`;
-          const btn = document.createElement('button');
-          btn.textContent = '❌';
-          btn.onclick = async () => {
-            const snap = await db.collection(`clienten/${id}/psychisch`).where("naam", "==", item).get();
-            snap.forEach(doc => doc.ref.delete());
-            psychisch.splice(i, 1);
-            updatePsychischLijst();
-          };
-          div.appendChild(btn);
-          psychischLijst.appendChild(div);
-        });
-      }
-      db.collection(`clienten/${id}/psychisch`).get().then(snapshot => {
-        snapshot.forEach(doc => psychisch.push(doc.data().naam));
-        updatePsychischLijst();
-      });
-      document.getElementById('addPsychisch').onclick = () => {
-        const val = document.getElementById('psychischDropdown').value;
-        if (val && !psychisch.includes(val) && val !== '-- Selecteer aandoening --') {
-          db.collection(`clienten/${id}/psychisch`).add({ naam: val });
-          psychisch.push(val);
-          updatePsychischLijst();
-        }
-      };
-
-      const afsprakenLijst = document.getElementById('afsprakenLijst');
-      function toonAfspraken() {
-        afsprakenLijst.innerHTML = '';
-        db.collection(`clienten/${id}/afspraken`).get().then(snapshot => {
-          snapshot.forEach(doc => {
-            const item = doc.data();
-            const div = document.createElement('div');
-            div.className = 'afspraakKaart';
-            div.innerHTML = `
-              <strong>${item.datum}</strong><br>
-              <em>Behandelaar:</em> ${item.behandelaar}<br>
-              <em>Reden:</em> ${item.reden}<br>
-              <em>Indicatie:</em> ${item.indicatie}<br>
-              <em>Plan:</em> ${item.plan}<br>
-              <em>Notities:</em> ${item.notities}
-            `;
-            afsprakenLijst.appendChild(div);
-          });
-        });
-      }
-
-      toonAfspraken();
-
-      document.getElementById('opslaanAfspraak').onclick = () => {
-        const afspraak = {
-                    datum: document.getElementById('afspraakDatum').value,
-          behandelaar: document.getElementById('afspraakBehandelaar').value,
-          reden: document.getElementById('afspraakReden').value,
-          indicatie: document.getElementById('afspraakIndicatie').value,
-          plan: document.getElementById('afspraakPlan').value,
-          notities: document.getElementById('afspraakNotities').value
-        };
-
-        if (!afspraak.datum || !afspraak.reden) {
-          alert("Datum en reden zijn verplicht.");
-          return;
-        }
-
-        db.collection(`clienten/${id}/afspraken`).add(afspraak).then(() => {
-          toonAfspraken();
-          ['afspraakDatum','afspraakBehandelaar','afspraakReden','afspraakIndicatie','afspraakPlan','afspraakNotities']
-            .forEach(vak => document.getElementById(vak).value = '');
-        });
-      };
     });
+
+    // ✅ FOTO UPLOAD via Storage Module
+    document.getElementById('fotoUpload')?.addEventListener('change', async e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      try {
+        const fotoRef = storageRef(storage, `client_fotos/${id}.jpg`);
+        await uploadBytes(fotoRef, file);
+        const downloadURL = await getDownloadURL(fotoRef);
+        preview.src = downloadURL;
+        await db.collection("clienten").doc(id).update({ fotoUrl: downloadURL });
+        console.log("✅ Foto geüpload");
+      } catch (err) {
+        console.error("❌ Upload mislukt:", err);
+        alert("Fout bij uploaden van foto.");
+      }
+    });
+
+    document.getElementById('verwijderClient')?.addEventListener('click', async () => {
+      if (confirm("Weet je zeker dat je dit dossier wilt verwijderen?")) {
+        try {
+          await db.collection("clienten").doc(id).delete();
+          const sub = ["chronisch", "psychisch", "afspraken"];
+          for (const coll of sub) {
+            const snap = await db.collection(`clienten/${id}/${coll}`).get();
+            snap.forEach(doc => doc.ref.delete());
+          }
+          alert("Cliënt is verwijderd.");
+          window.location.href = "index.html";
+        } catch (err) {
+          alert("Fout bij verwijderen: " + err.message);
+        }
+      }
+    });
+    const chronisch = [];
+    const chronischLijst = document.getElementById('chronischLijst');
+    function updateChronischLijst() {
+      chronischLijst.innerHTML = '';
+      chronisch.forEach((item, i) => {
+        const div = document.createElement('div');
+        div.className = 'aandoeningKaart';
+        div.innerHTML = `<span>${item}</span>`;
+        const btn = document.createElement('button');
+        btn.textContent = '❌';
+        btn.onclick = async () => {
+          const snap = await db.collection(`clienten/${id}/chronisch`).where("naam", "==", item).get();
+          snap.forEach(doc => doc.ref.delete());
+          chronisch.splice(i, 1);
+          updateChronischLijst();
+        };
+        div.appendChild(btn);
+        chronischLijst.appendChild(div);
+      });
+    }
+    db.collection(`clienten/${id}/chronisch`).get().then(snapshot => {
+      snapshot.forEach(doc => chronisch.push(doc.data().naam));
+      updateChronischLijst();
+    });
+    document.getElementById('addChronisch').onclick = () => {
+      const val = document.getElementById('chronischDropdown').value;
+      if (val && !chronisch.includes(val) && val !== '-- Selecteer aandoening --') {
+        db.collection(`clienten/${id}/chronisch`).add({ naam: val });
+        chronisch.push(val);
+        updateChronischLijst();
+      }
+    };
+
+    const psychisch = [];
+    const psychischLijst = document.getElementById('psychischLijst');
+    function updatePsychischLijst() {
+      psychischLijst.innerHTML = '';
+      psychisch.forEach((item, i) => {
+        const div = document.createElement('div');
+        div.className = 'aandoeningKaart';
+        div.innerHTML = `<span>${item}</span>`;
+        const btn = document.createElement('button');
+        btn.textContent = '❌';
+        btn.onclick = async () => {
+          const snap = await db.collection(`clienten/${id}/psychisch`).where("naam", "==", item).get();
+          snap.forEach(doc => doc.ref.delete());
+          psychisch.splice(i, 1);
+          updatePsychischLijst();
+        };
+        div.appendChild(btn);
+        psychischLijst.appendChild(div);
+      });
+    }
+    db.collection(`clienten/${id}/psychisch`).get().then(snapshot => {
+      snapshot.forEach(doc => psychisch.push(doc.data().naam));
+      updatePsychischLijst();
+    });
+    document.getElementById('addPsychisch').onclick = () => {
+      const val = document.getElementById('psychischDropdown').value;
+      if (val && !psychisch.includes(val) && val !== '-- Selecteer aandoening --') {
+        db.collection(`clienten/${id}/psychisch`).add({ naam: val });
+        psychisch.push(val);
+        updatePsychischLijst();
+      }
+    };
+
+    const afsprakenLijst = document.getElementById('afsprakenLijst');
+    function toonAfspraken() {
+      afsprakenLijst.innerHTML = '';
+      db.collection(`clienten/${id}/afspraken`).get().then(snapshot => {
+        snapshot.forEach(doc => {
+          const item = doc.data();
+          const div = document.createElement('div');
+          div.className = 'afspraakKaart';
+          div.innerHTML = `
+            <strong>${item.datum}</strong><br>
+            <em>Behandelaar:</em> ${item.behandelaar}<br>
+            <em>Reden:</em> ${item.reden}<br>
+            <em>Indicatie:</em> ${item.indicatie}<br>
+            <em>Plan:</em> ${item.plan}<br>
+            <em>Notities:</em> ${item.notities}
+          `;
+          afsprakenLijst.appendChild(div);
+        });
+      });
+    }
+
+    toonAfspraken();
+
+    document.getElementById('opslaanAfspraak').onclick = () => {
+      const afspraak = {
+        datum: document.getElementById('afspraakDatum').value,
+        behandelaar: document.getElementById('afspraakBehandelaar').value,
+        reden: document.getElementById('afspraakReden').value,
+        indicatie: document.getElementById('afspraakIndicatie').value,
+        plan: document.getElementById('afspraakPlan').value,
+        notities: document.getElementById('afspraakNotities').value
+      };
+
+      if (!afspraak.datum || !afspraak.reden) {
+        alert("Datum en reden zijn verplicht.");
+        return;
+      }
+
+      db.collection(`clienten/${id}/afspraken`).add(afspraak).then(() => {
+        toonAfspraken();
+        ['afspraakDatum','afspraakBehandelaar','afspraakReden','afspraakIndicatie','afspraakPlan','afspraakNotities']
+          .forEach(vak => document.getElementById(vak).value = '');
+      });
+    };
   });
 </script>
 </body>
 </html>
+
 
 
 
