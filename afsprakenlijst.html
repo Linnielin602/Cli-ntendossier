@@ -12,7 +12,6 @@
       background: url("teamhuisarts.png") no-repeat center center fixed;
       background-size: cover;
     }
-
     main {
       background-color: rgba(255, 255, 255, 0.95);
       padding: 2em;
@@ -21,19 +20,16 @@
       margin: 2em auto;
       box-shadow: 0 0 12px rgba(0,0,0,0.15);
     }
-
     h1 {
       text-align: center;
       margin-bottom: 1.5em;
     }
-
     #lijstContainer {
       display: flex;
       flex-wrap: wrap;
       gap: 1.5em;
       justify-content: space-between;
     }
-
     .client-kaart {
       flex: 1 1 45%;
       max-width: 45%;
@@ -42,17 +38,14 @@
       padding: 1.2em;
       background-color: #fffde7;
     }
-
     .client-kaart h3 {
       margin-top: 0;
     }
-
     label {
       display: block;
       margin: 0.8em 0 0.2em;
       font-weight: bold;
     }
-
     select, input[type="text"] {
       width: 100%;
       padding: 0.5em;
@@ -61,7 +54,6 @@
       border: 1px solid #cfd8dc;
       margin-bottom: 0.5em;
     }
-
     @media (max-width: 800px) {
       .client-kaart {
         flex: 1 1 100%;
@@ -99,15 +91,14 @@
     auth.onAuthStateChanged(user => {
       if (!user) {
         window.location.href = "login.html";
-      } else {
-        console.log("✅ Ingelogd als:", user.email);
-        laadClienten();
+        return;
       }
-    });
 
-    function laadClienten() {
+      console.log("✅ Ingelogd als:", user.email);
+
       db.collection("clienten").get().then(snapshot => {
         lijstContainer.innerHTML = "";
+
         snapshot.forEach(doc => {
           const data = doc.data();
           const id = doc.id;
@@ -116,6 +107,7 @@
 
           const div = document.createElement("div");
           div.className = "client-kaart";
+
           div.innerHTML = `
             <h3>${data.naam}</h3>
             <p>📞 ${data.telefoon || "Geen telefoonnummer"}</p>
@@ -156,7 +148,7 @@
           redenInput.addEventListener("blur", () => opslaan(id));
         });
       });
-    }
+    });
 
     async function opslaan(id) {
       const specialist = document.getElementById(`spec-${id}`).value;
