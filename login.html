@@ -84,19 +84,31 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    document.getElementById("loginBtn").addEventListener("click", () => {
-      const email = "huisarts@mrp.nl";
-      const wachtwoord = document.getElementById("wachtwoord").value;
+    const foutmelding = document.getElementById("fout");
 
+    document.getElementById("loginBtn").addEventListener("click", () => {
+      const wachtwoord = document.getElementById("wachtwoord").value.trim();
+      const email = "huisarts@mrp.nl";
+
+      if (!wachtwoord) {
+        foutmelding.textContent = "⚠️ Vul een wachtwoord in";
+        return;
+      }
+
+      foutmelding.textContent = "";
       console.log("🔐 Loginpoging gestart...");
+
       signInWithEmailAndPassword(auth, email, wachtwoord)
         .then(userCredential => {
           console.log("✅ Ingelogd als:", userCredential.user.email);
-          window.location.href = "index.html";
+          // Redirect met fallback via setTimeout
+          setTimeout(() => {
+            window.location.href = "index.html";
+          }, 150);
         })
         .catch(error => {
           console.error("❌ Login mislukt:", error.code, error.message);
-          document.getElementById("fout").textContent = "❌ Onjuist wachtwoord of verbinding";
+          foutmelding.textContent = "❌ Onjuist wachtwoord of verbindingsfout";
         });
     });
   </script>
