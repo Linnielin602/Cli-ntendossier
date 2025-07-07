@@ -567,6 +567,7 @@ document.getElementById("laatsteWens").value = data.laatsteWens || "-- Selecteer
     const toon = async (type, lijst, arr) => {
       lijst.innerHTML = "";
       const snap = await db.collection(`clienten/${id}/${type}`).get();
+      arr.length = 0;
       snap.forEach(doc => arr.push(doc.data().naam));
       arr.forEach((naam, i) => {
         const div = document.createElement("div");
@@ -584,7 +585,7 @@ document.getElementById("laatsteWens").value = data.laatsteWens || "-- Selecteer
 
     document.getElementById("addChronisch").onclick = () => {
       const val = document.getElementById("chronischDropdown").value;
-      if (val && !chronisch.includes(val)) {
+      if (val && val !== "-- Selecteer aandoening --" && !chronisch.includes(val)) {
         db.collection(`clienten/${id}/chronisch`).add({ naam: val });
         chronisch.push(val);
         toon("chronisch", document.getElementById("chronischLijst"), []);
@@ -593,7 +594,7 @@ document.getElementById("laatsteWens").value = data.laatsteWens || "-- Selecteer
 
     document.getElementById("addPsychisch").onclick = () => {
       const val = document.getElementById("psychischDropdown").value;
-      if (val && !psychisch.includes(val)) {
+      if (val && val !== "-- Selecteer aandoening --" && !psychisch.includes(val)) {
         db.collection(`clienten/${id}/psychisch`).add({ naam: val });
         psychisch.push(val);
         toon("psychisch", document.getElementById("psychischLijst"), []);
