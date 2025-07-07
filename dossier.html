@@ -248,6 +248,46 @@ section h2 {
   width: auto;
   min-width: 160px;
 }
+  .aandoeningInput {
+    width: 250px;
+    box-sizing: border-box;
+    padding: 6px;
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+
+  .aandoeningKaart {
+    display: inline-block;
+    background-color: #f2f2f2;
+    padding: 6px 10px;
+    margin: 5px;
+    border-radius: 6px;
+    font-size: 14px;
+    max-width: 200px;
+  }
+
+  .aandoeningKaart button {
+    background: none;
+    border: none;
+    margin-left: 6px;
+    cursor: pointer;
+  }
+
+  .aandoeningenGrid {
+    margin-top: 10px;
+  }
+
+  .flexAandoeningen {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    margin-top: 20px;
+  }
+
+  .flexAandoeningen section {
+    flex: 1;
+    min-width: 280px;
+  }
   </style>
 </head>
 <body>
@@ -337,55 +377,62 @@ section h2 {
   </select>
 </section>
   <section>
-    <h2>📋 Chronische aandoeningen</h2>
-    <select id="chronischDropdown">
-      <option>-- Selecteer aandoening --</option>
-      <option>Diabetes mellitus type 1</option>
-      <option>Diabetes mellitus type 2</option>
-      <option>Astma</option>
-      <option>COPD</option>
-      <option>Reuma</option>
-      <option>Hartfalen</option>
-      <option>Nierfalen</option>
-      <option>Hypertensie</option>
-      <option>Kanker (chronisch)</option>
-      <option>Ziekte van Crohn</option>
-      <option>Multiple sclerose</option>
-      <option>Epilepsie</option>
-      <option>NAH (Niet-aangeboren hersenletsel)</option>
-<option>Ziekte van Parkinson</option>
-    </select>
-    <button id="addChronisch">➕ Toevoegen</button>
-    <input type="text" id="chronischVrij" placeholder="Eigen aandoening invullen">
-<button id="addChronischVrij">➕ Voeg eigen toe</button>
-    <div id="chronischLijst" class="aandoeningenGrid"></div>
-  </section>
+  <h2>📋 Chronische aandoeningen</h2>
+  <select id="chronischDropdown" class="aandoeningInput">
+    <option>-- Selecteer aandoening --</option>
+    <option>Diabetes mellitus type 1</option>
+    <option>Diabetes mellitus type 2</option>
+    <option>Astma</option>
+    <option>COPD</option>
+    <option>Reuma</option>
+    <option>Hartfalen</option>
+    <option>Nierfalen</option>
+    <option>Hypertensie</option>
+    <option>Kanker (chronisch)</option>
+    <option>Ziekte van Crohn</option>
+    <option>Multiple sclerose</option>
+    <option>Epilepsie</option>
+    <option>NAH (Niet-aangeboren hersenletsel)</option>
+    <option>Ziekte van Parkinson</option>
+  </select>
+
+  <button id="addChronisch">➕ Toevoegen</button>
+
+  <input type="text" id="chronischVrij" class="aandoeningInput" placeholder="Eigen aandoening invullen">
+  <button id="addChronischVrij">➕ Voeg eigen toe</button>
+
+  <div id="chronischLijst" class="aandoeningenGrid"></div>
+</section>
 
   <section>
-    <h2>🧠 Psychische aandoeningen</h2>
-    <select id="psychischDropdown">
-      <option>-- Selecteer aandoening --</option>
-      <option>Depressie</option>
-      <option>Angststoornis</option>
-      <option>Bipolaire stoornis</option>
-      <option>PTSS</option>
-      <option>ADHD</option>
-      <option>Autismespectrumstoornis</option>
-      <option>Schizofrenie</option>
-      <option>Eetstoornis</option>
-      <option>Verslaving</option>
-      <option>Agressieproblemen</option>
-<option>Dwangstoornis</option>
-<option>Persoonlijkheidsstoornis</option>
-<option>Psychose</option>
-<option>Suïcidaal gedrag</option>
-<option>Burn-out</option>
-    </select>
-    <button id="addPsychisch">➕ Toevoegen</button>
-    <input type="text" id="psychischVrij" placeholder="Eigen aandoening invullen">
-<button id="addPsychischVrij">➕ Voeg eigen toe</button>
-    <div id="psychischLijst" class="aandoeningenGrid"></div>
-  </section>
+  <h2>🧠 Psychische aandoeningen</h2>
+
+  <select id="psychischDropdown" class="aandoeningInput">
+    <option>-- Selecteer aandoening --</option>
+    <option>Depressie</option>
+    <option>Angststoornis</option>
+    <option>Bipolaire stoornis</option>
+    <option>PTSS</option>
+    <option>ADHD</option>
+    <option>Autismespectrumstoornis</option>
+    <option>Schizofrenie</option>
+    <option>Eetstoornis</option>
+    <option>Verslaving</option>
+    <option>Agressieproblemen</option>
+    <option>Dwangstoornis</option>
+    <option>Persoonlijkheidsstoornis</option>
+    <option>Psychose</option>
+    <option>Suïcidaal gedrag</option>
+    <option>Burn-out</option>
+  </select>
+
+  <button id="addPsychisch">➕ Toevoegen</button>
+
+  <input type="text" id="psychischVrij" class="aandoeningInput" placeholder="Eigen aandoening invullen">
+  <button id="addPsychischVrij">➕ Voeg eigen toe</button>
+
+  <div id="psychischLijst" class="aandoeningenGrid"></div>
+</section>
 
   <section>
     <h2>📆 Afspraken</h2>
