@@ -160,17 +160,68 @@ section h2 {
   color: #1a237e;
   margin: 0;
 }
+    .profielRij {
+  display: flex;
+  gap: 1.5em;
+  flex-wrap: wrap;
+  margin-bottom: 2em;
+}
+
+.profielGegevens,
+.fotoBlok {
+  background-color: #eef6fb;
+  border: 2px solid #90caf9;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  padding: 1.5em;
+}
+
+.profielGegevens {
+  flex: 1 1 60%;
+}
+
+.fotoBlok {
+  flex: 0 0 180px;
+  text-align: center;
+}
+
+.fotoBlok img {
+  width: 160px;
+  height: 200px;
+  object-fit: cover;
+  border: 3px solid #90caf9;
+  border-radius: 10px;
+  background-color: white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.extraProfielInfo p {
+  margin: 0.4em 0;
+  font-size: 0.95em;
+  color: #1a237e;
+}
+
+.extraProfielInfo strong {
+  color: #0d47a1;
+}
   </style>
 </head>
 <body>
 <main>
-  <div class="profielKaart">
-  <div class="profielInfo">
+  <div class="profielRij">
+  <div class="profielGegevens">
     <h2>Dossier van</h2>
     <p id="naam" class="naamWeergave">...</p>
+
+    <div class="extraProfielInfo">
+      <p><strong>Contactpersoon:</strong> <span id="contactpersoon">...</span></p>
+      <p><strong>Telefoon:</strong> <span id="contactTelefoon">...</span></p>
+      <p><strong>Burgerlijke staat:</strong> <span id="burgerlijk">...</span></p>
+      <p><strong>Postcode:</strong> <span id="postcode">...</span></p>
+    </div>
   </div>
 
-  <div class="fotoContainer">
+  <div class="fotoBlok">
     <label for="fotoUpload">📷 Pasfoto</label>
     <img id="preview" src="" alt="Pasfoto cliënt" />
   </div>
