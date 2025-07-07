@@ -102,11 +102,13 @@
         snapshot.forEach(doc => {
           const data = doc.data();
           const id = doc.id;
-            const opnameDatum = data.opnamedatum?.toDate?.().toLocaleDateString("nl-NL", {
-    day: "numeric",
-    month: "long",
-    year: "numeric"
-  }) || "Onbekend";
+            const opnameDatum = data.opnamedatum
+  ? new Date(data.opnamedatum).toLocaleDateString("nl-NL", {
+      day: "numeric",
+      month: "long",
+      year: "numeric"
+    })
+  : "Onbekend";
 
           if (!data.naam || data.naam.toLowerCase() === "onbekend") return;
 
