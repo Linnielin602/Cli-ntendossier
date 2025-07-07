@@ -553,10 +553,18 @@ document.getElementById("laatsteWens").value = data.laatsteWens || "-- Selecteer
       const snap = await afsprakenRef.get();
       snap.forEach(doc => {
         const a = doc.data();
+
+const datumNL = a.datum
+  ? new Date(a.datum).toLocaleDateString("nl-NL", {
+      day: "numeric",
+      month: "long",
+      year: "numeric"
+    })
+  : "Geen datum";
         const div = document.createElement("div");
         div.className = "afspraakKaart";
         div.innerHTML = `
-          <strong>${a.datum}</strong><br>
+  <strong>📅 ${datumNL}</strong><br>
           <em>Behandelaar:</em> ${a.behandelaar}<br>
           <em>Reden:</em> ${a.reden}<br>
           <em>Indicatie:</em> ${a.indicatie}<br>
