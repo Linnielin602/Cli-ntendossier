@@ -204,6 +204,23 @@ section h2 {
 .extraProfielInfo strong {
   color: #0d47a1;
 }
+    .compactLabel {
+  display: block;
+  font-weight: 600;
+  font-size: 0.95em;
+  color: #0d47a1;
+  margin: 0.6em 0 0.2em;
+}
+
+.compactInput {
+  width: 100%;
+  padding: 0.3em 0.5em;
+  font-size: 0.9em;
+  border: 2px solid #bbdefb;
+  border-radius: 5px;
+  background-color: #f9fcff;
+  color: #1a237e;
+}
   </style>
 </head>
 <body>
@@ -214,10 +231,21 @@ section h2 {
     <p id="naam" class="naamWeergave">...</p>
 
     <div class="extraProfielInfo">
-      <p><strong>Contactpersoon:</strong> <span id="contactpersoon">...</span></p>
-      <p><strong>Telefoon:</strong> <span id="contactTelefoon">...</span></p>
-      <p><strong>Burgerlijke staat:</strong> <span id="burgerlijk">...</span></p>
-      <p><strong>Postcode:</strong> <span id="postcode">...</span></p>
+      <label class="compactLabel">Contactpersoon:
+  <input type="text" id="contactpersoon" class="compactInput" />
+</label>
+      <label class="compactLabel">Telefoon:
+  <input type="text" id="contactTelefoon" class="compactInput" />
+</label>
+
+<label class="compactLabel">Burgerlijke staat:
+  <input type="text" id="burgerlijk" class="compactInput" />
+</label>
+
+<label class="compactLabel">Postcode:
+  <input type="text" id="postcode" class="compactInput" />
+</label>
+
     </div>
   </div>
 
@@ -382,12 +410,25 @@ section h2 {
     document.getElementById("lengte").value = data.lengte || '';
     document.getElementById("gewicht").value = data.gewicht || '';
     if (data.fotoUrl) document.getElementById("preview").src = data.fotoUrl;
+    document.getElementById("contactpersoon").value = data.contactpersoon || '';
+document.getElementById("contactTelefoon").value = data.contactTelefoon || '';
+document.getElementById("burgerlijk").value = data.burgerlijkeStaat || '';
+document.getElementById("postcode").value = data.postcode || '';
     document.getElementById("preview").alt = `Pasfoto van ${data.naam || 'cliënt'}`;
 document.getElementById("reanimatie").value = data.reanimatie || "-- Selecteer --";
 document.getElementById("medicatie").value = data.medicatie || "-- Selecteer --";
 document.getElementById("operatie").value = data.operatie || "-- Selecteer --";
 document.getElementById("laatsteWens").value = data.laatsteWens || "-- Selecteer --";
-
+    
+    ["contactpersoon", "contactTelefoon", "burgerlijk", "postcode"].forEach(veld => {
+  const el = document.getElementById(veld);
+  if (el) {
+    el.addEventListener("change", e => {
+      const veldnaam = veld === "burgerlijk" ? "burgerlijkeStaat" : veld;
+      docRef.update({ [veldnaam]: e.target.value });
+    });
+  }
+});
     ["gewicht","geboorte","lengte","telefoon","opname","reden"].forEach(veld => {
       const el = document.getElementById(veld);
       if (el) {
