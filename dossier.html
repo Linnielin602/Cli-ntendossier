@@ -255,7 +255,9 @@ section h2 {
   <div class="profielRij">
   <div class="profielGegevens">
     <h2>Dossier van</h2>
-    <p id="naam" class="naamWeergave">...</p>
+    <div class="naamBadge">
+  <input type="text" id="naamInput" class="naamInput" placeholder="Naam cliënt" readonly />
+</div>
 
     <div class="extraProfielInfo">
       <label class="compactLabel">Contactpersoon:
@@ -429,7 +431,7 @@ section h2 {
     }
 
     const data = snap.data();
-    document.getElementById("naam").textContent = data.naam || "Onbekend";
+    document.getElementById("naamInput").value = data.naam || '';
     document.getElementById("geboorte").value = data.geboortedatum || '';
     document.getElementById("telefoon").value = data.telefoon || '';
     document.getElementById("opname").value = data.opnamedatum || '';
