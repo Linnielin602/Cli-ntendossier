@@ -197,12 +197,19 @@
     async function updateDropdown() {
       dropdown.innerHTML = '<option>Kies een cliënt...</option>';
       try {
-        const snapshot = await db.collection("clienten").get();
+        const snapshot = await db.collection("clienten").orderBy("opnamedatum").get();
         snapshot.forEach(doc => {
           const data = doc.data();
           if (!data.naam) return;
           const option = document.createElement('option');
-          const extra = data.opnamedatum ? ` (${data.opnamedatum})` : '';
+          let extra = '';
+if (data.opnamedatum) {
+  const parts = data.opnamedatum.split("-");
+  if (parts.length === 3) {
+    const [jaar, maand, dag] = parts;
+    extra = ` (${dag}-${maand}-${jaar})`;
+  }
+}
           option.value = doc.id;
           option.textContent = `${data.naam}${extra}`;
           dropdown.appendChild(option);
