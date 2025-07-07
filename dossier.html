@@ -109,14 +109,39 @@ section h2 {
       main { padding: 1em; }
       button { width: 100%; }
     }
+    .fotoContainer {
+  text-align: center;
+  margin-left: 1.5em;
+}
+
+.fotoContainer label {
+  display: block;
+  font-weight: bold;
+  color: #1a237e;
+  margin-bottom: 0.4em;
+}
+
+.fotoContainer img {
+  width: 160px;
+  height: 200px;
+  object-fit: cover;
+  border: 3px solid #90caf9;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  background-color: white;
+}
   </style>
 </head>
 <body>
 <main>
-  <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
-    <h1 style="margin: 0;">Dossier van: <span id="naam">...</span></h1>
-    <img id="preview" src="" alt="Foto cliënt" style="width: 180px; height: 180px; object-fit: cover;" />
+  <div style="display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap;">
+  <h1 style="margin: 0;">Dossier van: <span id="naam">...</span></h1>
+  
+  <div class="fotoContainer">
+    <label for="fotoUpload">📷 Pasfoto</label>
+    <img id="preview" src="" alt="Pasfoto cliënt" />
   </div>
+</div>
 
   <section>
     <h2>📇 Persoonsgegevens</h2>
@@ -273,6 +298,7 @@ section h2 {
     document.getElementById("lengte").value = data.lengte || '';
     document.getElementById("gewicht").value = data.gewicht || '';
     if (data.fotoUrl) document.getElementById("preview").src = data.fotoUrl;
+    document.getElementById("preview").alt = `Pasfoto van ${data.naam || 'cliënt'}`;
 document.getElementById("reanimatie").value = data.reanimatie || "-- Selecteer --";
 document.getElementById("medicatie").value = data.medicatie || "-- Selecteer --";
 document.getElementById("operatie").value = data.operatie || "-- Selecteer --";
