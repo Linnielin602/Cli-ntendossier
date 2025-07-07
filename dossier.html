@@ -583,43 +583,59 @@ document.getElementById("laatsteWens").value = data.laatsteWens || "-- Selecteer
       });
     };
 
-    document.getElementById("addChronisch").onclick = () => {
-      const val = document.getElementById("chronischDropdown").value;
-      if (val && val !== "-- Selecteer aandoening --" && !chronisch.includes(val)) {
-        db.collection(`clienten/${id}/chronisch`).add({ naam: val });
-        chronisch.push(val);
-        toon("chronisch", document.getElementById("chronischLijst"), []);
-      }
-    };
-
-    document.getElementById("addPsychisch").onclick = () => {
-      const val = document.getElementById("psychischDropdown").value;
-      if (val && val !== "-- Selecteer aandoening --" && !psychisch.includes(val)) {
-        db.collection(`clienten/${id}/psychisch`).add({ naam: val });
-        psychisch.push(val);
-        toon("psychisch", document.getElementById("psychischLijst"), []);
-      }
-    };
-
-document.getElementById("addChronischVrij").onclick = () => {
-  const input = document.getElementById("chronischVrij");
-  const waarde = input.value.trim();
-  if (waarde && !chronisch.includes(waarde)) {
-    db.collection(`clienten/${id}/chronisch`).add({ naam: waarde });
-    chronisch.push(waarde);
+    document.getElementById("addChronisch").onclick = async () => {
+  const val = document.getElementById("chronischDropdown").value;
+  if (val && val !== "-- Selecteer aandoening --") {
+    const snap = await db.collection(`clienten/${id}/chronisch`).where("naam", "==", val).get();
+    if (!snap.empty) {
+      alert("Deze aandoening staat al in het dossier.");
+      return;
+    }
+    await db.collection(`clienten/${id}/chronisch`).add({ naam: val });
     toon("chronisch", document.getElementById("chronischLijst"), []);
-    input.value = "";
   }
 };
 
-document.getElementById("addPsychischVrij").onclick = () => {
+document.getElementById("addPsychisch").onclick = async () => {
+  const val = document.getElementById("psychischDropdown").value;
+  if (val && val !== "-- Selecteer aandoening --") {
+    const snap = await db.collection(`clienten/${id}/psychisch`).where("naam", "==", val).get();
+    if (!snap.empty) {
+      alert("Deze aandoening staat al in het dossier.");
+      return;
+    }
+    await db.collection(`clienten/${id}/psychisch`).add({ naam: val });
+    toon("psychisch", document.getElementById("psychischLijst"), []);
+  }
+};
+
+document.getElementById("addChronischVrij").onclick = async () => {
+  const input = document.getElementById("chronischVrij");
+  const waarde = input.value.trim();
+  if (waarde) {
+    const snap = await db.collection(`clienten/${id}/chronisch`).where("naam", "==", waarde).get();
+    if (!snap.empty) {
+      alert("Deze aandoening staat al in het dossier.");
+      return;
+    }
+    await db.collection(`clienten/${id}/chronisch`).add({ naam: waarde });
+    input.value = "";
+    toon("chronisch", document.getElementById("chronischLijst"), []);
+  }
+};
+
+document.getElementById("addPsychischVrij").onclick = async () => {
   const input = document.getElementById("psychischVrij");
   const waarde = input.value.trim();
-  if (waarde && !psychisch.includes(waarde)) {
-    db.collection(`clienten/${id}/psychisch`).add({ naam: waarde });
-    psychisch.push(waarde);
-    toon("psychisch", document.getElementById("psychischLijst"), []);
+  if (waarde) {
+    const snap = await db.collection(`clienten/${id}/psychisch`).where("naam", "==", waarde).get();
+    if (!snap.empty) {
+      alert("Deze aandoening staat al in het dossier.");
+      return;
+    }
+    await db.collection(`clienten/${id}/psychisch`).add({ naam: waarde });
     input.value = "";
+    toon("psychisch", document.getElementById("psychischLijst"), []);
   }
 };
 
