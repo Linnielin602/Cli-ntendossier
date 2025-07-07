@@ -352,9 +352,12 @@ section h2 {
       <option>Ziekte van Crohn</option>
       <option>Multiple sclerose</option>
       <option>Epilepsie</option>
-      <option>Andere...</option>
+      <option>NAH (Niet-aangeboren hersenletsel)</option>
+<option>Ziekte van Parkinson</option>
     </select>
     <button id="addChronisch">➕ Toevoegen</button>
+    <input type="text" id="chronischVrij" placeholder="Eigen aandoening invullen">
+<button id="addChronischVrij">➕ Voeg eigen toe</button>
     <div id="chronischLijst" class="aandoeningenGrid"></div>
   </section>
 
@@ -371,9 +374,16 @@ section h2 {
       <option>Schizofrenie</option>
       <option>Eetstoornis</option>
       <option>Verslaving</option>
-      <option>Andere...</option>
+      <option>Agressieproblemen</option>
+<option>Dwangstoornis</option>
+<option>Persoonlijkheidsstoornis</option>
+<option>Psychose</option>
+<option>Suïcidaal gedrag</option>
+<option>Burn-out</option>
     </select>
     <button id="addPsychisch">➕ Toevoegen</button>
+    <input type="text" id="psychischVrij" placeholder="Eigen aandoening invullen">
+<button id="addPsychischVrij">➕ Voeg eigen toe</button>
     <div id="psychischLijst" class="aandoeningenGrid"></div>
   </section>
 
@@ -542,6 +552,28 @@ document.getElementById("laatsteWens").value = data.laatsteWens || "-- Selecteer
         toon("psychisch", document.getElementById("psychischLijst"), []);
       }
     };
+
+document.getElementById("addChronischVrij").onclick = () => {
+  const input = document.getElementById("chronischVrij");
+  const waarde = input.value.trim();
+  if (waarde && !chronisch.includes(waarde)) {
+    db.collection(`clienten/${id}/chronisch`).add({ naam: waarde });
+    chronisch.push(waarde);
+    toon("chronisch", document.getElementById("chronischLijst"), []);
+    input.value = "";
+  }
+};
+
+document.getElementById("addPsychischVrij").onclick = () => {
+  const input = document.getElementById("psychischVrij");
+  const waarde = input.value.trim();
+  if (waarde && !psychisch.includes(waarde)) {
+    db.collection(`clienten/${id}/psychisch`).add({ naam: waarde });
+    psychisch.push(waarde);
+    toon("psychisch", document.getElementById("psychischLijst"), []);
+    input.value = "";
+  }
+};
 
     toon("chronisch", document.getElementById("chronischLijst"), []);
     toon("psychisch", document.getElementById("psychischLijst"), []);
