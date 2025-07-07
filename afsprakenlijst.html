@@ -96,12 +96,17 @@
 
       console.log("✅ Ingelogd als:", user.email);
 
-      db.collection("clienten").get().then(snapshot => {
+      db.collection("clienten").orderBy("opnamedatum").get().then(snapshot => {
         lijstContainer.innerHTML = "";
 
         snapshot.forEach(doc => {
           const data = doc.data();
           const id = doc.id;
+            const opnameDatum = data.opnamedatum?.toDate?.().toLocaleDateString("nl-NL", {
+    day: "numeric",
+    month: "long",
+    year: "numeric"
+  }) || "Onbekend";
 
           if (!data.naam || data.naam.toLowerCase() === "onbekend") return;
 
@@ -110,6 +115,7 @@
 
           div.innerHTML = `
             <h3>${data.naam}</h3>
+             <p>📆 Opname: ${opnameDatum}</p>
             <p>📞 ${data.telefoon || "Geen telefoonnummer"}</p>
             <p>🏥 ${data.redenOpname || "Geen reden voor opname"}</p>
 
