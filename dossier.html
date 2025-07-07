@@ -9,6 +9,19 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
   <style>
+  section {
+  background-color: #f9faff;
+  border: 2px solid #bbdefb;
+  border-radius: 10px;
+  padding: 1.5em;
+  margin-bottom: 2em;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+section h2 {
+  margin-top: 0;
+  color: #0d47a1;
+}
     body {
       margin: 0;
       font-family: 'Segoe UI', Tahoma, sans-serif;
@@ -124,6 +137,40 @@
     <button id="verwijderClient">🗑️ Verwijder dit dossier</button>
   </section>
   <section>
+  <h2>🩺 Medisch beleid</h2>
+
+  <label for="reanimatie">Reanimatie:</label>
+  <select id="reanimatie">
+    <option>-- Selecteer --</option>
+    <option>Wel reanimeren</option>
+    <option>Niet reanimeren</option>
+  </select>
+
+  <label for="medicatie">Medicatie:</label>
+  <select id="medicatie">
+    <option>-- Selecteer --</option>
+    <option>Geen medicatie</option>
+    <option>Reguliere medicatie</option>
+    <option>Alleen natuurlijke middelen</option>
+  </select>
+
+  <label for="operatie">Operatievoorkeur:</label>
+  <select id="operatie">
+    <option>-- Selecteer --</option>
+    <option>Toestaan</option>
+    <option>Alleen bij levensbedreiging</option>
+    <option>Afwijzen</option>
+  </select>
+
+  <label for="laatsteWens">Laatste wens:</label>
+  <select id="laatsteWens">
+    <option>-- Selecteer --</option>
+    <option>Begraven</option>
+    <option>Crematie</option>
+    <option>Orgaandonatie</option>
+  </select>
+</section>
+  <section>
     <h2>📋 Chronische aandoeningen</h2>
     <select id="chronischDropdown">
       <option>-- Selecteer aandoening --</option>
@@ -226,6 +273,10 @@
     document.getElementById("lengte").value = data.lengte || '';
     document.getElementById("gewicht").value = data.gewicht || '';
     if (data.fotoUrl) document.getElementById("preview").src = data.fotoUrl;
+document.getElementById("reanimatie").value = data.reanimatie || "-- Selecteer --";
+document.getElementById("medicatie").value = data.medicatie || "-- Selecteer --";
+document.getElementById("operatie").value = data.operatie || "-- Selecteer --";
+document.getElementById("laatsteWens").value = data.laatsteWens || "-- Selecteer --";
 
     ["gewicht","geboorte","lengte","telefoon","opname","reden"].forEach(veld => {
       const el = document.getElementById(veld);
@@ -240,7 +291,14 @@
         });
       }
     });
-
+["reanimatie", "medicatie", "operatie", "laatsteWens"].forEach(veld => {
+  const el = document.getElementById(veld);
+  if (el) {
+    el.addEventListener("change", e => {
+      docRef.update({ [veld]: e.target.value });
+    });
+  }
+});
     document.getElementById("fotoUpload")?.addEventListener("change", async e => {
       const file = e.target.files[0];
       if (!file) return;
