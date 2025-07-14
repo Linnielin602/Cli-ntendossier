@@ -9,31 +9,90 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <!-- Tom Select -->
+<link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+
 
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyAATkvdTPoWR9vWiqpjogMn3v1UpiA-6ks",
-      authDomain: "clientendossier-3c555.firebaseapp.com",
-      projectId: "clientendossier-3c555",
-      storageBucket: "clientendossier-3c555.appspot.com",
-      messagingSenderId: "266738066133",
-      appId: "1:266738066133:web:a7942baff73d082c01385c"
-    };
+  const firebaseConfig = {
+    apiKey: "AIzaSyAATkvdTPoWR9vWiqpjogMn3v1UpiA-6ks",
+    authDomain: "clientendossier-3c555.firebaseapp.com",
+    projectId: "clientendossier-3c555",
+    storageBucket: "clientendossier-3c555.appspot.com",
+    messagingSenderId: "266738066133",
+    appId: "1:266738066133:web:a7942baff73d082c01385c"
+  };
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-    const auth = firebase.auth();
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  const auth = firebase.auth();
 
-    auth.onAuthStateChanged(user => {
-      if (!user) {
-        console.warn("⚠️ Geen sessie – naar login.html");
-        window.location.href = "login.html";
-      } else {
-        console.log("✅ Ingelogd als:", user.email);
-        updateDropdown(); // Alleen na succesvolle login
+  // 🔽 Vul dropdown met cliënten en opnamedatum
+  async function vulDropdown() {
+    const dropdown = document.getElementById('client-dropdown');
+    dropdown.innerHTML = '<option>Kies een cliënt...</option>';
+    try {
+      const snapshot = await db.collection("clienten").orderBy("opnamedatum").get();
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        if (!data.naam) return;
+        const option = document.createElement('option');
+        let extra = '';
+        if (data.opnamedatum) {
+          const parts = data.opnamedatum.split("-");
+          if (parts.length === 3) {
+            const [jaar, maand, dag] = parts;
+            extra = ` (${dag}-${maand}-${jaar})`;
+          }
+        }
+        option.value = doc.id;
+        option.textContent = `${data.naam}${extra}`;
+        dropdown.appendChild(option);
+      });
+    } catch (err) {
+      console.error("❌ Fout bij ophalen cliënten:", err);
+    }
+  }
+
+  // 👂 Reageer op dropdown selectie
+  function activeerDropdownNavigatie() {
+    document.getElementById('client-dropdown').addEventListener('change', e => {
+      const id = e.target.value;
+      if (id && id !== 'Kies een cliënt...') {
+        window.location.href = `dossier.html?id=${id}`;
       }
     });
-  </script>
+  }
+
+  // ✅ Slimme dropdown activeren met Tom Select
+  function maakDropdownSlim() {
+    new TomSelect('#client-dropdown', {
+      placeholder: 'Typ om te zoeken...',
+      allowEmptyOption: true,
+      onChange: (id) => {
+        if (id && id !== 'Kies een cliënt...') {
+          window.location.href = `dossier.html?id=${id}`;
+        }
+      }
+    });
+  }
+
+  // 🔒 Login check
+  auth.onAuthStateChanged(user => {
+    if (!user) {
+      console.warn("⚠️ Geen sessie – naar login.html");
+      window.location.href = "login.html";
+    } else {
+      console.log("✅ Ingelogd als:", user.email);
+      vulDropdown().then(() => {
+        maakDropdownSlim();       // 🔍 activeer slimme filtering
+        activeerDropdownNavigatie(); // ⏩ fallback voor selectie event
+      });
+    }
+  });
+</script>
+
 
   <style>
     body {
