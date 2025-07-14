@@ -138,6 +138,14 @@
       padding: 1.5em;
       box-shadow: 0 0 6px rgba(0,0,0,0.05);
     }
+    .instructieblok {
+  background-color: rgba(255, 255, 255, 0.97);
+  border: 1.5px solid #bbdefb;
+  border-radius: 8px;
+  padding: 1em;
+  margin-bottom: 1.2em;
+  box-shadow: 0 0 4px rgba(0,0,0,0.04);
+}
     label {
       display: block;
       margin: 1em 0 0.4em;
@@ -175,9 +183,13 @@
         align-items: flex-start;
       }
       .container {
-        flex-direction: column;
-        gap: 1em;
-      }
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: start;     /* 📌 zorgt dat aside direct naast main blijft */
+  align-items: flex-start;
+  gap: 1.2em;                 /* afstand tussen main en aside */
+  padding: 2em;
+}
       main, aside {
         max-width: 100%;
       }
@@ -225,10 +237,20 @@
     </main>
 
     <aside>
-      <h2>ℹ️ Instructies</h2>
-      <p>Vul de gegevens in om een cliënt toe te voegen. Selecteer daarna uit de lijst om naar zijn/haar dossier te gaan.</p>
-    </aside>
+  <div class="instructieblok">
+    <h2>ℹ️ Instructies</h2>
+    <p>Vul de gegevens in om een cliënt toe te voegen. Selecteer daarna uit de lijst om naar zijn/haar dossier te gaan.</p>
   </div>
+
+  <div class="instructieblok">
+    <h3>📌 Let op bij afspraken</h3>
+    <p>Nadat je een afspraak noteert, werk ook de <strong>afsprakenlijst</strong> bij:</p>
+    <ul style="padding-left: 1em; margin-top: 0.8em;">
+      <li>Voeg de benodigde <strong>specialist</strong> toe</li>
+      <li>Noteer de <strong>reden voor de volgende afspraak</strong></li>
+    </ul>
+  </div>
+</aside>
 
   <script>
     const form = document.getElementById('new-client-form');
