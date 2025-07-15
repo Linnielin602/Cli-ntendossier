@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
+  <!-- 🔍 Tom Select -->
+  <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Afsprakenlijst – AmbuRP</title>
@@ -12,6 +16,7 @@
       background: url("teamhuisarts.png") no-repeat center center fixed;
       background-size: cover;
     }
+
     main {
       background-color: rgba(255, 255, 255, 0.95);
       padding: 2em;
@@ -20,16 +25,36 @@
       margin: 2em auto;
       box-shadow: 0 0 12px rgba(0,0,0,0.15);
     }
+
     h1 {
       text-align: center;
-      margin-bottom: 1.5em;
+      margin-bottom: 1.2em;
     }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin: 1em 0 0.4em;
+    }
+
+    #zoek-client {
+      width: 100%;
+      padding: 0.6em;
+      font-size: 1em;
+      border-radius: 6px;
+      border: 1px solid #cfd8dc;
+      margin-bottom: 1.4em;
+      background-color: #f5faff;
+      color: #1a237e;
+    }
+
     #lijstContainer {
       display: flex;
       flex-wrap: wrap;
       gap: 1.5em;
       justify-content: space-between;
     }
+
     .client-kaart {
       flex: 1 1 45%;
       max-width: 45%;
@@ -38,14 +63,11 @@
       padding: 1.2em;
       background-color: #fffde7;
     }
+
     .client-kaart h3 {
       margin-top: 0;
     }
-    label {
-      display: block;
-      margin: 0.8em 0 0.2em;
-      font-weight: bold;
-    }
+
     select, input[type="text"] {
       width: 100%;
       padding: 0.5em;
@@ -54,6 +76,7 @@
       border: 1px solid #cfd8dc;
       margin-bottom: 0.5em;
     }
+
     @media (max-width: 800px) {
       .client-kaart {
         flex: 1 1 100%;
@@ -65,14 +88,20 @@
 <body>
   <main>
     <h1>📋 Afsprakenlijst</h1>
+
+    <!-- 🔽 Slimme zoekfunctie -->
+    <label for="zoek-client">👤 Filter op naam:</label>
+    <select id="zoek-client" placeholder="Typ om te zoeken...">
+      <option value="">Alle cliënten...</option>
+    </select>
+
     <div id="lijstContainer">Laden...</div>
   </main>
 
-  <!-- ✅ Firebase SDKs (compat) -->
+  <!-- ✅ Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyAATkvdTPoWR9vWiqpjogMn3v1UpiA-6ks",
@@ -99,25 +128,37 @@
       db.collection("clienten").orderBy("opnamedatum").get().then(snapshot => {
         lijstContainer.innerHTML = "";
 
+        const zoekSelect = document.getElementById('zoek-client');
+        zoekSelect.innerHTML = '<option value="">Alle cliënten...</option>';
+
         snapshot.forEach(doc => {
           const data = doc.data();
           const id = doc.id;
-            const opnameDatum = data.opnamedatum
-  ? new Date(data.opnamedatum).toLocaleDateString("nl-NL", {
-      day: "numeric",
-      month: "long",
-      year: "numeric"
-    })
-  : "Onbekend";
+
+          const opnameDatum = data.opnamedatum
+            ? new Date(data.opnamedatum).toLocaleDateString("nl-NL", {
+                day: "numeric",
+                month: "long",
+                year: "numeric"
+              })
+            : "Onbekend";
+
+          if (data.naam && data.naam.toLowerCase() !== "onbekend") {
+            const option = document.createElement("option");
+            option.value = id;
+            option.textContent = data.naam;
+            zoekSelect.appendChild(option);
+          }
 
           if (!data.naam || data.naam.toLowerCase() === "onbekend") return;
 
           const div = document.createElement("div");
           div.className = "client-kaart";
+          div.setAttribute("data-id", id);
 
           div.innerHTML = `
             <h3>${data.naam}</h3>
-             <p>📆 Opname: ${opnameDatum}</p>
+            <p>📆 Opname: ${opnameDatum}</p>
             <p>📞 ${data.telefoon || "Geen telefoonnummer"}</p>
             <p>🏥 ${data.redenOpname || "Geen reden voor opname"}</p>
 
@@ -154,6 +195,24 @@
 
           specSelect.addEventListener("change", () => opslaan(id));
           redenInput.addEventListener("blur", () => opslaan(id));
+        });
+
+        // ✅ Activeer Tom Select op dropdown
+        new TomSelect('#zoek-client', {
+          placeholder: 'Typ om te zoeken...',
+          allowEmptyOption: true,
+          openOnFocus: true
+        });
+
+        // 🔍 Filter kaarten op selectie
+        document.getElementById('zoek-client').addEventListener('change', function(e) {
+          const gekozenId = e.target.value;
+          const kaarten = document.querySelectorAll('.client-kaart');
+
+          kaarten.forEach(kaart => {
+            const id = kaart.getAttribute('data-id');
+            kaart.style.display = (!gekozenId || id === gekozenId) ? '' : 'none';
+          });
         });
       });
     });
