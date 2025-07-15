@@ -65,43 +65,49 @@
     });
   }
 
-  // ✅ Slimme dropdown activeren met Tom Select
-  function maakDropdownSlim() {
-  if (tomSelectInstance) {
-    tomSelectInstance.destroy(); // 🔄 verwijder vorige dropdown instance
-  }
-
-  tomSelectInstance = new TomSelect('#client-dropdown', {
-    placeholder: 'Typ om te zoeken...',
-    allowEmptyOption: true,
-    onChange: (id) => {
-      if (id && id !== 'Kies een cliënt...') {
-        window.location.href = `dossier.html?id=${id}`;
-      }
-    }
-  });
-}
-
-  // 🔒 Login check
-  let tomSelectInstance;
+  // 🔒 Login & slimme dropdown
+let tomSelectInstance;
 
 auth.onAuthStateChanged(async user => {
   if (!user) {
+    console.warn("⛔ Niet ingelogd – doorsturen naar login...");
     window.location.href = "login.html";
-  } else {
-    console.log("✅ Ingelogd als:", user.email);
-    await vulDropdown();
+    return;
+  }
 
-    if (tomSelectInstance) tomSelectInstance.destroy(); // 🧼 Verwijder oude
+  console.log("✅ Ingelogd als:", user.email);
+
+  try {
+    await vulDropdown(); // 🔄 eerst dropdown vullen
+
+    // 🔁 Reset eventuele oude Tom Select
+    if (tomSelectInstance) {
+      tomSelectInstance.destroy();
+    }
+
+    // 🧠 Activeer slimme dropdown met verbeterde instellingen
     tomSelectInstance = new TomSelect('#client-dropdown', {
       placeholder: 'Typ om te zoeken...',
       allowEmptyOption: true,
+      openOnFocus: true,
+      hideSelected: false,
+      shouldLoad: () => true,
+      maxOptions: null,
+      render: {
+        option: (data, escape) => {
+          return `<div>${escape(data.text)}</div>`;
+        }
+      },
       onChange: (id) => {
         if (id && id !== '') {
           window.location.href = `dossier.html?id=${id}`;
         }
       }
     });
+
+  } catch (err) {
+    console.error("❌ Fout bij opbouwen dropdown:", err);
+    alert("Kon cliëntenlijst niet ophalen. Probeer het later opnieuw.");
   }
 });
 </script>
