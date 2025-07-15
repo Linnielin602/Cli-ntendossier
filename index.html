@@ -85,13 +85,22 @@
   // 🔒 Login check
   let tomSelectInstance;
 
-auth.onAuthStateChanged(user => {
+auth.onAuthStateChanged(async user => {
   if (!user) {
     window.location.href = "login.html";
   } else {
     console.log("✅ Ingelogd als:", user.email);
-    updateDropdown().then(() => {
-      maakDropdownSlim();
+    await vulDropdown();
+
+    if (tomSelectInstance) tomSelectInstance.destroy(); // 🧼 Verwijder oude
+    tomSelectInstance = new TomSelect('#client-dropdown', {
+      placeholder: 'Typ om te zoeken...',
+      allowEmptyOption: true,
+      onChange: (id) => {
+        if (id && id !== '') {
+          window.location.href = `dossier.html?id=${id}`;
+        }
+      }
     });
   }
 });
@@ -278,31 +287,6 @@ auth.onAuthStateChanged(user => {
         alert("Opslaan mislukt – zie console voor details");
       }
     });
-
-    async function updateDropdown() {
-      dropdown.innerHTML = '<option>Kies een cliënt...</option>';
-      try {
-        const snapshot = await db.collection("clienten").orderBy("opnamedatum").get();
-        snapshot.forEach(doc => {
-          const data = doc.data();
-          if (!data.naam) return;
-          const option = document.createElement('option');
-          let extra = '';
-if (data.opnamedatum) {
-  const parts = data.opnamedatum.split("-");
-  if (parts.length === 3) {
-    const [jaar, maand, dag] = parts;
-    extra = ` (${dag}-${maand}-${jaar})`;
-  }
-}
-          option.value = doc.id;
-          option.textContent = `${data.naam}${extra}`;
-          dropdown.appendChild(option);
-        });
-      } catch (err) {
-        console.error("❌ Fout bij ophalen cliënten:", err);
-      }
-    }
 
     dropdown.addEventListener('change', () => {
       const id = dropdown.value;
