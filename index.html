@@ -67,30 +67,34 @@
 
   // ✅ Slimme dropdown activeren met Tom Select
   function maakDropdownSlim() {
-    new TomSelect('#client-dropdown', {
-      placeholder: 'Typ om te zoeken...',
-      allowEmptyOption: true,
-      onChange: (id) => {
-        if (id && id !== 'Kies een cliënt...') {
-          window.location.href = `dossier.html?id=${id}`;
-        }
-      }
-    });
+  if (tomSelectInstance) {
+    tomSelectInstance.destroy(); // 🔄 verwijder vorige dropdown instance
   }
 
-  // 🔒 Login check
-  auth.onAuthStateChanged(user => {
-    if (!user) {
-      console.warn("⚠️ Geen sessie – naar login.html");
-      window.location.href = "login.html";
-    } else {
-      console.log("✅ Ingelogd als:", user.email);
-      vulDropdown().then(() => {
-        maakDropdownSlim();       // 🔍 activeer slimme filtering
-        activeerDropdownNavigatie(); // ⏩ fallback voor selectie event
-      });
+  tomSelectInstance = new TomSelect('#client-dropdown', {
+    placeholder: 'Typ om te zoeken...',
+    allowEmptyOption: true,
+    onChange: (id) => {
+      if (id && id !== 'Kies een cliënt...') {
+        window.location.href = `dossier.html?id=${id}`;
+      }
     }
   });
+}
+
+  // 🔒 Login check
+  let tomSelectInstance;
+
+auth.onAuthStateChanged(user => {
+  if (!user) {
+    window.location.href = "login.html";
+  } else {
+    console.log("✅ Ingelogd als:", user.email);
+    updateDropdown().then(() => {
+      maakDropdownSlim();
+    });
+  }
+});
 </script>
 
 
