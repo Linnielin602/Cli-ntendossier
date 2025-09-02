@@ -451,6 +451,26 @@ section h2 {
     <button id="opslaanAfspraak">➕ Opslaan afspraak</button>
     <div id="afsprakenLijst" class="afsprakenGrid"></div>
   </section>
+  <section>
+  <h2>📌 Volgende afspraak</h2>
+
+  <label for="volgendeSpecialist">Specialist nodig:</label>
+  <select id="volgendeSpecialist">
+    <option>-- Kies specialist --</option>
+    <option>Ambulancier</option>
+    <option>Operatiespecialist</option>
+    <option>Psycholoog</option>
+    <option>Fysiotherapeut</option>
+    <option>Diëtist</option>
+    <option>Huisarts</option>
+    <option>Tandarts</option>
+    <option>Verloskundige</option>
+    <option>Oogarts</option>
+  </select>
+
+  <label for="redenAfspraak">Reden afspraak:</label>
+  <input type="text" id="redenAfspraak" placeholder="Bijv. controle hechtingen..." />
+</section>
 </main>
 <script>
   const firebaseConfig = {
@@ -505,6 +525,8 @@ document.getElementById("reanimatie").value = data.reanimatie || "-- Selecteer -
 document.getElementById("medicatie").value = data.medicatie || "-- Selecteer --";
 document.getElementById("operatie").value = data.operatie || "-- Selecteer --";
 document.getElementById("laatsteWens").value = data.laatsteWens || "-- Selecteer --";
+    document.getElementById("volgendeSpecialist").value = data.specialist || "-- Kies specialist --";
+document.getElementById("redenAfspraak").value = data.redenAfspraak || "";
     
     ["contactpersoon", "contactTelefoon", "burgerlijk", "postcode"].forEach(veld => {
   const el = document.getElementById(veld);
@@ -535,6 +557,13 @@ document.getElementById("laatsteWens").value = data.laatsteWens || "-- Selecteer
       docRef.update({ [veld]: e.target.value });
     });
   }
+});
+    document.getElementById("volgendeSpecialist").addEventListener("change", e => {
+  docRef.update({ specialist: e.target.value });
+});
+
+document.getElementById("redenAfspraak").addEventListener("blur", e => {
+  docRef.update({ redenAfspraak: e.target.value.trim() });
 });
     document.getElementById("fotoUpload")?.addEventListener("change", async e => {
   const file = e.target.files[0];
@@ -717,4 +746,5 @@ const datumNL = a.datum
 </script>
 </body>
 </html>
+
 
