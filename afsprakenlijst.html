@@ -72,6 +72,19 @@
         max-width: 100%;
       }
     }
+    .foto-client {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 0 4px rgba(0,0,0,0.2);
+}
+.client-kaart {
+  position: relative; /* nodig voor positionering van de foto */
+}
   </style>
 </head>
 <body>
@@ -129,12 +142,13 @@
         div.setAttribute("data-id", id);
         div.setAttribute("data-naam", (data.naam || "").toLowerCase());
         div.innerHTML = `
-          <h3>${data.naam || "Onbekend"}</h3>
-          <p>📆 Opname: ${opnameDatum}</p>
-          <p>📞 ${data.telefoon || "Geen telefoonnummer"}</p>
-          <p>🏥 ${data.redenOpname || "Geen reden voor opname"}</p>
-          <p>🔧 Specialist nodig: <strong>${data.specialist || "Niet ingevuld"}</strong></p>
-          <p>📌 Reden volgende afspraak: <strong>${data.redenAfspraak || "Geen reden opgegeven"}</strong></p>
+  <img src="${data.fotoUrl || 'placeholder.jpg'}" class="foto-client" alt="Profielfoto">
+  <h3>${data.naam || "Onbekend"}</h3>
+  <p>📆 Opname: ${opnameDatum}</p>
+  <p>📞 ${data.telefoon || "Geen telefoonnummer"}</p>
+  <p>🏥 ${data.redenOpname || "Geen reden voor opname"}</p>
+  <p>🔧 Specialist nodig: <strong>${data.specialist || "Niet ingevuld"}</strong></p>
+  <p>📌 Reden volgende afspraak: <strong>${data.redenAfspraak || "Geen reden opgegeven"}</strong></p>
         `;
         lijstContainer.appendChild(div);
         clientKaarten.push(div);
@@ -154,4 +168,5 @@
 </script>
 </body>
 </html>
+
 
