@@ -77,90 +77,81 @@
 <body>
   <main>
     <h1>📋 Afsprakenlijst</h1>
-    <label for="zoek-client">👤 Filter op naam:</label>
-    <select id="zoek-client">
-      <option value="">Alle cliënten...</option>
-    </select>
-    <div id="lijstContainer">Laden...</div>
-  </main>
+<label for="zoek-client">🔍 Zoek op naam:</label>
+<input type="text" id="zoek-client" placeholder="Typ een naam..." />
+<div id="lijstContainer">Laden...</div>
+</main>
 
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyAATkvdTPoWR9vWiqpjogMn3v1UpiA-6ks",
-      authDomain: "clientendossier-3c555.firebaseapp.com",
-      projectId: "clientendossier-3c555",
-      storageBucket: "clientendossier-3c555.appspot.com",
-      messagingSenderId: "266738066133",
-      appId: "1:266738066133:web:a7942baff73d082c01385c"
-    };
+  const firebaseConfig = {
+    apiKey: "AIzaSyAATkvdTPoWR9vWiqpjogMn3v1UpiA-6ks",
+    authDomain: "clientendossier-3c555.firebaseapp.com",
+    projectId: "clientendossier-3c555",
+    storageBucket: "clientendossier-3c555.appspot.com",
+    messagingSenderId: "266738066133",
+    appId: "1:266738066133:web:a7942baff73d082c01385c"
+  };
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-    const auth = firebase.auth();
-    const lijstContainer = document.getElementById("lijstContainer");
-    const zoekSelect = document.getElementById("zoek-client");
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  const auth = firebase.auth();
+  const lijstContainer = document.getElementById("lijstContainer");
+  const zoekInput = document.getElementById("zoek-client");
 
-    auth.onAuthStateChanged(user => {
-      if (!user) {
-        window.location.href = "login.html";
-        return;
-      }
+  let clientKaarten = [];
 
-      console.log("✅ Ingelogd als:", user.email);
-      db.collection("clienten").orderBy("opnamedatum").get().then(snapshot => {
-        lijstContainer.innerHTML = "";
-        zoekSelect.innerHTML = '<option value="">Alle cliënten...</option>';
+  auth.onAuthStateChanged(user => {
+    if (!user) {
+      window.location.href = "login.html";
+      return;
+    }
 
-        snapshot.forEach(doc => {
-          const data = doc.data();
-          const id = doc.id;
-          const opnameDatum = data.opnamedatum
-            ? new Date(data.opnamedatum).toLocaleDateString("nl-NL", {
-                day: "numeric",
-                month: "long",
-                year: "numeric"
-              })
-            : "Onbekend";
+    console.log("✅ Ingelogd als:", user.email);
 
-          if (data.naam && data.naam.toLowerCase() !== "onbekend") {
-            const option = document.createElement("option");
-            option.value = id;
-            option.textContent = data.naam;
-            zoekSelect.appendChild(option);
-          }
+    db.collection("clienten").orderBy("opnamedatum").limit(500).get().then(snapshot => {
+      lijstContainer.innerHTML = "";
+      clientKaarten = [];
 
-          if (!data.naam || data.naam.toLowerCase() === "onbekend") return;
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const id = doc.id;
 
-          const div = document.createElement("div");
-          div.className = "client-kaart";
-          div.setAttribute("data-id", id);
-          div.innerHTML = `
-            <h3>${data.naam}</h3>
-            <p>📆 Opname: ${opnameDatum}</p>
-            <p>📞 ${data.telefoon || "Geen telefoonnummer"}</p>
-            <p>🏥 ${data.redenOpname || "Geen reden voor opname"}</p>
-            <p>🔧 Specialist nodig: <strong>${data.specialist || "Niet ingevuld"}</strong></p>
-            <p>📌 Reden volgende afspraak: <strong>${data.redenAfspraak || "Geen reden opgegeven"}</strong></p>
-          `;
-          lijstContainer.appendChild(div);
-        });
+        const opnameDatum = data.opnamedatum
+          ? new Date(data.opnamedatum).toLocaleDateString("nl-NL", {
+              day: "numeric",
+              month: "long",
+              year: "numeric"
+            })
+          : "Onbekend";
 
-        new TomSelect('#zoek-client', {
-          placeholder: 'Typ om te zoeken...',
-          allowEmptyOption: true,
-          openOnFocus: true
-        });
-
-        zoekSelect.addEventListener('change', function(e) {
-          const gekozenId = e.target.value;
-          const kaarten = document.querySelectorAll('.client-kaart');
-          kaarten.forEach(kaart => {
-            const id = kaart.getAttribute('data-id');
-            kaart.style.display = (!gekozenId || id === gekozenId) ? '' : 'none';
-          });
-        });
+        const div = document.createElement("div");
+        div.className = "client-kaart";
+        div.setAttribute("data-id", id);
+        div.setAttribute("data-naam", (data.naam || "").toLowerCase());
+        div.innerHTML = `
+          <h3>${data.naam || "Onbekend"}</h3>
+          <p>📆 Opname: ${opnameDatum}</p>
+          <p>📞 ${data.telefoon || "Geen telefoonnummer"}</p>
+          <p>🏥 ${data.redenOpname || "Geen reden voor opname"}</p>
+          <p>🔧 Specialist nodig: <strong>${data.specialist || "Niet ingevuld"}</strong></p>
+          <p>📌 Reden volgende afspraak: <strong>${data.redenAfspraak || "Geen reden opgegeven"}</strong></p>
+        `;
+        lijstContainer.appendChild(div);
+        clientKaarten.push(div);
       });
+
+      console.log(`📊 Totaal opgehaalde cliënten: ${clientKaarten.length}`);
     });
-  </script>
+  });
+
+  zoekInput.addEventListener("input", function () {
+    const zoekTerm = zoekInput.value.toLowerCase();
+    clientKaarten.forEach(kaart => {
+      const naam = kaart.getAttribute("data-naam");
+      kaart.style.display = naam.includes(zoekTerm) ? "" : "none";
+    });
+  });
+</script>
 </body>
 </html>
+
