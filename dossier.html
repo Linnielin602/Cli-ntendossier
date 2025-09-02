@@ -515,7 +515,8 @@ section h2 {
     document.getElementById("reden").value = data.redenOpname || '';
     document.getElementById("lengte").value = data.lengte || '';
     document.getElementById("gewicht").value = data.gewicht || '';
-    if (data.fotoUrl) document.getElementById("preview").src = data.fotoUrl;
+    const fotoSrc = (data.fotoUrl && data.fotoUrl.trim() !== "") ? data.fotoUrl : "legefoto.png";
+document.getElementById("preview").src = fotoSrc;
     document.getElementById("contactpersoon").value = data.contactpersoon || '';
 document.getElementById("contactTelefoon").value = data.contactTelefoon || '';
 document.getElementById("burgerlijk").value = data.burgerlijkeStaat || '';
@@ -746,5 +747,6 @@ const datumNL = a.datum
 </script>
 </body>
 </html>
+
 
 
