@@ -100,7 +100,7 @@ auth.onAuthStateChanged(async user => {
       },
       onChange: (id) => {
         if (id && id !== '') {
-          window.location.href = `dossier.html?id=${id}`;
+          window.open(`dossier.html?id=${id}`, '_blank');
         }
       }
     });
@@ -311,4 +311,5 @@ window.open(`dossier.html?id=${docRef.id}`, '_blank'); // 🔄 nieuwe tab
   </script>
 </body>
 </html>
+
 
