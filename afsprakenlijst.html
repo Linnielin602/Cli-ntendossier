@@ -76,12 +76,12 @@
   position: absolute;
   top: 12px;
   right: 12px;
-  width: 64px;
-  height: 64px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   object-fit: cover;
   box-shadow: 0 0 4px rgba(0,0,0,0.2);
-  background-color: #e0e0e0; /* grijze achtergrond als er geen foto is */
+  background-color: #e0e0e0;
 }
 .client-kaart {
   position: relative; /* nodig voor positionering van de foto */
@@ -143,7 +143,7 @@
         div.setAttribute("data-id", id);
         div.setAttribute("data-naam", (data.naam || "").toLowerCase());
         div.innerHTML = `
-  <img src="${data.fotoUrl || 'placeholder.jpg'}" class="foto-client" alt="Profielfoto">
+  <img src="${(data.fotoUrl && data.fotoUrl.trim() !== '') ? data.fotoUrl : 'legefoto.png'}" class="foto-client" alt="Profielfoto">
   <h3>${data.naam || "Onbekend"}</h3>
   <p>📆 Opname: ${opnameDatum}</p>
   <p>📞 ${data.telefoon || "Geen telefoonnummer"}</p>
@@ -169,6 +169,7 @@
 </script>
 </body>
 </html>
+
 
 
 
