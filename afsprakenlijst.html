@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-  <!-- 🔍 Tom Select -->
   <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
 
@@ -78,62 +77,58 @@
     }
 
     @media (max-width: 800px) {
-  main {
-    padding: 1.2em;
-    border-radius: 8px;
-    background-color: rgba(255, 255, 255, 0.85); /* 📸 meer transparantie */
-    backdrop-filter: blur(2px);                  /* 🌫️ subtiele glow op bg */
-  }
+      main {
+        padding: 1.2em;
+        border-radius: 8px;
+        background-color: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(2px);
+      }
 
-  h1 {
-    font-size: 1.4em;
-    text-align: center;
-  }
+      h1 {
+        font-size: 1.4em;
+        text-align: center;
+      }
 
-  #zoek-client {
-    font-size: 1em;
-    margin-bottom: 1.2em;
-  }
+      #zoek-client {
+        font-size: 1em;
+        margin-bottom: 1.2em;
+      }
 
-  .client-kaart {
-    flex: 1 1 100%;
-    max-width: 100%;
-    padding: 1em;
-    font-size: 0.95em;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-  }
+      .client-kaart {
+        flex: 1 1 100%;
+        max-width: 100%;
+        padding: 1em;
+        font-size: 0.95em;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      }
 
-  .client-kaart h3 {
-    font-size: 1.15em;
-    margin-bottom: 0.6em;
-  }
+      .client-kaart h3 {
+        font-size: 1.15em;
+        margin-bottom: 0.6em;
+      }
 
-  select, input[type="text"] {
-    font-size: 1em;
-    padding: 0.6em;
-    margin-bottom: 0.8em;
-  }
+      select, input[type="text"] {
+        font-size: 1em;
+        padding: 0.6em;
+        margin-bottom: 0.8em;
+      }
 
-  label {
-    font-size: 0.95em;
-    margin-top: 1em;
-  }
-}
+      label {
+        font-size: 0.95em;
+        margin-top: 1em;
+      }
+    }
   </style>
 </head>
 <body>
   <main>
     <h1>📋 Afsprakenlijst</h1>
-
-    <!-- 🔽 Slimme zoekfunctie -->
     <label for="zoek-client">👤 Filter op naam:</label>
     <select id="zoek-client" placeholder="Typ om te zoeken...">
       <option value="">Alle cliënten...</option>
     </select>
-
     <div id="lijstContainer">Laden...</div>
   </main>
-
   <!-- ✅ Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -152,6 +147,10 @@
     const db = firebase.firestore();
     const auth = firebase.auth();
     const lijstContainer = document.getElementById("lijstContainer");
+    const zoekSelect = document.getElementById("zoek-client");
+
+    let lastVisible = null;
+    let isLoading = false;
 
     auth.onAuthStateChanged(user => {
       if (!user) {
@@ -160,98 +159,143 @@
       }
 
       console.log("✅ Ingelogd als:", user.email);
+      lijstContainer.innerHTML = "";
+      zoekSelect.innerHTML = '<option value="">Alle cliënten...</option>';
+      laadVolgendeBatch();
+    });
 
-      db.collection("clienten").orderBy("opnamedatum").get().then(snapshot => {
-        lijstContainer.innerHTML = "";
+    async function laadVolgendeBatch() {
+      if (isLoading) return;
+      isLoading = true;
 
-        const zoekSelect = document.getElementById('zoek-client');
-        zoekSelect.innerHTML = '<option value="">Alle cliënten...</option>';
+      let query = db.collection("clienten").orderBy("opnamedatum").limit(20);
+      if (lastVisible) {
+        query = query.startAfter(lastVisible);
+      }
 
-        snapshot.forEach(doc => {
-          const data = doc.data();
-          const id = doc.id;
+      const snapshot = await query.get();
+      if (snapshot.empty) {
+        isLoading = false;
+        return;
+      }
 
-          const opnameDatum = data.opnamedatum
-            ? new Date(data.opnamedatum).toLocaleDateString("nl-NL", {
-                day: "numeric",
-                month: "long",
-                year: "numeric"
-              })
-            : "Onbekend";
+      lastVisible = snapshot.docs[snapshot.docs.length - 1];
 
-          if (data.naam && data.naam.toLowerCase() !== "onbekend") {
-            const option = document.createElement("option");
-            option.value = id;
-            option.textContent = data.naam;
-            zoekSelect.appendChild(option);
-          }
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const id = doc.id;
 
-          if (!data.naam || data.naam.toLowerCase() === "onbekend") return;
+        if (!data.naam || data.naam.toLowerCase() === "onbekend") return;
 
-          const div = document.createElement("div");
-          div.className = "client-kaart";
-          div.setAttribute("data-id", id);
+        const opnameDatum = data.opnamedatum
+          ? new Date(data.opnamedatum).toLocaleDateString("nl-NL", {
+              day: "numeric",
+              month: "long",
+              year: "numeric"
+            })
+          : "Onbekend";
 
-          div.innerHTML = `
-            <h3>${data.naam}</h3>
-            <p>📆 Opname: ${opnameDatum}</p>
-            <p>📞 ${data.telefoon || "Geen telefoonnummer"}</p>
-            <p>🏥 ${data.redenOpname || "Geen reden voor opname"}</p>
+        const option = document.createElement("option");
+        option.value = id;
+        option.textContent = data.naam;
+        zoekSelect.appendChild(option);
 
-            <label>🔧 Specialist nodig:</label>
-            <select id="spec-${id}">
-              <option>-- Kies specialist --</option>
-              <option>Ambulancier</option>
-              <option>Operatiespecialist</option>
-              <option>Psycholoog</option>
-              <option>Fysiotherapeut</option>
-              <option>Diëtist</option>
-              <option>Huisarts</option>
-              <option>Tandarts</option>
-              <option>Verloskundige</option>
-              <option>Oogarts</option>
-            </select>
+        const div = document.createElement("div");
+        div.className = "client-kaart";
+        div.setAttribute("data-id", id);
 
-            <label>📌 Reden volgende afspraak:</label>
-            <input type="text" id="reden-${id}" placeholder="Bijv. gips verwijderen..." />
-          `;
+        div.innerHTML = `
+          <h3>${data.naam}</h3>
+          <p>📆 Opname: ${opnameDatum}</p>
+          <p>📞 ${data.telefoon || "Geen telefoonnummer"}</p>
+          <p>🏥 ${data.redenOpname || "Geen reden voor opname"}</p>
 
-          lijstContainer.appendChild(div);
+          <label>🔧 Specialist nodig:</label>
+          <select id="spec-${id}">
+            <option>-- Kies specialist --</option>
+            <option>Ambulancier</option>
+            <option>Operatiespecialist</option>
+            <option>Psycholoog</option>
+            <option>Fysiotherapeut</option>
+            <option>Diëtist</option>
+            <option>Huisarts</option>
+            <option>Tandarts</option>
+            <option>Verloskundige</option>
+            <option>Oogarts</option>
+          </select>
 
-          const specSelect = div.querySelector(`#spec-${id}`);
-          const redenInput = div.querySelector(`#reden-${id}`);
+          <label>📌 Reden volgende afspraak:</label>
+          <input type="text" id="reden-${id}" placeholder="Bijv. gips verwijderen..." />
+        `;
 
-          db.collection("clienten").doc(id).collection("volgendeAfspraak").doc("info").get().then(afspraakDoc => {
-            if (afspraakDoc.exists) {
-              const afspraak = afspraakDoc.data();
-              specSelect.value = afspraak.specialist || "-- Kies specialist --";
-              redenInput.value = afspraak.reden || "";
-            }
-          });
+        lijstContainer.appendChild(div);
+      });
+      
+      // 🔄 Update Tom Select dropdown
+      updateTomSelect();
 
-          specSelect.addEventListener("change", () => opslaan(id));
-          redenInput.addEventListener("blur", () => opslaan(id));
-        });
+      isLoading = false;
+    }
 
-        // ✅ Activeer Tom Select op dropdown
-        new TomSelect('#zoek-client', {
-          placeholder: 'Typ om te zoeken...',
-          allowEmptyOption: true,
-          openOnFocus: true
-        });
+    window.addEventListener('scroll', () => {
+      if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100) {
+        laadVolgendeBatch();
+      }
+    });
+    // 🔍 Filter kaarten op selectie
+    zoekSelect.addEventListener('change', function(e) {
+      const gekozenId = e.target.value;
+      const kaarten = document.querySelectorAll('.client-kaart');
 
-        // 🔍 Filter kaarten op selectie
-        document.getElementById('zoek-client').addEventListener('change', function(e) {
-          const gekozenId = e.target.value;
-          const kaarten = document.querySelectorAll('.client-kaart');
+      kaarten.forEach(kaart => {
+        const id = kaart.getAttribute('data-id');
+        kaart.style.display = (!gekozenId || id === gekozenId) ? '' : 'none';
 
-          kaarten.forEach(kaart => {
-            const id = kaart.getAttribute('data-id');
-            kaart.style.display = (!gekozenId || id === gekozenId) ? '' : 'none';
-          });
-        });
+        // Lazy load afspraakinfo bij selectie
+        if (id === gekozenId) {
+          laadAfspraakInfo(id);
+        }
       });
     });
+
+    let tomSelectInstance = null;
+
+function updateTomSelect() {
+  if (!tomSelectInstance) {
+    tomSelectInstance = new TomSelect('#zoek-client', {
+      placeholder: 'Typ om te zoeken...',
+      allowEmptyOption: true,
+      openOnFocus: true
+    });
+  } else {
+    tomSelectInstance.clearOptions();
+    tomSelectInstance.addOptions([...zoekSelect.options].map(opt => ({
+      value: opt.value,
+      text: opt.textContent
+    })));
+  }
+}
+
+    async function laadAfspraakInfo(id) {
+      const specSelect = document.getElementById(`spec-${id}`);
+      const redenInput = document.getElementById(`reden-${id}`);
+
+      if (!specSelect || !redenInput) return;
+
+      try {
+        const afspraakDoc = await db.collection("clienten").doc(id).collection("volgendeAfspraak").doc("info").get();
+        if (afspraakDoc.exists) {
+          const afspraak = afspraakDoc.data();
+          specSelect.value = afspraak.specialist || "-- Kies specialist --";
+          redenInput.value = afspraak.reden || "";
+        }
+      } catch (err) {
+        console.error(`❌ Fout bij laden afspraak voor ${id}:`, err);
+      }
+
+      specSelect.addEventListener("change", () => opslaan(id));
+      redenInput.addEventListener("blur", () => opslaan(id));
+    }
 
     async function opslaan(id) {
       const specialist = document.getElementById(`spec-${id}`).value;
