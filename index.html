@@ -57,13 +57,13 @@
 
   // 👂 Reageer op dropdown selectie
   function activeerDropdownNavigatie() {
-    document.getElementById('client-dropdown').addEventListener('change', e => {
-      const id = e.target.value;
-      if (id && id !== 'Kies een cliënt...') {
-        window.location.href = `dossier.html?id=${id}`;
-      }
-    });
-  }
+  document.getElementById('client-dropdown').addEventListener('change', e => {
+    const id = e.target.value;
+    if (id && id !== 'Kies een cliënt...') {
+      window.open(`dossier.html?id=${id}`, '_blank'); // ✅ opent in nieuwe tab
+    }
+  });
+}
 
   // 🔒 Login & slimme dropdown
 let tomSelectInstance;
@@ -287,7 +287,7 @@ auth.onAuthStateChanged(async user => {
 
       try {
         const docRef = await db.collection("clienten").add(nieuweClient);
-        window.location.href = `dossier.html?id=${docRef.id}`;
+window.open(`dossier.html?id=${docRef.id}`, '_blank'); // 🔄 nieuwe tab
       } catch (err) {
         console.error("❌ Fout bij opslaan:", err);
         alert("Opslaan mislukt – zie console voor details");
@@ -295,11 +295,11 @@ auth.onAuthStateChanged(async user => {
     });
 
     dropdown.addEventListener('change', () => {
-      const id = dropdown.value;
-      if (id && id !== 'Kies een cliënt...') {
-        window.location.href = `dossier.html?id=${id}`;
-      }
-    });
+  const id = dropdown.value;
+  if (id && id !== 'Kies een cliënt...') {
+    window.open(`dossier.html?id=${id}`, '_blank'); // 🔄 nieuwe tab
+  }
+});
 
     function uitloggen() {
       auth.signOut().then(() => {
@@ -311,3 +311,4 @@ auth.onAuthStateChanged(async user => {
   </script>
 </body>
 </html>
+
