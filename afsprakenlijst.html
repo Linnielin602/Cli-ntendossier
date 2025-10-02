@@ -62,6 +62,7 @@
       border-radius: 10px;
       padding: 1.2em;
       background-color: #fffde7;
+      position: relative;
     }
     .client-kaart h3 {
       margin-top: 0;
@@ -73,104 +74,104 @@
       }
     }
     .foto-client {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  object-fit: cover;
-  box-shadow: 0 0 6px rgba(0,0,0,0.25);
-  background-color: #e0e0e0;
-}
-.client-kaart {
-  position: relative; /* nodig voor positionering van de foto */
-}
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      box-shadow: 0 0 6px rgba(0,0,0,0.25);
+      background-color: #e0e0e0;
+    }
   </style>
 </head>
 <body>
   <main>
     <h1>📋 Afsprakenlijst</h1>
-<label for="zoek-client">🔍 Zoek op naam:</label>
-<input type="text" id="zoek-client" placeholder="Typ een naam..." />
-<div id="lijstContainer">Laden...</div>
-</main>
+    <label for="zoek-client">🔍 Zoek op naam:</label>
+    <input type="text" id="zoek-client" placeholder="Typ een naam..." />
+    <div id="lijstContainer">Laden...</div>
+  </main>
 
   <script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyAATkvdTPoWR9vWiqpjogMn3v1UpiA-6ks",
-    authDomain: "clientendossier-3c555.firebaseapp.com",
-    projectId: "clientendossier-3c555",
-    storageBucket: "clientendossier-3c555.appspot.com",
-    messagingSenderId: "266738066133",
-    appId: "1:266738066133:web:a7942baff73d082c01385c"
-  };
+    const firebaseConfig = {
+      apiKey: "AIzaSyAATkvdTPoWR9vWiqpjogMn3v1UpiA-6ks",
+      authDomain: "clientendossier-3c555.firebaseapp.com",
+      projectId: "clientendossier-3c555",
+      storageBucket: "clientendossier-3c555.appspot.com",
+      messagingSenderId: "266738066133",
+      appId: "1:266738066133:web:a7942baff73d082c01385c"
+    };
 
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-  const auth = firebase.auth();
-  const lijstContainer = document.getElementById("lijstContainer");
-  const zoekInput = document.getElementById("zoek-client");
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+    const lijstContainer = document.getElementById("lijstContainer");
+    const zoekInput = document.getElementById("zoek-client");
 
-  let clientKaarten = [];
+    let clientKaarten = [];
 
-  auth.onAuthStateChanged(user => {
-    if (!user) {
-      window.location.href = "login.html";
-      return;
-    }
+    auth.onAuthStateChanged(user => {
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
 
-    console.log("✅ Ingelogd als:", user.email);
+      console.log("✅ Ingelogd als:", user.email);
 
-    db.collection("clienten").orderBy("opnamedatum").limit(500).get().then(snapshot => {
-      lijstContainer.innerHTML = "";
-      clientKaarten = [];
+      db.collection("clienten").orderBy("opnamedatum").limit(500).get().then(snapshot => {
+        lijstContainer.innerHTML = "";
+        clientKaarten = [];
 
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        const id = doc.id;
+        const docs = snapshot.docs.sort((a, b) => {
+          const aVal = a.data().telefoonGecontroleerd === false ? 0 : 1;
+          const bVal = b.data().telefoonGecontroleerd === false ? 0 : 1;
+          return aVal - bVal;
+        });
 
-        const opnameDatum = data.opnamedatum
-          ? new Date(data.opnamedatum).toLocaleDateString("nl-NL", {
-              day: "numeric",
-              month: "long",
-              year: "numeric"
-            })
-          : "Onbekend";
+        docs.forEach(doc => {
+          const data = doc.data();
+          const id = doc.id;
 
-        const div = document.createElement("div");
-        div.className = "client-kaart";
-        div.setAttribute("data-id", id);
-        div.setAttribute("data-naam", (data.naam || "").toLowerCase());
-        div.innerHTML = `
-  <img src="${(data.fotoUrl && data.fotoUrl.trim() !== '') ? data.fotoUrl : 'legefoto.png'}" class="foto-client" alt="Profielfoto">
-  <h3>${data.naam || "Onbekend"}</h3>
-  <p>📆 Opname: ${opnameDatum}</p>
-  <p>📞 ${data.telefoon || "Geen telefoonnummer"}</p>
-  <p>🏥 ${data.redenOpname || "Geen reden voor opname"}</p>
-  <p>🔧 Specialist nodig: <strong>${data.specialist || "Niet ingevuld"}</strong></p>
-  <p>📌 Reden volgende afspraak: <strong>${data.redenAfspraak || "Geen reden opgegeven"}</strong></p>
-        `;
-        lijstContainer.appendChild(div);
-        clientKaarten.push(div);
+          const opnameDatum = data.opnamedatum
+            ? new Date(data.opnamedatum).toLocaleDateString("nl-NL", {
+                day: "numeric",
+                month: "long",
+                year: "numeric"
+              })
+            : "Onbekend";
+
+          const div = document.createElement("div");
+          div.className = "client-kaart";
+          div.setAttribute("data-id", id);
+          div.setAttribute("data-naam", (data.naam || "").toLowerCase());
+          div.innerHTML = `
+            <img src="${(data.fotoUrl && data.fotoUrl.trim() !== '') ? data.fotoUrl : 'legefoto.png'}" class="foto-client" alt="Profielfoto">
+            <h3>${data.naam || "Onbekend"}</h3>
+            <p>📆 Opname: ${opnameDatum}</p>
+            <p>📞 <span style="color:${data.telefoonGecontroleerd === false ? '#d32f2f' : '#1a237e'}">
+              ${data.telefoon || "Geen telefoonnummer"} ${data.telefoonGecontroleerd === false ? "⬤" : ""}
+            </span></p>
+            <p>🏥 ${data.redenOpname || "Geen reden voor opname"}</p>
+            <p>🔧 Specialist nodig: <strong>${data.specialist || "Niet ingevuld"}</strong></p>
+            <p>📌 Reden volgende afspraak: <strong>${data.redenAfspraak || "Geen reden opgegeven"}</strong></p>
+          `;
+          lijstContainer.appendChild(div);
+          clientKaarten.push(div);
+        });
+
+        console.log(`📊 Totaal opgehaalde cliënten: ${clientKaarten.length}`);
       });
-
-      console.log(`📊 Totaal opgehaalde cliënten: ${clientKaarten.length}`);
     });
-  });
 
-  zoekInput.addEventListener("input", function () {
-    const zoekTerm = zoekInput.value.toLowerCase();
-    clientKaarten.forEach(kaart => {
-      const naam = kaart.getAttribute("data-naam");
-      kaart.style.display = naam.includes(zoekTerm) ? "" : "none";
+    zoekInput.addEventListener("input", function () {
+      const zoekTerm = zoekInput.value.toLowerCase();
+      clientKaarten.forEach(kaart => {
+        const naam = kaart.getAttribute("data-naam");
+        kaart.style.display = naam.includes(zoekTerm) ? "" : "none";
+      });
     });
-  });
-</script>
+  </script>
 </body>
 </html>
-
-
-
-
-
