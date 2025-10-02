@@ -329,7 +329,10 @@ section h2 {
     <label>Geboortedatum:</label>
     <input type="date" id="geboorte" />
     <label>Telefoonnummer:</label>
-    <input type="text" id="telefoon" />
+<div style="display: flex; align-items: center;">
+  <input type="text" id="telefoon" />
+  <span id="telefoonStatus" style="margin-left:8px; font-size:1.2em; color:#d32f2f;"></span>
+</div>
     <label>Datum eerste opname:</label>
     <input type="date" id="opname" />
     <label>Reden opname:</label>
@@ -508,9 +511,26 @@ section h2 {
     }
 
     const data = snap.data();
+    if (data.telefoonGecontroleerd === undefined) {
+  await docRef.update({ telefoonGecontroleerd: false });
+  data.telefoonGecontroleerd = false;
+}
     document.getElementById("naamInput").value = data.naam || '';
     document.getElementById("geboorte").value = data.geboortedatum || '';
-    document.getElementById("telefoon").value = data.telefoon || '';
+    const telefoonInput = document.getElementById("telefoon");
+telefoonInput.value = data.telefoon || '';
+
+// Visuele hint als nummer niet is gecontroleerd
+if (data.telefoonGecontroleerd === false) {
+  telefoonInput.style.border = "2px solid #d32f2f";
+  telefoonInput.style.backgroundColor = "#ffebee";
+
+  const statusBol = document.getElementById("telefoonStatus");
+  if (statusBol) {
+    statusBol.textContent = "⬤";
+    statusBol.title = "Nummer nog niet bevestigd";
+  }
+}
     document.getElementById("opname").value = data.opnamedatum || '';
     document.getElementById("reden").value = data.redenOpname || '';
     document.getElementById("lengte").value = data.lengte || '';
@@ -528,6 +548,20 @@ document.getElementById("operatie").value = data.operatie || "-- Selecteer --";
 document.getElementById("laatsteWens").value = data.laatsteWens || "-- Selecteer --";
     document.getElementById("volgendeSpecialist").value = data.specialist || "-- Kies specialist --";
 document.getElementById("redenAfspraak").value = data.redenAfspraak || "";
+telefoonInput.addEventListener("change", async e => {
+  const nieuwNummer = e.target.value.trim();
+  await docRef.update({
+    telefoon: nieuwNummer,
+    telefoonGecontroleerd: true
+  });
+
+  // Hint verwijderen
+  telefoonInput.style.border = "";
+  telefoonInput.style.backgroundColor = "";
+
+  const statusBol = document.getElementById("telefoonStatus");
+  if (statusBol) statusBol.textContent = "";
+});
     
     ["contactpersoon", "contactTelefoon", "burgerlijk", "postcode"].forEach(veld => {
   const el = document.getElementById(veld);
@@ -747,6 +781,7 @@ const datumNL = a.datum
 </script>
 </body>
 </html>
+
 
 
 
